@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noyade Pédiatrique — SDS30</title>
+<style>
+  :root {
+    --bleu: #1a4a7a;
+    --bleu-clair: #2a6db5;
+    --bleu-bg: #e8f0f8;
+    --rouge: #c0392b;
+    --rouge-bg: #fdf0ef;
+    --orange: #c96a00;
+    --orange-bg: #fef6e8;
+    --vert: #1a6b3a;
+    --vert-bg: #eaf5ee;
+    --violet: #5a2d82;
+    --violet-bg: #f3eef9;
+    --cyan: #0a7a8a;
+    --cyan-bg: #e6f7f9;
+    --gris: #4a4a4a;
+    --gris-clair: #f5f5f5;
+    --bordure: #d0d0d0;
+    --texte: #1a1a1a;
+    font-size: 15px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: var(--texte);
+    background: #fff;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  header {
+    background: var(--cyan);
+    color: #fff;
+    padding: 14px 16px 10px;
+  }
+  header h1 { font-size: 18px; font-weight: 700; }
+  header p { font-size: 12px; opacity: 0.85; margin-top: 3px; }
+
+  .section {
+    margin-bottom: 14px;
+    border: 1px solid var(--bordure);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .section-header.rouge  { background: var(--rouge);  color: #fff; }
+  .section-header.bleu   { background: var(--bleu);   color: #fff; }
+  .section-header.orange { background: var(--orange); color: #fff; }
+  .section-header.vert   { background: var(--vert);   color: #fff; }
+  .section-header.violet { background: var(--violet); color: #fff; }
+  .section-header.cyan   { background: var(--cyan);   color: #fff; }
+  .section-header.noir   { background: #2c2c2c;       color: #fff; }
+  .section-body { padding: 10px 12px; background: #fff; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: var(--gris-clair);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--gris);
+    padding: 5px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--bordure);
+  }
+  td { padding: 6px 8px; border-bottom: 1px solid #ebebeb; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .val        { font-weight: 700; color: var(--bleu); }
+  .val-rouge  { font-weight: 700; color: var(--rouge); }
+  .val-vert   { font-weight: 700; color: var(--vert); }
+  .val-orange { font-weight: 700; color: var(--orange); }
+  .val-cyan   { font-weight: 700; color: var(--cyan); }
+
+  .alerte {
+    background: var(--rouge-bg);
+    border: 1px solid #e8b4b0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 12px;
+    color: var(--rouge);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+  .alerte::before { content: "⚠"; font-size: 14px; flex-shrink: 0; }
+
+  .alerte-cyan {
+    background: var(--cyan-bg);
+    border: 1px solid #a0d8e0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 12px;
+    color: var(--cyan);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+  .alerte-cyan::before { content: "💧"; font-size: 14px; flex-shrink: 0; }
+
+  .note {
+    background: var(--orange-bg);
+    border-left: 3px solid var(--orange);
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--orange);
+    margin-top: 8px;
+    border-radius: 0 4px 4px 0;
+  }
+  .note-vert {
+    background: var(--vert-bg);
+    border-left: 3px solid var(--vert);
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--vert);
+    margin-top: 8px;
+    border-radius: 0 4px 4px 0;
+  }
+  .note-cyan {
+    background: var(--cyan-bg);
+    border-left: 3px solid var(--cyan);
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--cyan);
+    margin-top: 8px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .step {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 7px;
+    font-size: 13px;
+  }
+  .step-num {
+    background: var(--cyan);
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-num.rouge  { background: var(--rouge); }
+  .step-num.bleu   { background: var(--bleu); }
+  .step-num.vert   { background: var(--vert); }
+  .step-num.orange { background: var(--orange); }
+
+  /* Stades noyade */
+  .stades {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .stade-card {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--bordure);
+    font-size: 12px;
+  }
+  .stade-title {
+    padding: 5px 10px;
+    font-weight: 700;
+    font-size: 12px;
+    color: #fff;
+  }
+  .stade-body { padding: 6px 10px; }
+
+  /* 3 situations */
+  .situations {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .sit-card {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--bordure);
+    font-size: 12px;
+  }
+  .sit-title {
+    padding: 6px 8px;
+    font-weight: 700;
+    font-size: 11px;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 0.3px;
+  }
+  .sit-body { padding: 7px 8px; font-size: 11px; line-height: 1.5; }
+
+  .drug-block {
+    background: var(--rouge-bg);
+    border: 1px solid #e8b4b0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .drug-block h4 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--rouge);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 6px;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .mini-card {
+    background: var(--gris-clair);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  .mini-card .label { color: #777; font-size: 11px; margin-bottom: 2px; }
+  .mini-card .bigval { font-size: 17px; font-weight: 700; color: var(--cyan); line-height: 1.2; }
+
+  hr.sep { border: none; border-top: 1px dashed var(--bordure); margin: 8px 0; }
+
+  .footer-note {
+    font-size: 11px;
+    color: #999;
+    text-align: center;
+    padding: 12px 0 4px;
+    border-top: 1px solid var(--bordure);
+    margin-top: 16px;
+  }
+
+  @media (max-width: 480px) {
+    .situations { grid-template-columns: 1fr; }
+    .stades { grid-template-columns: 1fr; }
+  }
+
+  /* ── ACCORDION ── */
+  .acc-wrap {
+    background: #2c2c2c;
+    padding: 8px 14px 6px;
+  }
+  .acc-wrap p {
+    color: #ccc;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  details.acc {
+    margin-bottom: 6px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 2px solid #0a7a8a;
+  }
+  details.acc summary {
+    background: #0a7a8a;
+    color: #fff;
+    padding: 11px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  details.acc summary::-webkit-details-marker { display: none; }
+  details.acc summary .arr { font-size: 10px; opacity: 0.8; }
+  details.acc[open] summary .arr { transform: rotate(180deg); display: inline-block; }
+  details.acc summary .sub {
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.85;
+    margin-left: 8px;
+  }
+  details.acc .panel-inner {
+    padding: 12px 14px 16px;
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>💧 Noyade Pédiatrique</h1>
+  <p>SDS30 · v2.0 — juin 2026 · Référence : ERC Guidelines 2025 Paediatric Life Support</p>
+</header>
+
+<!-- SECTION COMMUNE -->
+<div style="padding: 12px 14px 4px;">
+
+  <div class="alerte-cyan">Pronostic lié à l'hypoxie · Mise au sec dès que possible · Objectifs : contrôle T°, oxygénation, hémodynamique, neuroprotection, stress minimal</div>
+
+  <!-- SÉCURITÉ EXTRACTION -->
+  <div class="section">
+    <div class="section-header noir">🏊 Sécurité — Extraction</div>
+    <div class="section-body">
+      <div class="step"><div class="step-num">1</div><div><strong>Ne pas entrer dans l'eau</strong> sauf si formé et équipé · maintenir la victime en position horizontale sans retarder l'extraction</div></div>
+      <div class="step"><div class="step-num">2</div><div><strong>Déshabiller, sécher, mettre au sec</strong> immédiatement</div></div>
+      <div class="step"><div class="step-num">3</div><div><strong>Immobilisation cervicale</strong> uniquement si suspicion de traumatisme sévère (plongeon, accident de sports nautiques) · non systématique</div></div>
+      <div class="step"><div class="step-num">4</div><div><strong>Ne pas chercher à évacuer toute l'eau</strong> à l'aspiration · pose de SNG après intubation</div></div>
+      <div class="note">Penser TC associé : plongeon, chute, choc · rechercher systématiquement un contexte sous-jacent (malaise, épilepsie, intoxication)</div>
+    </div>
+  </div>
+
+  <!-- CLASSIFICATION STADES -->
+  <div class="section">
+    <div class="section-header cyan">📊 Classification — 4 stades</div>
+    <div class="section-body">
+      <div class="stades">
+        <div class="stade-card">
+          <div class="stade-title" style="background:var(--vert)">Stade I — Aquastress</div>
+          <div class="stade-body">Pas d'inhalation liquide · angoisse · hyperventilation · tachycardie · tremblements</div>
+        </div>
+        <div class="stade-card">
+          <div class="stade-title" style="background:var(--orange)">Stade II — Petite noyade</div>
+          <div class="stade-body">Encombrement broncho-pulmonaire · cyanose · hypothermie · agitation</div>
+        </div>
+        <div class="stade-card">
+          <div class="stade-title" style="background:var(--rouge)">Stade III — Grande noyade</div>
+          <div class="stade-body">Détresse respiratoire aiguë · obnubilation ou coma</div>
+        </div>
+        <div class="stade-card">
+          <div class="stade-title" style="background:#2c2c2c">Stade IV — Anoxie</div>
+          <div class="stade-body">Arrêt cardiaque · → <strong>cf. fiche ACR pédiatrique</strong> avec spécificités hypothermie</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 SITUATIONS -->
+  <div class="section">
+    <div class="section-header cyan">🔀 Arbre décisionnel — 3 situations</div>
+    <div class="section-body">
+      <div class="situations">
+        <div class="sit-card">
+          <div class="sit-title" style="background:var(--vert)">Gêne respi modérée<br>Conscience normale</div>
+          <div class="sit-body">
+            <strong>Oxygénothérapie</strong><br>
+            LN O₂ pur QSP SpO₂ &gt; 94 %<br>
+            Si échec : VNI (CPAP 5+5)<br><br>
+            <strong>Circulation</strong><br>
+            Remplissage SSI prudent 10 mL/kg<br>
+            Si hypotension : Noradrénaline<br>
+            (CI si T° &lt; 32°C)<br><br>
+            <strong>Transport possible</strong><br>
+            Position demi-assise si conscient
+          </div>
+        </div>
+        <div class="sit-card">
+          <div class="sit-title" style="background:var(--rouge)">Insuffisance respi aiguë<br>et/ou troubles conscience</div>
+          <div class="sit-body">
+            <strong>Intubation</strong> SIT ballonnet<br>
+            Séquence rapide<br><br>
+            <strong>Ventilation</strong><br>
+            PEP élevée jusqu'à 10 cmH₂O<br>
+            EtCO₂ 35–40 mmHg<br><br>
+            <strong>Circulation</strong><br>
+            Remplissage SSI prudent<br>
+            Si hypotension : Noradrénaline<br>
+            (CI si T° &lt; 32°C)<br><br>
+            <strong>Relai perfusion</strong> apports de base
+          </div>
+        </div>
+        <div class="sit-card">
+          <div class="sit-title" style="background:#2c2c2c">ACR</div>
+          <div class="sit-body">
+            → <strong>Cf. fiche ACR pédiatrique</strong><br><br>
+            Spécificités noyade :<br>
+            · Si T° &lt; 30°C : max 3 CEE · <strong>1 dose unique adré</strong> · pas d'amiodarone (sauf ECMO imminente : pas d'adré)<br>
+            · Si T° 30–35°C : adré toutes les 8 min · 2ème amiodarone après 8 min<br>
+            · Aucun décès si T° &lt; 34°C<br>
+            · Penser CEC/ECMO si hypothermie réfractaire<br>
+            · Le SDRA du noyé tend à s'améliorer rapidement
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RÉCHAUFFEMENT -->
+  <div class="section">
+    <div class="section-header bleu">🌡️ Réchauffement — Lutte contre l'hypothermie</div>
+    <div class="section-body">
+      <div class="alerte">Si T° &lt; 28°C : risque de FV · Si T° &lt; 32°C : CI à la Noradrénaline</div>
+      <table>
+        <tr><th>Objectif</th><th>Modalité</th></tr>
+        <tr><td>Température cible</td><td class="val-cyan">&gt; 36,5°C · <strong>au moins 1°C/h</strong> de remontée · arrêt réchauffement actif à <strong>35°C</strong> pour éviter le rebond</td></tr>
+        <tr><td>Réchauffement externe</td><td class="val">Couverture chauffante · UMH chauffée à 30°C · précharger l'UMH si possible</td></tr>
+        <tr><td>Réchauffement gaz</td><td class="val">Gaz respiratoires réchauffés dès que possible</td></tr>
+        <tr><td>ACR &amp; réchauffement</td><td class="val-rouge">Objectif T° ≥ 33°C si ACR · Penser CEC si hypothermie profonde réfractaire → contact SAMU</td></tr>
+      </table>
+      <div class="note">Refroidir la brûlure mais réchauffer le brûlé noyé · ne pas déclarer le décès si T° &lt; 34°C</div>
+    </div>
+  </div>
+
+  <!-- NEUROPROTECTION -->
+  <div class="section">
+    <div class="section-header violet">🧠 Neuroprotection</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Action</th><th>Détail</th></tr>
+        <tr><td>Prévention ACSOS</td><td class="val">SpO₂ 94–98 % · EtCO₂ 35–40 mmHg · normoglycémie · normothermie</td></tr>
+        <tr><td>Si signes HTIC</td><td class="val-rouge">SSH 3 % : 3 mL/kg IVL 10 min · ou Mannitol 20 % : 5 mL/kg IVL 15 min</td></tr>
+        <tr><td>TC associé suspecté</td><td class="val-orange">TDMc à organiser avec régulation si doute · proclive 20° si intubé</td></tr>
+        <tr><td>Glycémie</td><td class="val">Dextro systématique · G10 % 3 mL/kg si &lt; 0,6 g/L</td></tr>
+      </table>
+      <div class="note">Toujours garder à l'esprit un TC associé : plongeon, chute, choc · contexte à rechercher : malaise, épilepsie, intoxication</div>
+    </div>
+  </div>
+
+  <!-- TRANSPORT -->
+  <div class="section">
+    <div class="section-header orange">🚑 Transport — Points de vigilance</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Item</th><th>Conduite à tenir</th></tr>
+        <tr><td>Position</td><td class="val">Demi-assise si conscient · décubitus dorsal si intubé</td></tr>
+        <tr><td>Monitorage</td><td class="val-rouge">FC · TA · T° +++ (sonde thermique) · SpO₂ · EtCO₂</td></tr>
+        <tr><td>Réévaluation clinique</td><td class="val">Pupilles · conscience · auscultation à chaque étape</td></tr>
+        <tr><td>Pas de montée en altitude</td><td class="val">Si accident de plongée</td></tr>
+        <tr><td>Antibiothérapie</td><td class="val">Pas d'indication systématique · uniquement si inhalation de boue</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ORIENTATION -->
+  <div class="section">
+    <div class="section-header vert">🏥 Orientation</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Tableau clinique</th><th>Orientation</th></tr>
+        <tr><td>Stade I — Conscience normale + stabilité HD + absence DR</td><td class="val-vert">Urgences pédiatriques</td></tr>
+        <tr><td>Stade II/III — GCS 9–12 · signes de détresse respi</td><td class="val-orange">Soins continus pédiatriques</td></tr>
+        <tr><td>Stade III/IV — Coma (GCS &lt; 8) · insuffisance respi aiguë · instabilité HD · T° &lt; 32°C</td><td class="val-rouge">Réanimation pédiatrique</td></tr>
+      </table>
+      <div class="note-vert">Contact SAMU systématique pour tout stade ≥ II · annoncer T°, SpO₂, EtCO₂, contexte</div>
+    </div>
+  </div>
+
+</div><!-- fin section commune -->
+
+<!-- TABS DOSES -->
+
+
+<!-- ===== CRÈCHE ===== -->
+<div class="acc-wrap"><p>▼ DOSES PAR TRANCHE DE POIDS — Toucher pour ouvrir/fermer</p>
+<details class="acc" id="panel-creche" open>
+  <summary>CRÈCHE <span class="sub">&lt; 10 kg · &lt; 1 an</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+<div class="alerte-cyan">&lt; 10 kg · Tuyaux pédiatriques · Mode nourrisson · IO bleu 25 mm</div>
+
+  <div class="grid2">
+    <div class="mini-card"><div class="label">SpO₂ cible</div><div class="bigval">94–98 %</div></div>
+    <div class="mini-card"><div class="label">EtCO₂ cible</div><div class="bigval">35–40 mmHg</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header cyan">🫁 Ventilation mécanique — &lt; 10 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Paramètre</th><th>Réglage noyade</th></tr>
+        <tr><td>Mode</td><td class="val">VPC (pression contrôlée) · mode nourrisson</td></tr>
+        <tr><td>VT cible</td><td class="val">6 mL/kg → 48–60 mL</td></tr>
+        <tr><td>FR</td><td class="val">30–40 /min</td></tr>
+        <tr><td>PEP initiale</td><td class="val-rouge">8 cmH₂O · augmenter jusqu'à 10 si hypoxie persistante</td></tr>
+        <tr><td>FiO₂</td><td class="val">100 % puis QSP SpO₂ 94–98 %</td></tr>
+        <tr><td>I/E</td><td class="val">1/2 · Ti long possible (Ti &gt; Te)</td></tr>
+      </table>
+      <div class="note">Éviter de déconnecter du ventilateur · Pression plateau &lt; 28 cmH₂O · Vider l'estomac si distension gastrique gênant ventilation</div>
+    </div>
+  </div>
+
+  <div class="drug-block">
+    <h4>💉 ISR — &lt; 10 kg</h4>
+    <table>
+      <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>5 kg</th><th>8 kg</th></tr>
+      <tr><td>Kétamine 10 mg/mL</td><td>3–5 mg/kg</td><td>Pure · IVD<br>+ O₂ apnéique LN 15 L/min</td><td class="val-rouge">1,5–2,5 mL</td><td class="val-rouge">2,4–4 mL</td></tr>
+      <tr><td>Célocurine 50 mg/mL ⚠ frigo</td><td>2 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">0,2 mL</td><td class="val-rouge">0,32 mL</td></tr>
+      <tr><td>OU Rocuronium 10 mg/mL</td><td>1 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">0,5 mL</td><td class="val-rouge">0,8 mL</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-header bleu">💊 Sédation entretien — &lt; 10 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Posologie</th><th>5 kg</th><th>8 kg</th></tr>
+        <tr><td>Propofol 10 mg/mL <em>(si HD stable)</em></td><td>2–6 mg/kg/h</td><td class="val">1–3 mL/h</td><td class="val">1,6–4,8 mL/h</td></tr>
+        <tr><td>OU Hypnovel 1 mg/mL</td><td>0,1–0,3 mg/kg/h</td><td class="val">0,5–1,5 mL/h</td><td class="val">0,8–2,4 mL/h</td></tr>
+        <tr><td>+ Sufenta 5 µg/mL</td><td>0,2–0,5 µg/kg/h</td><td class="val">0,2–0,5 mL/h</td><td class="val">0,32–0,8 mL/h</td></tr>
+      </table>
+      <div class="note">Si HD instable : Hypnovel + Sufenta · éviter le Propofol</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header rouge">💊 Hémodynamique — &lt; 10 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>5 kg</th><th>8 kg</th></tr>
+        <tr><td>Remplissage SSI</td><td>10 mL/kg</td><td>—</td><td class="val-rouge">50 mL</td><td class="val-rouge">80 mL</td></tr>
+        <tr><td>Noradrénaline <em>(si T° ≥ 32°C)</em></td><td>0,1 µg/kg/min</td><td>1 mg dans 100 mL SSI<br>→ 10 µg/mL</td><td class="val-rouge">0,75 mL/h</td><td class="val-rouge">1,2 mL/h</td></tr>
+      </table>
+      <div class="note">Noradrénaline CI si T° &lt; 32°C</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header violet">🧠 Neuroprotection — &lt; 10 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Produit</th><th>Dose</th><th>Préparation</th><th>5 kg</th><th>8 kg</th></tr>
+        <tr><td>SSH 3 % <em>(si HTIC)</em></td><td>3 mL/kg · IVL 10 min</td><td>100 mL NaCl 0,9 %<br>+ 10 mL NaCl 20 %</td><td class="val-rouge">15 mL</td><td class="val-rouge">24 mL</td></tr>
+        <tr><td>Mannitol 20 % <em>(si TC)</em></td><td>5 mL/kg · IVL 15 min</td><td>Pur</td><td class="val-rouge">25 mL</td><td class="val-rouge">40 mL</td></tr>
+      </table>
+    </div>
+  </div>
+  </div>
+</details>
+
+<!-- ===== MATERNELLE ===== -->
+<details class="acc" id="panel-maternelle">
+  <summary>MATERNELLE <span class="sub">10–20 kg · 1–6 ans</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+<div class="alerte-cyan">10–20 kg · Tuyaux pédiatriques · Mode enfant · IO bleu 25 mm</div>
+
+  <div class="grid2">
+    <div class="mini-card"><div class="label">SpO₂ cible</div><div class="bigval">94–98 %</div></div>
+    <div class="mini-card"><div class="label">EtCO₂ cible</div><div class="bigval">35–40 mmHg</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header cyan">🫁 Ventilation mécanique — 10–20 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Paramètre</th><th>Réglage noyade</th></tr>
+        <tr><td>Mode</td><td class="val">VVC · mode enfant</td></tr>
+        <tr><td>VT cible</td><td class="val">6 mL/kg → 60–120 mL</td></tr>
+        <tr><td>FR</td><td class="val">25 /min (20–30)</td></tr>
+        <tr><td>PEP initiale</td><td class="val-rouge">8 cmH₂O · augmenter jusqu'à 10 si hypoxie persistante</td></tr>
+        <tr><td>FiO₂</td><td class="val">100 % puis QSP SpO₂ 94–98 %</td></tr>
+        <tr><td>I/E</td><td class="val">1/2</td></tr>
+      </table>
+      <div class="note">Pression plateau &lt; 28 cmH₂O · Vider l'estomac si distension gênant ventilation</div>
+    </div>
+  </div>
+
+  <div class="drug-block">
+    <h4>💉 ISR — 10–20 kg</h4>
+    <table>
+      <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>10 kg</th><th>15 kg</th><th>20 kg</th></tr>
+      <tr><td>Kétamine 10 mg/mL</td><td>2–4 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">2–4 mL</td><td class="val-rouge">3–6 mL</td><td class="val-rouge">4–8 mL</td></tr>
+      <tr><td>Célocurine 50 mg/mL ⚠ frigo</td><td>1,5 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">0,3 mL</td><td class="val-rouge">0,45 mL</td><td class="val-rouge">0,6 mL</td></tr>
+      <tr><td>OU Rocuronium 10 mg/mL</td><td>1 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">1 mL</td><td class="val-rouge">1,5 mL</td><td class="val-rouge">2 mL</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-header bleu">💊 Sédation entretien — 10–20 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Posologie</th><th>10 kg</th><th>15 kg</th><th>20 kg</th></tr>
+        <tr><td>Propofol 10 mg/mL <em>(si HD stable)</em></td><td>2–6 mg/kg/h</td><td class="val">2–6 mL/h</td><td class="val">3–9 mL/h</td><td class="val">4–12 mL/h</td></tr>
+        <tr><td>OU Hypnovel 1 mg/mL</td><td>0,1–0,3 mg/kg/h</td><td class="val">1–3 mL/h</td><td class="val">1,5–4,5 mL/h</td><td class="val">2–6 mL/h</td></tr>
+        <tr><td>+ Sufenta 5 µg/mL</td><td>0,2–0,5 µg/kg/h</td><td class="val">0,4–1 mL/h</td><td class="val">0,6–1,5 mL/h</td><td class="val">0,8–2 mL/h</td></tr>
+      </table>
+      <div class="note">Si HD instable : Hypnovel + Sufenta · éviter le Propofol</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header rouge">💊 Hémodynamique — 10–20 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>10 kg</th><th>15 kg</th><th>20 kg</th></tr>
+        <tr><td>Remplissage SSI</td><td>10 mL/kg</td><td>—</td><td class="val-rouge">100 mL</td><td class="val-rouge">150 mL</td><td class="val-rouge">200 mL</td></tr>
+        <tr><td>Noradrénaline <em>(si T° ≥ 32°C)</em></td><td>0,1 µg/kg/min</td><td>1 mg dans 100 mL SSI<br>→ 10 µg/mL</td><td class="val-rouge">1,5 mL/h</td><td class="val-rouge">2,25 mL/h</td><td class="val-rouge">3 mL/h</td></tr>
+      </table>
+      <div class="note">Noradrénaline CI si T° &lt; 32°C</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header violet">🧠 Neuroprotection — 10–20 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Produit</th><th>Dose</th><th>Préparation</th><th>10 kg</th><th>15 kg</th><th>20 kg</th></tr>
+        <tr><td>SSH 3 % <em>(si HTIC)</em></td><td>3 mL/kg · IVL 10 min</td><td>100 mL NaCl 0,9 %<br>+ 10 mL NaCl 20 %</td><td class="val-rouge">30 mL</td><td class="val-rouge">45 mL</td><td class="val-rouge">60 mL</td></tr>
+        <tr><td>Mannitol 20 % <em>(si TC)</em></td><td>5 mL/kg · IVL 15 min</td><td>Pur</td><td class="val-rouge">50 mL</td><td class="val-rouge">75 mL</td><td class="val-rouge">100 mL</td></tr>
+      </table>
+    </div>
+  </div>
+  </div>
+</details>
+
+<!-- ===== PRIMAIRE ===== -->
+<details class="acc" id="panel-primaire">
+  <summary>PRIMAIRE <span class="sub">20–30 kg · 6–10 ans</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+<div class="alerte-cyan">20–30 kg · Tuyaux adulte · Mode adulte · IO bleu 25 mm</div>
+
+  <div class="grid2">
+    <div class="mini-card"><div class="label">SpO₂ cible</div><div class="bigval">94–98 %</div></div>
+    <div class="mini-card"><div class="label">EtCO₂ cible</div><div class="bigval">35–40 mmHg</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header cyan">🫁 Ventilation mécanique — 20–30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Paramètre</th><th>Réglage noyade</th></tr>
+        <tr><td>Mode</td><td class="val">VVC · mode adulte</td></tr>
+        <tr><td>VT cible</td><td class="val">6 mL/kg → 120–180 mL</td></tr>
+        <tr><td>FR</td><td class="val">18 /min (15–25)</td></tr>
+        <tr><td>PEP initiale</td><td class="val-rouge">8 cmH₂O · augmenter jusqu'à 10–15 si hypoxie persistante</td></tr>
+        <tr><td>FiO₂</td><td class="val">100 % puis QSP SpO₂ 94–98 %</td></tr>
+        <tr><td>I/E</td><td class="val">1/2 · Ti long possible</td></tr>
+      </table>
+      <div class="note">Pression plateau &lt; 28 cmH₂O · Si dégradation : penser DOPE + écho plèvre</div>
+    </div>
+  </div>
+
+  <div class="drug-block">
+    <h4>💉 ISR — 20–30 kg</h4>
+    <table>
+      <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>20 kg</th><th>25 kg</th><th>30 kg</th></tr>
+      <tr><td>Kétamine 10 mg/mL</td><td>2–4 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">4–8 mL</td><td class="val-rouge">5–10 mL</td><td class="val-rouge">6–12 mL</td></tr>
+      <tr><td>Célocurine 50 mg/mL ⚠ frigo</td><td>1 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">0,4 mL</td><td class="val-rouge">0,5 mL</td><td class="val-rouge">0,6 mL</td></tr>
+      <tr><td>OU Rocuronium 10 mg/mL</td><td>1 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">2 mL</td><td class="val-rouge">2,5 mL</td><td class="val-rouge">3 mL</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-header bleu">💊 Sédation entretien — 20–30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Posologie</th><th>20 kg</th><th>25 kg</th><th>30 kg</th></tr>
+        <tr><td>Propofol 10 mg/mL <em>(si HD stable)</em></td><td>2–6 mg/kg/h</td><td class="val">4–12 mL/h</td><td class="val">5–15 mL/h</td><td class="val">6–18 mL/h</td></tr>
+        <tr><td>OU Hypnovel 1 mg/mL</td><td>0,1–0,3 mg/kg/h</td><td class="val">2–6 mL/h</td><td class="val">2,5–7,5 mL/h</td><td class="val">3–9 mL/h</td></tr>
+        <tr><td>+ Sufenta 5 µg/mL</td><td>0,2–0,5 µg/kg/h</td><td class="val">0,8–2 mL/h</td><td class="val">1–2,5 mL/h</td><td class="val">1,2–3 mL/h</td></tr>
+      </table>
+      <div class="note">Si HD instable : Hypnovel + Sufenta · éviter le Propofol</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header rouge">💊 Hémodynamique — 20–30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>20 kg</th><th>25 kg</th><th>30 kg</th></tr>
+        <tr><td>Remplissage SSI</td><td>10 mL/kg</td><td>—</td><td class="val-rouge">200 mL</td><td class="val-rouge">250 mL</td><td class="val-rouge">300 mL</td></tr>
+        <tr><td>Noradrénaline <em>(si T° ≥ 32°C)</em></td><td>0,1 µg/kg/min</td><td>4 mg dans 40 mL G5 %<br>→ 100 µg/mL</td><td class="val-rouge">1,8 mL/h</td><td class="val-rouge">2,25 mL/h</td><td class="val-rouge">2,7 mL/h</td></tr>
+      </table>
+      <div class="note">Noradrénaline CI si T° &lt; 32°C</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header violet">🧠 Neuroprotection — 20–30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Produit</th><th>Dose</th><th>Préparation</th><th>20 kg</th><th>25 kg</th><th>30 kg</th></tr>
+        <tr><td>SSH 3 % <em>(si HTIC)</em></td><td>3 mL/kg · IVL 10 min</td><td>100 mL NaCl 0,9 %<br>+ 10 mL NaCl 20 %</td><td class="val-rouge">60 mL</td><td class="val-rouge">75 mL</td><td class="val-rouge">90 mL</td></tr>
+        <tr><td>Mannitol 20 % <em>(si TC)</em></td><td>5 mL/kg · IVL 15 min</td><td>Retirer 190 mL poche 250 mL</td><td class="val-rouge">100 mL</td><td class="val-rouge">125 mL</td><td class="val-rouge">150 mL</td></tr>
+      </table>
+    </div>
+  </div>
+  </div>
+</details>
+
+<!-- ===== ADULTE ===== -->
+<details class="acc" id="panel-adulte">
+  <summary>ADOS/ADULTES <span class="sub">&gt; 30 kg · &gt; 10 ans</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+<div class="alerte-cyan">&gt; 30 kg · Tuyaux adulte · Mode adulte · IO bleu 25 mm</div>
+
+  <div class="grid2">
+    <div class="mini-card"><div class="label">SpO₂ cible</div><div class="bigval">94–98 %</div></div>
+    <div class="mini-card"><div class="label">EtCO₂ cible</div><div class="bigval">35–40 mmHg</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header cyan">🫁 Ventilation mécanique — &gt; 30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Paramètre</th><th>Réglage noyade</th></tr>
+        <tr><td>Mode</td><td class="val">VVC · mode adulte</td></tr>
+        <tr><td>VT cible</td><td class="val">6 mL/kg → 180–300 mL</td></tr>
+        <tr><td>FR</td><td class="val">16–18 /min (12–20)</td></tr>
+        <tr><td>PEP initiale</td><td class="val-rouge">8 cmH₂O · augmenter jusqu'à 10–15 si hypoxie persistante</td></tr>
+        <tr><td>FiO₂</td><td class="val">100 % puis QSP SpO₂ 94–98 %</td></tr>
+        <tr><td>I/E</td><td class="val">1/2 · Ti long possible</td></tr>
+      </table>
+      <div class="note">Pression plateau &lt; 28 cmH₂O · SDRA du noyé : tendance à s'améliorer rapidement · Si dégradation : DOPE + écho plèvre</div>
+    </div>
+  </div>
+
+  <div class="drug-block">
+    <h4>💉 ISR — &gt; 30 kg</h4>
+    <table>
+      <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>35 kg</th><th>40 kg</th><th>50 kg</th></tr>
+      <tr><td>Kétamine 10 mg/mL</td><td>2–4 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">7–14 mL</td><td class="val-rouge">8–16 mL</td><td class="val-rouge">10–20 mL</td></tr>
+      <tr><td>Célocurine 50 mg/mL ⚠ frigo</td><td>1 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">0,7 mL</td><td class="val-rouge">0,8 mL</td><td class="val-rouge">1 mL</td></tr>
+      <tr><td>OU Rocuronium 10 mg/mL</td><td>1 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">3,5 mL</td><td class="val-rouge">4 mL</td><td class="val-rouge">5 mL</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-header bleu">💊 Sédation entretien — &gt; 30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Posologie</th><th>35 kg</th><th>40 kg</th><th>50 kg</th></tr>
+        <tr><td>Propofol 10 mg/mL <em>(si HD stable)</em></td><td>2–6 mg/kg/h</td><td class="val">7–21 mL/h</td><td class="val">8–24 mL/h</td><td class="val">10–30 mL/h</td></tr>
+        <tr><td>OU Hypnovel 1 mg/mL</td><td>0,1–0,3 mg/kg/h</td><td class="val">3,5–10,5 mL/h</td><td class="val">4–12 mL/h</td><td class="val">5–15 mL/h</td></tr>
+        <tr><td>+ Sufenta 5 µg/mL</td><td>0,2–0,5 µg/kg/h</td><td class="val">1,4–3,5 mL/h</td><td class="val">1,6–4 mL/h</td><td class="val">2–5 mL/h</td></tr>
+      </table>
+      <div class="note">Si HD instable : Hypnovel + Sufenta · éviter le Propofol</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header rouge">💊 Hémodynamique — &gt; 30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>35 kg</th><th>40 kg</th><th>50 kg</th></tr>
+        <tr><td>Remplissage SSI</td><td>10 mL/kg</td><td>—</td><td class="val-rouge">350 mL</td><td class="val-rouge">400 mL</td><td class="val-rouge">500 mL</td></tr>
+        <tr><td>Noradrénaline <em>(si T° ≥ 32°C)</em></td><td>0,1 µg/kg/min</td><td>4 mg dans 40 mL G5 %<br>→ 100 µg/mL</td><td class="val-rouge">2,1 mL/h</td><td class="val-rouge">2,4 mL/h</td><td class="val-rouge">3 mL/h</td></tr>
+      </table>
+      <div class="note">Noradrénaline CI si T° &lt; 32°C</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header violet">🧠 Neuroprotection — &gt; 30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Produit</th><th>Dose</th><th>Préparation</th><th>35 kg</th><th>40 kg</th><th>50 kg</th></tr>
+        <tr><td>SSH 3 % <em>(si HTIC)</em></td><td>3 mL/kg · IVL 10 min</td><td>100 mL NaCl 0,9 %<br>+ 10 mL NaCl 20 %</td><td class="val-rouge">105 mL</td><td class="val-rouge">120 mL</td><td class="val-rouge">150 mL</td></tr>
+        <tr><td>Mannitol 20 % <em>(si TC)</em></td><td>5 mL/kg · IVL 15 min</td><td>Retirer 100–145 mL poche 250 mL</td><td class="val-rouge">175 mL</td><td class="val-rouge">200 mL</td><td class="val-rouge">250 mL</td></tr>
+      </table>
+    </div>
+  </div>
+  </div>
+</details>
+</div>
+
+<p class="footer-note">SDS30 · v2.0 juin 2026 · Référence : ERC Guidelines 2025 Paediatric Life Support · Ce document ne remplace pas le contact SAMU/SMUR pédiatrique</p>
+
+
+
+</body>
+</html>

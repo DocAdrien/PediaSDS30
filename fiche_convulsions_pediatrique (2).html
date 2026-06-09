@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convulsions Pédiatriques — SDS30</title>
+<style>
+  :root {
+    --bleu: #1a4a7a;
+    --bleu-bg: #e8f0f8;
+    --rouge: #c0392b;
+    --rouge-bg: #fdf0ef;
+    --orange: #c96a00;
+    --orange-bg: #fef6e8;
+    --vert: #1a6b3a;
+    --vert-bg: #eaf5ee;
+    --violet: #5a2d82;
+    --violet-bg: #f3eef9;
+    --gris: #4a4a4a;
+    --gris-clair: #f5f5f5;
+    --bordure: #d0d0d0;
+    font-size: 15px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #1a1a1a;
+    background: #fff;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  header { background: var(--violet); color: #fff; padding: 14px 16px 10px; }
+  header h1 { font-size: 18px; font-weight: 700; }
+  header p { font-size: 12px; opacity: 0.85; margin-top: 3px; }
+
+  .section { margin-bottom: 14px; border: 1px solid var(--bordure); border-radius: 8px; overflow: hidden; }
+  .section-header { padding: 8px 12px; font-size: 13px; font-weight: 700; letter-spacing: 0.3px; color: #fff; }
+  .section-header.violet { background: var(--violet); }
+  .section-header.rouge  { background: var(--rouge); }
+  .section-header.bleu   { background: var(--bleu); }
+  .section-header.orange { background: var(--orange); }
+  .section-header.vert   { background: var(--vert); }
+  .section-header.noir   { background: #2c2c2c; }
+  .section-body { padding: 10px 12px; background: #fff; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--gris-clair); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--gris); padding: 5px 8px; text-align: left; border-bottom: 1px solid var(--bordure); }
+  td { padding: 6px 8px; border-bottom: 1px solid #ebebeb; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .val        { font-weight: 700; color: var(--bleu); }
+  .val-rouge  { font-weight: 700; color: var(--rouge); }
+  .val-vert   { font-weight: 700; color: var(--vert); }
+  .val-orange { font-weight: 700; color: var(--orange); }
+  .val-violet { font-weight: 700; color: var(--violet); }
+
+  .alerte {
+    background: var(--rouge-bg); border: 1px solid #e8b4b0; border-radius: 6px;
+    padding: 8px 10px; font-size: 12px; color: var(--rouge); font-weight: 600;
+    margin-bottom: 10px; display: flex; gap: 6px; align-items: flex-start;
+  }
+  .alerte::before { content: "⚠"; font-size: 14px; flex-shrink: 0; }
+
+  .note {
+    background: var(--orange-bg); border-left: 3px solid var(--orange);
+    padding: 6px 10px; font-size: 12px; color: var(--orange);
+    margin-top: 8px; border-radius: 0 4px 4px 0;
+  }
+  .note-vert {
+    background: var(--vert-bg); border-left: 3px solid var(--vert);
+    padding: 6px 10px; font-size: 12px; color: var(--vert);
+    margin-top: 8px; border-radius: 0 4px 4px 0;
+  }
+  .note-violet {
+    background: var(--violet-bg); border-left: 3px solid var(--violet);
+    padding: 6px 10px; font-size: 12px; color: var(--violet);
+    margin-top: 8px; border-radius: 0 4px 4px 0;
+  }
+
+  /* ALGORITHME TEMPOREL */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .tline-step {
+    display: flex;
+    gap: 0;
+    position: relative;
+  }
+  .tline-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 52px;
+    flex-shrink: 0;
+  }
+  .tline-time {
+    background: var(--violet);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 6px;
+    border-radius: 6px;
+    text-align: center;
+    min-width: 44px;
+    margin-bottom: 0;
+  }
+  .tline-time.rouge  { background: var(--rouge); }
+  .tline-time.orange { background: var(--orange); }
+  .tline-time.bleu   { background: var(--bleu); }
+  .tline-line {
+    width: 2px;
+    background: var(--bordure);
+    flex: 1;
+    min-height: 12px;
+  }
+  .tline-content {
+    flex: 1;
+    padding: 4px 0 12px 10px;
+  }
+  .tline-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--gris);
+    margin-bottom: 4px;
+  }
+  .tline-body {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .tline-step:last-child .tline-line { display: none; }
+
+  .drug-line {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 5px 0;
+    border-bottom: 1px dashed var(--bordure);
+    font-size: 13px;
+  }
+  .drug-line:last-child { border-bottom: none; }
+  .drug-name { font-weight: 700; min-width: 120px; }
+  .drug-route {
+    font-size: 11px;
+    background: var(--bleu-bg);
+    color: var(--bleu);
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .drug-route.in  { background: var(--violet-bg); color: var(--violet); }
+  .drug-route.ir  { background: var(--orange-bg); color: var(--orange); }
+  .drug-route.po  { background: var(--vert-bg);   color: var(--vert); }
+
+  /* ACCORDION */
+  .acc-wrap { background: #2c2c2c; padding: 8px 14px 6px; }
+  .acc-wrap p { color: #ccc; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin-bottom: 6px; }
+  details.acc { margin-bottom: 6px; border-radius: 6px; overflow: hidden; border: 2px solid var(--violet); }
+  details.acc summary {
+    background: var(--violet); color: #fff; padding: 11px 14px;
+    font-size: 14px; font-weight: 700; cursor: pointer; list-style: none;
+    display: flex; justify-content: space-between; align-items: center;
+    -webkit-user-select: none; user-select: none;
+  }
+  details.acc summary::-webkit-details-marker { display: none; }
+  details.acc summary .arr { font-size: 10px; opacity: 0.8; }
+  details.acc[open] summary .arr { transform: rotate(180deg); display: inline-block; }
+  details.acc summary .sub { font-size: 11px; font-weight: 400; opacity: 0.85; margin-left: 8px; }
+  details.acc .panel-inner { padding: 12px 14px 16px; background: #fff; }
+
+  /* Encart nouveau-né */
+  .nn-box {
+    background: #fff8e6;
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 12px;
+  }
+  .nn-box h4 { color: var(--orange); font-size: 13px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.3px; }
+
+  .common-wrap { padding: 12px 14px 4px; }
+
+  .footer-note { font-size: 11px; color: #999; text-align: center; padding: 12px 0 4px; border-top: 1px solid var(--bordure); margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ Convulsion et état de mal de l'enfant</h1>
+  <p>SDS30 · v1.0 — juin 2026 · Référence : protocoles SMUR pédiatrique</p>
+</header>
+
+<div class="common-wrap">
+
+  <!-- CONVULSIONS FÉBRILES -->
+  <div class="section">
+    <div class="section-header orange">🌡️ Convulsions fébriles — la situation la plus fréquente</div>
+    <div class="section-body">
+      <p style="font-size:12px;color:#777;margin-bottom:8px;font-style:italic">6 mois – 5 ans · 2–5 % des enfants · bénignes dans la grande majorité des cas</p>
+
+      <table style="margin-bottom:10px">
+        <tr><th style="width:40%">Type</th><th>Critères</th></tr>
+        <tr>
+          <td><strong style="color:var(--vert)">Simple</strong> <span style="font-size:11px;color:#888">(80 %)</span></td>
+          <td>Durée &lt; 15 min · généralisée · épisode unique sur 24h · retour à la normale rapide · enfant 6 mois–5 ans</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--rouge)">Complexe</strong> <span style="font-size:11px;color:#888">(20 %)</span></td>
+          <td>Durée ≥ 15 min <strong>OU</strong> focale <strong>OU</strong> récidive dans les 24h <strong>OU</strong> déficit post-critique persistant</td>
+        </tr>
+      </table>
+
+      <div style="background:var(--vert-bg);border-radius:6px;padding:10px 12px;margin-bottom:8px">
+        <div style="font-weight:700;font-size:12px;color:var(--vert);margin-bottom:6px">✅ Convulsion fébrile SIMPLE — Conduite à tenir</div>
+        <table>
+          <tr><td style="width:40%">Crise terminée à l'arrivée</td><td>Mesures générales · antipyrexie · surveillance · pas de traitement antiépileptique</td></tr>
+          <tr><td>Crise en cours &lt; 5 min</td><td>Mesures générales · antipyrexie · attendre la fin spontanée · ne pas traiter systématiquement</td></tr>
+          <tr><td>Crise en cours ≥ 5 min</td><td class="val-rouge">→ Traiter comme un EME (algorithme ci-dessous)</td></tr>
+        </table>
+      </div>
+
+      <div style="background:var(--rouge-bg);border-radius:6px;padding:10px 12px;margin-bottom:8px">
+        <div style="font-weight:700;font-size:12px;color:var(--rouge);margin-bottom:6px">⚠ Signes d'alarme — Ne pas rassurer trop vite</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:12px">
+          <div>· Âge &lt; 6 mois ou &gt; 5 ans<br>· Crise focale<br>· Déficit neurologique post-critique</div>
+          <div>· Fièvre sans foyer évident<br>· Purpura associé<br>· Fontanelle bombante</div>
+        </div>
+        <div class="note" style="margin-top:6px">Signes d'alarme → évoquer méningite, encéphalite, maltraitance → contact SAMU</div>
+      </div>
+
+      <div style="background:var(--orange-bg);border-radius:6px;padding:8px 12px">
+        <div style="font-weight:700;font-size:12px;color:var(--orange);margin-bottom:4px">↓ Quand basculer sur l'algorithme EME ?</div>
+        <div style="font-size:13px">Crise ≥ 5 min · ou récidive rapide · ou convulsion fébrile complexe en cours · ou signes d'alarme</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DÉFINITION EME -->
+  <div class="section">
+    <div class="section-header violet">📋 Définition — État de Mal Épileptique (EME)</div>
+    <div class="section-body">
+      <table>
+        <tr><td style="width:55%">EME tonico-clonique généralisé</td><td class="val-rouge">Crise &gt; 5 min<br>OU ≥ 2 crises sans reprise de conscience entre elles</td></tr>
+        <tr><td>EME non TCG (partiel, tonique, absence…)</td><td class="val-orange">Crise &gt; 10–15 min · même définition</td></tr>
+        <tr><td>Nouveau-né</td><td class="val-rouge">Crise &gt; 3 min OU &gt; 2 épisodes brefs</td></tr>
+      </table>
+      <div class="note">Un patient en EME est en hyperadrénergie → Alerte si FC et TA normales ou basses (hypoxie, HTIC, sepsis)</div>
+    </div>
+  </div>
+
+  <!-- MESURES GÉNÉRALES -->
+  <div class="section">
+    <div class="section-header bleu">🔧 Mesures générales — Toujours</div>
+    <div class="section-body">
+      <table>
+        <tr><th style="width:40%">Action</th><th>Détail</th></tr>
+        <tr><td>Sécuriser</td><td>Déplacer les objets · ne pas empêcher les mouvements · ne rien introduire dans la bouche</td></tr>
+        <tr><td>Voies aériennes</td><td>Libération VAS · pas de Guedel pendant la crise · O₂ SpO₂ &gt; 94 %</td></tr>
+        <tr><td>Position</td><td>PLS si possible · sinon en post-critique</td></tr>
+        <tr><td>Température &gt; 38°C</td><td>Déshabiller · rafraîchir · paracétamol IR</td></tr>
+        <tr><td>Glycémie</td><td>Dextro systématique</td></tr>
+        <tr><td>Monitorage post-critique</td><td class="val-orange">Les constantes doivent se normaliser → Alerte si persistance HTA, tachycardie, hyperglycémie</td></tr>
+      </table>
+      <div class="note">Toujours anticiper et préparer le traitement suivant · Épileptique connu : utiliser les molécules efficaces antérieurement</div>
+    </div>
+  </div>
+
+  <!-- CAUSES SECONDAIRES -->
+  <div class="section">
+    <div class="section-header orange">🔍 Causes secondaires à rechercher</div>
+    <div class="section-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px">
+        <div>· Hypoglycémie<br>· Hyperthermie<br>· Infection neuro (méningite)<br>· Intoxication (CO…)</div>
+        <div>· HTIC<br>· Traumatisme crânien<br>· Trouble ionique<br>· Maltraitance</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALGORITHME -->
+  <div class="section">
+    <div class="section-header violet">⏱️ Algorithme — Traitement de la crise</div>
+    <div class="section-body">
+      <div class="timeline">
+
+        <div class="tline-step">
+          <div class="tline-left">
+            <div class="tline-time">0 min</div>
+            <div class="tline-line"></div>
+          </div>
+          <div class="tline-content">
+            <div class="tline-label">Mesures générales</div>
+            <div class="tline-body">Mesures générales · pose VVP · selon contexte débuter ttt avant 5 min</div>
+          </div>
+        </div>
+
+        <div class="tline-step">
+          <div class="tline-left">
+            <div class="tline-time">5 min</div>
+            <div class="tline-line"></div>
+          </div>
+          <div class="tline-content">
+            <div class="tline-label">1ère ligne — Benzodiazépines</div>
+            <div class="tline-body">
+              <div class="drug-line">
+                <span class="drug-name">Clonazépam</span>
+                <span class="drug-route">IV</span>
+                <span>0,015 mg/kg IVD (max 1,5 mg) · <strong>1ère intention si VVP</strong></span>
+              </div>
+              <div class="drug-line">
+                <span class="drug-name">Midazolam</span>
+                <span class="drug-route in">IN</span>
+                <span>0,2 mg/kg (max 5 mg) · si pas de VVP</span>
+              </div>
+              <div class="drug-line">
+                <span class="drug-name">Diazépam</span>
+                <span class="drug-route ir">IR</span>
+                <span>0,5 mg/kg (max 10 mg) · si IN non possible</span>
+              </div>
+              <div class="drug-line">
+                <span class="drug-name">Clonazépam</span>
+                <span class="drug-route">IV</span>
+                <span>2ème dose si crise persistante à 10 min</span>
+              </div>
+            </div>
+            <div class="note-violet">Max 2 doses de benzo au total · tenir compte des doses déjà données par la famille / les pompiers (Valium IR ou Buccolam)</div>
+          </div>
+        </div>
+
+        <div class="tline-step">
+          <div class="tline-left">
+            <div class="tline-time orange">15 min</div>
+            <div class="tline-line"></div>
+          </div>
+          <div class="tline-content">
+            <div class="tline-label">2ème ligne — EME installé</div>
+            <div class="tline-body">
+              <div class="drug-line">
+                <span class="drug-name">Lévétiracétam</span>
+                <span class="drug-route">IV</span>
+                <span><strong>40 mg/kg</strong> IV sur 5 min (max 2,5 g)</span>
+              </div>
+            </div>
+            <div class="note">Perfusion lente avec monitoring cardio-respiratoire rapproché</div>
+          </div>
+        </div>
+
+        <div class="tline-step">
+          <div class="tline-left">
+            <div class="tline-time rouge">20 min</div>
+            <div class="tline-line"></div>
+          </div>
+          <div class="tline-content">
+            <div class="tline-label">3ème ligne — Si échec Keppra</div>
+            <div class="tline-body">
+              <div class="drug-line">
+                <span class="drug-name">Phénobarbital</span>
+                <span class="drug-route">IV</span>
+                <span><strong>20 mg/kg</strong> IVL sur 10 min</span>
+              </div>
+            </div>
+            <div class="note">Monitoring cardio-respiratoire rapproché · hypotension artérielle possible</div>
+          </div>
+        </div>
+
+        <div class="tline-step">
+          <div class="tline-left">
+            <div class="tline-time rouge">30 min</div>
+          </div>
+          <div class="tline-content">
+            <div class="tline-label">4ème ligne — EME réfractaire</div>
+            <div class="tline-body">
+              <div class="drug-line">
+                <span class="drug-name">Midazolam</span>
+                <span class="drug-route">IV</span>
+                <span><strong>0,2 mg/kg</strong> bolus sur 5 min · répéter /5 min jusqu'à arrêt</span>
+              </div>
+            </div>
+            <div class="note-violet" style="margin-top:6px">⚠ Préparer l'intubation · ISR si échec ou apnée · Intubation si EME réfractaire, défaillance d'organe, étiologie grave (TC, HTIC, hémorragie cérébrale)</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- INTUBATION -->
+  <div class="section">
+    <div class="section-header rouge">🔴 Indications d'intubation</div>
+    <div class="section-body">
+      <table>
+        <tr><td>EME réfractaire malgré 4ème ligne</td></tr>
+        <tr><td>Défaillance respiratoire ou circulatoire</td></tr>
+        <tr><td>État de mal épileptique secondaire</td></tr>
+      </table>
+      <div style="background:var(--rouge-bg);border:1px solid #e8b4b0;border-radius:6px;padding:10px 12px;margin-top:8px">
+        <div style="font-weight:700;font-size:12px;color:var(--rouge);margin-bottom:6px">ISR — cohérence avec protocole SDS30</div>
+        <table>
+          <tr><td style="width:40%">Kétamine</td><td class="val-rouge">2–4 mg/kg IVD</td></tr>
+          <tr><td>Célocurine</td><td class="val-rouge">2 mg/kg si &lt; 2 ans · 1 mg/kg si &gt; 2 ans · ⚠ frigo</td></tr>
+          <tr><td>OU Rocuronium</td><td class="val-rouge">1 mg/kg IVD</td></tr>
+        </table>
+        <div class="note" style="margin-top:6px">EtCO₂ cible 40 mmHg (normocapnie) — éviter hypocapnie qui aggrave l'ischémie cérébrale</div>
+      </div>
+      <div style="background:var(--orange-bg);border-left:3px solid var(--orange);padding:6px 10px;font-size:12px;color:var(--orange);margin-top:8px;border-radius:0 4px 4px 0">
+        <strong>Valproate IV</strong> : non utilisé en 1ère intention pédiatrique — risque de décompensation métabolique si cause inconnue<br>
+        <strong>Phénytoïne</strong> : à envisager si Gardénal inefficace chez l'enfant &lt; 5 ans — contact SAMU
+      </div>
+    </div>
+  </div>
+
+
+
+</div><!-- fin section commune -->
+
+<!-- ACCORDION DOSES -->
+<div class="acc-wrap">
+  <p>▼ DOSES PAR TRANCHE DE POIDS — Toucher pour ouvrir/fermer</p>
+
+<details class="acc" id="panel-creche" open>
+  <summary>CRÈCHE <span class="sub">&lt; 10 kg · &lt; 1 an</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+
+    <div class="alerte">Poids &lt; 10 kg · IO bleu 25 mm si échec VVP × 2</div>
+
+    <div class="section">
+      <div class="section-header violet">💊 1ère ligne — Benzodiazépines</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Médicament</th><th>Voie</th><th>Dose / Volume</th></tr>
+          <tr><td>Clonazépam (Rivotril)</td><td><span class="drug-route" style="font-size:11px;background:var(--bleu-bg);color:var(--bleu);padding:1px 6px;border-radius:8px;font-weight:600">IV</span></td><td class="val-violet">0,015 mg/kg IVD (max 1,5 mg)<br>Dil : 1 amp 1 mL + 9 mL SSI → 0,1 mg/mL<br>→ 0,15 mL/kg · ex : 5 kg → 0,75 mL</td></tr>
+          <tr><td>Midazolam (Hypnovel)</td><td><span style="font-size:11px;background:var(--violet-bg);color:var(--violet);padding:1px 6px;border-radius:8px;font-weight:600">IN</span></td><td class="val-violet">0,3 mg/kg IN (max 5 mg)<br>250 mg/5 mL pur · 0,04 mL/kg<br>→ ex : 5 kg → 0,3 mL · diviser en 2 narines</td></tr>
+          <tr><td>Diazépam (Valium)</td><td><span style="font-size:11px;background:var(--orange-bg);color:var(--orange);padding:1px 6px;border-radius:8px;font-weight:600">IR</span></td><td class="val-violet">0,5 mg/kg IR (max 10 mg)<br>→ ex : 5 kg → 2,5 mg · 8 kg → 4 mg</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header orange">💊 2ème ligne — Lévétiracétam (Keppra)</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>500 mg/5 mL · pur IVL sur 5 min</td><td>40 mg/kg</td><td class="val-rouge">ex : 5 kg → 400 mg → 4 mL<br>ex : 8 kg → 320 mg → 3,2 mL</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header rouge">💊 3ème ligne — Phénobarbital (Gardénal)</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>200 mg/mL · diluer dans SSI · IVL sur 10 min</td><td>20 mg/kg</td><td class="val-rouge">ex : 5 kg → 100 mg → 0,5 mL<br>ex : 8 kg → 160 mg → 0,8 mL</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header rouge">💊 4ème ligne — Midazolam IV bolus</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>50 mg/10 mL · diluer 1 mL + 9 mL SSI → 0,5 mg/mL</td><td>0,2 mg/kg sur 5 min · répéter /5 min</td><td class="val-rouge">ex : 5 kg → 1 mg → 2 mL<br>ex : 8 kg → 1,6 mg → 3,2 mL</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ENCART NOUVEAU-NÉ -->
+    <div class="nn-box">
+      <h4>🍼 Nouveau-né — Algorithme spécifique</h4>
+      <p style="font-size:12px;color:#666;margin-bottom:8px">Traitement si crise &gt; 3 min ou &gt; 2 épisodes brefs · Algorithme différent de l'enfant</p>
+      <table>
+        <tr><th>Ligne</th><th>Médicament</th><th>Dose / Volume</th></tr>
+        <tr><td class="val-orange">1ère</td><td>Phénobarbital (Gardénal)</td><td class="val-rouge">20 mg/kg IV sur 10 min · répéter si efficace transitoirement</td></tr>
+        <tr><td class="val-orange">2ème</td><td>Lévétiracétam (Keppra)</td><td class="val-rouge">40 mg/kg IV sur 5 min</td></tr>
+        <tr><td class="val-rouge">3ème</td><td>Midazolam IV bolus</td><td class="val-rouge">0,2 mg/kg /5 min · préparer IOT</td></tr>
+      </table>
+      <div class="note" style="margin-top:8px">⚠ Pas de benzodiazépines en 1ère ligne chez le nouveau-né · Orientation systématique en réanimation pédiatrique ou néonatale · ETF en service</div>
+    </div>
+
+  </div>
+</details>
+
+<details class="acc" id="panel-maternelle">
+  <summary>MATERNELLE <span class="sub">10–20 kg · 1–6 ans</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+
+    <div class="alerte">Poids 10–20 kg · IO bleu 25 mm si échec VVP × 2</div>
+
+    <div class="section">
+      <div class="section-header violet">💊 1ère ligne — Benzodiazépines</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Médicament</th><th>Voie</th><th>Dose / Volume</th></tr>
+          <tr><td>Clonazépam (Rivotril)</td><td><span class="drug-route" style="font-size:11px;background:var(--bleu-bg);color:var(--bleu);padding:1px 6px;border-radius:8px;font-weight:600">IV</span></td><td class="val-violet">0,015 mg/kg IVD (max 1,5 mg)<br>Dil : 1 amp + 9 mL SSI → 0,1 mg/mL → 0,15 mL/kg<br>10 kg → 1,5 mL · 15 kg → 1,5 mL (max) · 20 kg → 1,5 mL (max)</td></tr>
+          <tr><td>Midazolam (Hypnovel)</td><td><span style="font-size:11px;background:var(--violet-bg);color:var(--violet);padding:1px 6px;border-radius:8px;font-weight:600">IN</span></td><td class="val-violet">0,3 mg/kg IN (max 5 mg) · 0,06 mL/kg pur<br>10 kg → 0,6 mL · 15 kg → 0,9 mL · 20 kg → 1,2 mL</td></tr>
+          <tr><td>Diazépam (Valium)</td><td><span style="font-size:11px;background:var(--orange-bg);color:var(--orange);padding:1px 6px;border-radius:8px;font-weight:600">IR</span></td><td class="val-violet">0,5 mg/kg IR (max 10 mg)<br>10 kg → 5 mg · 15 kg → 7,5 mg · 20 kg → 10 mg (max)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header orange">💊 2ème ligne — Lévétiracétam (Keppra)</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>500 mg/5 mL · pur IVL sur 5 min</td><td>40 mg/kg (max 2,5 g)</td><td class="val-rouge">10 kg → 400 mg → 4 mL<br>15 kg → 600 mg → 6 mL<br>20 kg → 800 mg → 8 mL</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header rouge">💊 3ème ligne — Phénobarbital (Gardénal)</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>200 mg/mL · diluer dans SSI · IVL sur 10 min</td><td>20 mg/kg</td><td class="val-rouge">10 kg → 200 mg → 1 mL<br>15 kg → 300 mg → 1,5 mL<br>20 kg → 400 mg → 2 mL</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header rouge">💊 4ème ligne — Midazolam IV bolus</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>50 mg/10 mL · diluer 1 mL + 9 mL SSI → 0,5 mg/mL</td><td>0,2 mg/kg sur 5 min · répéter /5 min</td><td class="val-rouge">10 kg → 4 mL · 15 kg → 6 mL · 20 kg → 8 mL</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<details class="acc" id="panel-primaire">
+  <summary>PRIMAIRE <span class="sub">20–30 kg · 6–10 ans</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+
+    <div class="alerte">Poids 20–30 kg · IO bleu 25 mm si échec VVP × 2</div>
+
+    <div class="section">
+      <div class="section-header violet">💊 1ère ligne — Benzodiazépines</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Médicament</th><th>Voie</th><th>Dose / Volume</th></tr>
+          <tr><td>Clonazépam (Rivotril)</td><td><span class="drug-route" style="font-size:11px;background:var(--bleu-bg);color:var(--bleu);padding:1px 6px;border-radius:8px;font-weight:600">IV</span></td><td class="val-violet">0,015 mg/kg IVD (max 1,5 mg)<br>0,15 mL/kg · 20 kg → 1,5 mL (max) · 25 kg → 1,5 mL (max)</td></tr>
+          <tr><td>Midazolam (Hypnovel)</td><td><span style="font-size:11px;background:var(--violet-bg);color:var(--violet);padding:1px 6px;border-radius:8px;font-weight:600">IN</span></td><td class="val-violet">0,3 mg/kg IN (max 5 mg) · 0,06 mL/kg pur<br>20 kg → 1,2 mL · 25 kg → 1,5 mL · 30 kg → 1,8 mL</td></tr>
+          <tr><td>Diazépam (Valium)</td><td><span style="font-size:11px;background:var(--orange-bg);color:var(--orange);padding:1px 6px;border-radius:8px;font-weight:600">IR</span></td><td class="val-violet">0,5 mg/kg IR (max 10 mg)<br>20 kg → 10 mg (max) · 25–30 kg → 10 mg (max)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header orange">💊 2ème ligne — Lévétiracétam (Keppra)</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>500 mg/5 mL · pur IVL sur 5 min</td><td>40 mg/kg (max 2,5 g)</td><td class="val-rouge">20 kg → 800 mg → 8 mL<br>25 kg → 1000 mg → 10 mL<br>30 kg → 1200 mg → 12 mL</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header rouge">💊 3ème ligne — Phénobarbital (Gardénal)</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>200 mg/mL · diluer dans SSI · IVL sur 10 min</td><td>20 mg/kg</td><td class="val-rouge">20 kg → 400 mg → 2 mL<br>25 kg → 500 mg → 2,5 mL<br>30 kg → 600 mg → 3 mL</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header rouge">💊 4ème ligne — Midazolam IV bolus</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>50 mg/10 mL · diluer 1 mL + 9 mL SSI → 0,5 mg/mL</td><td>0,2 mg/kg sur 5 min · répéter /5 min</td><td class="val-rouge">20 kg → 8 mL · 25 kg → 10 mL · 30 kg → 12 mL</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<details class="acc" id="panel-adulte">
+  <summary>ADOS/ADULTES <span class="sub">&gt; 30 kg · &gt; 10 ans</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+
+    <div class="alerte">Poids &gt; 30 kg · IO bleu 25 mm si échec VVP × 2</div>
+
+    <div class="section">
+      <div class="section-header violet">💊 1ère ligne — Benzodiazépines</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Médicament</th><th>Voie</th><th>Dose / Volume</th></tr>
+          <tr><td>Clonazépam (Rivotril)</td><td><span class="drug-route" style="font-size:11px;background:var(--bleu-bg);color:var(--bleu);padding:1px 6px;border-radius:8px;font-weight:600">IV</span></td><td class="val-violet">0,015 mg/kg IVD (max 1,5 mg)<br>35 kg → 1,5 mL (max) · tous &gt; 30 kg → 1,5 mL (max atteint)</td></tr>
+          <tr><td>Midazolam (Hypnovel)</td><td><span style="font-size:11px;background:var(--violet-bg);color:var(--violet);padding:1px 6px;border-radius:8px;font-weight:600">IN</span></td><td class="val-violet">0,3 mg/kg IN (max 5 mg) · 0,06 mL/kg pur<br>35 kg → 2,1 mL · 40 kg → 2,4 mL · 50 kg → 3 mL</td></tr>
+          <tr><td>Diazépam (Valium)</td><td><span style="font-size:11px;background:var(--orange-bg);color:var(--orange);padding:1px 6px;border-radius:8px;font-weight:600">IR</span></td><td class="val-violet">0,5 mg/kg IR (max 10 mg)<br>Tous &gt; 20 kg → 10 mg (max atteint)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header orange">💊 2ème ligne — Lévétiracétam (Keppra)</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>500 mg/5 mL · pur IVL sur 5 min</td><td>40 mg/kg (max 4 g)</td><td class="val-rouge">35 kg → 1400 mg → 14 mL<br>40 kg → 1600 mg → 16 mL<br>50 kg → 2000 mg → 20 mL<br>≥ 100 kg → 4000 mg → 40 mL (max)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header rouge">💊 3ème ligne — Phénobarbital (Gardénal)</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>200 mg/mL · diluer dans SSI · IVL sur 10 min</td><td>20 mg/kg</td><td class="val-rouge">35 kg → 700 mg → 3,5 mL<br>40 kg → 800 mg → 4 mL<br>50 kg → 1000 mg → 5 mL</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header rouge">💊 4ème ligne — Midazolam IV bolus</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Préparation</th><th>Dose</th><th>Volume</th></tr>
+          <tr><td>50 mg/10 mL · diluer 1 mL + 9 mL SSI → 0,5 mg/mL</td><td>0,2 mg/kg sur 5 min · répéter /5 min (max 5 mg)</td><td class="val-rouge">35 kg → 14 mL · 40 kg → 16 mL · 50 kg → 20 mL</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+</div><!-- fin acc-wrap -->
+
+<p class="footer-note">SDS30 · v1.1 juin 2026 · EME : protocoles SMUR pédiatrique · Convulsions fébriles : recommandations HAS/SFP · Encart nouveau-né : recommandations SFN/GFRUP · Ce document ne remplace pas le contact SAMU/SMUR pédiatrique</p>
+
+</body>
+</html>

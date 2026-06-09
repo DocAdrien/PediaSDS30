@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urgences Pédiatriques — Tronc Commun</title>
+<style>
+  :root {
+    --bleu: #1a4a7a;
+    --bleu-clair: #2a6db5;
+    --bleu-bg: #e8f0f8;
+    --rouge: #c0392b;
+    --rouge-bg: #fdf0ef;
+    --orange: #c96a00;
+    --orange-bg: #fef6e8;
+    --vert: #1a6b3a;
+    --vert-bg: #eaf5ee;
+    --violet: #5a2d82;
+    --violet-bg: #f3eef9;
+    --gris: #4a4a4a;
+    --gris-clair: #f5f5f5;
+    --bordure: #d0d0d0;
+    --texte: #1a1a1a;
+    font-size: 15px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: var(--texte);
+    background: #fff;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  header {
+    background: var(--bleu);
+    color: #fff;
+    padding: 14px 16px 10px;
+  }
+  header h1 { font-size: 17px; font-weight: 700; letter-spacing: 0.3px; }
+  header p { font-size: 12px; opacity: 0.8; margin-top: 3px; }
+
+  .tabs {
+    display: flex;
+    background: #f0f0f0;
+    border-bottom: 2px solid var(--bleu);
+    overflow-x: auto;
+  }
+  .tab {
+    flex: 1;
+    min-width: 80px;
+    padding: 9px 6px 7px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--gris);
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .tab.active { background: #fff; color: var(--bleu); border-bottom: 3px solid var(--bleu); }
+  .tab span { display: block; font-size: 10px; font-weight: 400; color: #888; margin-top: 1px; }
+  .tab.active span { color: var(--bleu-clair); }
+
+  .panel { display: none; padding: 12px 14px 24px; }
+  .panel.active { display: block; }
+
+  .section {
+    margin-bottom: 14px;
+    border: 1px solid var(--bordure);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .section-header.bleu { background: var(--bleu); color: #fff; }
+  .section-header.rouge { background: var(--rouge); color: #fff; }
+  .section-header.orange { background: var(--orange); color: #fff; }
+  .section-header.vert { background: var(--vert); color: #fff; }
+  .section-header.violet { background: var(--violet); color: #fff; }
+  .section-body { padding: 10px 12px; background: #fff; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: var(--gris-clair);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--gris);
+    padding: 5px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--bordure);
+  }
+  td { padding: 6px 8px; border-bottom: 1px solid #ebebeb; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .val { font-weight: 600; color: var(--bleu); }
+  .val-rouge { font-weight: 600; color: var(--rouge); }
+  .val-orange { font-weight: 600; color: var(--orange); }
+  .val-vert { font-weight: 600; color: var(--vert); }
+
+  .drug-row td:first-child { color: #555; font-size: 12px; width: 38%; }
+  .drug-row td:nth-child(2) { font-size: 11px; color: #777; width: 32%; }
+  .drug-row td:nth-child(3) { font-weight: 700; color: var(--rouge); font-size: 13px; }
+
+  .alerte {
+    background: var(--rouge-bg);
+    border: 1px solid #e8b4b0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 12px;
+    color: var(--rouge);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+  .alerte::before { content: "⚠"; font-size: 14px; flex-shrink: 0; margin-top: -1px; }
+
+  .note {
+    background: var(--orange-bg);
+    border-left: 3px solid var(--orange);
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--orange);
+    margin-top: 8px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .pill {
+    display: inline-block;
+    background: var(--bleu-bg);
+    color: var(--bleu);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin: 2px 2px 2px 0;
+  }
+  .pill.rouge { background: var(--rouge-bg); color: var(--rouge); }
+  .pill.vert { background: var(--vert-bg); color: var(--vert); }
+  .pill.orange { background: var(--orange-bg); color: var(--orange); }
+  .pill.violet { background: var(--violet-bg); color: var(--violet); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mini-card {
+    background: var(--gris-clair);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .mini-card .label { color: #777; font-size: 11px; margin-bottom: 3px; }
+  .mini-card .bigval { font-size: 20px; font-weight: 700; color: var(--bleu); line-height: 1.1; }
+  .mini-card .unit { font-size: 11px; color: #888; }
+
+  .isr-box {
+    background: var(--rouge-bg);
+    border: 1px solid #e8b4b0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-top: 8px;
+  }
+  .isr-box h4 { font-size: 12px; color: var(--rouge); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.4px; }
+
+  .step {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  .step-num {
+    background: var(--bleu);
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  hr.sep { border: none; border-top: 1px dashed var(--bordure); margin: 8px 0; }
+
+  .footer-note {
+    font-size: 11px;
+    color: #999;
+    text-align: center;
+    padding: 12px 0 4px;
+    border-top: 1px solid var(--bordure);
+    margin-top: 16px;
+  }
+
+  .tab.tab-sse { border-left: 2px solid var(--bordure); }
+  .tab.tab-sse.active { color: var(--rouge); border-bottom: 3px solid var(--rouge); }
+
+
+    .grid2 { grid-template-columns: 1fr 1fr; }
+    .mini-card .bigval { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Urgences Pédiatriques — Tronc Commun</h1>
+  <p>SDS30 · v1.4 — juin 2026</p>
+</header>
+
+<!-- TABS POIDS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('creche')">
+    CRÈCHE
+    <span>&lt; 10 kg · &lt; 1 an</span>
+  </button>
+  <button class="tab" onclick="switchTab('maternelle')">
+    MATERNELLE
+    <span>10–20 kg · 1–6 ans</span>
+  </button>
+  <button class="tab" onclick="switchTab('primaire')">
+    PRIMAIRE
+    <span>20–30 kg · 6–10 ans</span>
+  </button>
+  <button class="tab" onclick="switchTab('adulte')">
+    ADOS/ADULTES
+    <span>&gt; 30 kg · &gt; 10 ans</span>
+  </button>
+  <button class="tab tab-sse" onclick="switchTab('sse')">
+    MODE SSE
+    <span>Sans poids</span>
+  </button>
+</div>
+
+<!-- ============================================================ -->
+<!-- PANEL CRÈCHE < 10 kg -->
+<!-- ============================================================ -->
+<div id="panel-creche" class="panel active">
+
+  <div class="alerte">Poids : demander aux parents en priorité. Sinon formule (âge+4)×2.</div>
+
+  <!-- PARAMÈTRES VITAUX -->
+  <div class="section">
+    <div class="section-header bleu">📊 Paramètres vitaux normaux — &lt; 10 kg</div>
+    <div class="section-body">
+      <div class="grid2">
+        <div class="mini-card"><div class="label">FR (/min)</div><div class="bigval">20–40</div></div>
+        <div class="mini-card"><div class="label">FC (/min)</div><div class="bigval">80–180</div></div>
+        <div class="mini-card"><div class="label">PAS (mmHg)</div><div class="bigval">&gt; 70</div></div>
+        <div class="mini-card"><div class="label">PAM (mmHg)</div><div class="bigval">&gt; 50</div></div>
+      </div>
+      <table style="margin-top:10px">
+        <tr><th>Objectif</th><th>Hors TC</th><th>Avec TC</th></tr>
+        <tr><td>PAS mini</td><td class="val">&gt; 50</td><td class="val-rouge">&gt; 60</td></tr>
+        <tr><td>PAM mini</td><td class="val">&gt; 45</td><td class="val-rouge">&gt; 50</td></tr>
+        <tr><td>SpO₂</td><td colspan="2" class="val">94–98 %</td></tr>
+        <tr><td>EtCO₂</td><td colspan="2" class="val">35–40 mmHg</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- MATÉRIEL -->
+  <div class="section">
+    <div class="section-header orange">🔧 Matériel — &lt; 10 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Item</th><th>Taille / Calibre</th></tr>
+        <tr><td>Sonde IOT (à ballonnet)</td><td class="val">3 – 3,5</td></tr>
+        <tr><td>Repère labial</td><td class="val">9 – 10 cm</td></tr>
+        <tr><td>Mandrin béquillé</td><td class="val">CH 6</td></tr>
+        <tr><td>Lame laryngoscope</td><td class="val">Droite 0 – 1</td></tr>
+        <tr><td>Guedel</td><td class="val">Taille 0 – 1</td></tr>
+        <tr><td>Masque facial insufflateur</td><td class="val">Péd 00-0</td></tr>
+        <tr><td>VVP / IO</td><td class="val">24G jaune / IO bleu 25 mm</td></tr>
+        <tr><td>Exsufflation PNO</td><td class="val">Cathlon rose 20G</td></tr>
+        <tr><td>Drain thoracique</td><td class="val">CH 8</td></tr>
+        <tr><td>Sonde gastrique</td><td class="val">CH 6 (systématique après IOT)</td></tr>
+        <tr><td>Garrot</td><td class="val">Pédiatrique</td></tr>
+        <tr><td>Ceinture pelvienne</td><td class="val">Non</td></tr>
+      </table>
+      <div class="note">Pression ballonnet IOT : &lt; 25 cmH₂O · CEE ACR : 4 J/kg (12 J)</div>
+    </div>
+  </div>
+
+  <!-- VOIES D'ABORD & REMPLISSAGE -->
+  <div class="section">
+    <div class="section-header vert">💉 Voies d'abord & Remplissage — &lt; 10 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Geste</th><th>Modalité / Volume</th></tr>
+        <tr><td>1ère intention</td><td class="val">VVP 24G jaune</td></tr>
+        <tr><td>Si échec × 2</td><td class="val-rouge">IO bleu 25 mm</td></tr>
+        <tr><td>Débit de base NaCl 0,9 %</td><td class="val">12 mL/h</td></tr>
+        <tr><td>Remplissage SSI/RL</td><td class="val">10 mL/kg → 100 mL à la seringue, renouvelable</td></tr>
+        <tr><td>Transfusion CGR</td><td class="val">20 mL/kg → 60 mL (pack 1 CGR + PFC)</td></tr>
+        <tr><td>Exacyl (acide tranexamique)</td><td class="val">20 mg/kg IVL 10 min → 2 mL pur</td></tr>
+      </table>
+      <div class="note">Exacyl : avant H3 impérativement — 20 mg/kg IVL 10 min.</div>
+    </div>
+  </div>
+
+  <!-- ISR -->
+  <div class="section">
+    <div class="section-header rouge">💊 Induction Séquence Rapide (ISR) — &lt; 10 kg</div>
+    <div class="section-body">
+      <div class="isr-box">
+        <h4>Protocole standard (estomac plein)</h4>
+        <div class="step"><div class="step-num">1</div><div>Pré-oxygénation FiO₂ 100 % min 3 min (LN 10–15 L/min)</div></div>
+        <div class="step"><div class="step-num">2</div><div><strong>Kétamine</strong> 3–5 mg/kg IVD</div></div>
+        <div class="step"><div class="step-num">3</div><div><strong>Célocurine</strong> 2 mg/kg IVD <em>(frigo)</em></div></div>
+        <div class="step"><div class="step-num">4</div><div>OU <strong>Rocuronium</strong> 1 mg/kg IVD</div></div>
+      </div>
+      <div class="note">CI Célocurine : hyperK, crush syndrome. Si TC isolé stable : Etomidate 0,3 mg/kg possible à partir de 24 mois.</div>
+      <table style="margin-top:10px">
+        <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>5 kg</th><th>8 kg</th></tr>
+        <tr><td>Kétamine 10 mg/mL</td><td>3–5 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">1,5–2,5 mL</td><td class="val-rouge">2,4–4 mL</td></tr>
+        <tr><td>Célocurine 50 mg/mL</td><td>2 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">0,2 mL</td><td class="val-rouge">0,32 mL</td></tr>
+        <tr><td>OU Rocuronium 10 mg/mL</td><td>1 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">0,5 mL</td><td class="val-rouge">0,8 mL</td></tr>
+      </table>
+      <table style="margin-top:10px">
+        <tr><th>Sédation entretien</th><th>Posologie</th><th>5 kg</th><th>8 kg</th></tr>
+        <tr><td>Hypnovel 1 mg/mL</td><td>0,1–0,3 mg/kg/h</td><td class="val">0,5–1,5 mL/h</td><td class="val">0,8–2,4 mL/h</td></tr>
+        <tr><td>OU Kétamine 10 mg/mL</td><td>2–4 mg/kg/h</td><td class="val">1–2 mL/h</td><td class="val">1,6–3,2 mL/h</td></tr>
+        <tr><td>+ Sufenta 5 µg/mL</td><td>0,2–0,5 µg/kg/h</td><td class="val">0,2–0,5 mL/h</td><td class="val">0,32–0,8 mL/h</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- VENTILATION -->
+  <div class="section">
+    <div class="section-header bleu">🫁 Ventilation mécanique — &lt; 10 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Paramètre</th><th>Réglage</th></tr>
+        <tr><td>Mode</td><td class="val">VPC (pression contrôlée) / nourrisson</td></tr>
+        <tr><td>VT cible</td><td class="val">6–7 mL/kg → 48–70 mL</td></tr>
+        <tr><td>FR initiale</td><td class="val">30–40 /min</td></tr>
+        <tr><td>I/E</td><td class="val">1/2</td></tr>
+        <tr><td>PEEP</td><td class="val">5 cmH₂O</td></tr>
+        <tr><td>FiO₂</td><td class="val">100 % puis QSP SpO₂ 94–98 %</td></tr>
+        <tr><td>EtCO₂ cible</td><td class="val">35–40 mmHg (TC : 30–35)</td></tr>
+      </table>
+      <div class="note">Tuyaux respiratoires pédiatriques · Tester fuite · Mode nourrisson</div>
+    </div>
+  </div>
+
+  <!-- ANALGESIE -->
+  <div class="section">
+    <div class="section-header violet">💉 Analgésie en VS — &lt; 10 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Préparation</th><th>Dose / Volume</th></tr>
+        <tr class="drug-row"><td>Morphine titration IV</td><td>1 mg/mL (diluer 1 amp dans 9 mL SSI)</td><td class="val-rouge">0,1 mg/kg puis 0,05 mg/kg /5 min → 0,5 mL puis 0,2 mL</td></tr>
+        <tr class="drug-row"><td>Kétamine analg.</td><td>1 mg/mL (diluer)</td><td class="val-rouge">0,2–0,5 mg/kg → 0,5–1 mL IVL</td></tr>
+        <tr class="drug-row"><td>Paracétamol (Perfalgan)</td><td>Pur 10 mg/mL</td><td class="val-rouge">15 mg/kg → 7–10 mL IVL</td></tr>
+        <tr class="drug-row"><td>Kétamine IN</td><td>250 mg/5 mL pure</td><td class="val-rouge">2 mg/kg → 0,1 mL/kg IN</td></tr>
+        <tr class="drug-row"><td>Midazolam IN (convulsions)</td><td>50 mg/10 mL pure</td><td class="val-rouge">0,2 mg/kg → 0,04 mL/kg IN</td></tr>
+      </table>
+      <div class="note">Sans VVP : kétamine IN 2 mg/kg ou sufenta IN 0,3 µg/kg. Diviser dose en 2 narines si volume &gt; 0,5 mL.</div>
+    </div>
+  </div>
+
+  <!-- AMINES -->
+  <div class="section">
+    <div class="section-header rouge">💊 Amines vasopressives — &lt; 10 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Amine</th><th>Dose départ</th><th>Dilution</th><th>5 kg</th><th>8 kg</th></tr>
+        <tr><td>Noradrénaline</td><td>0,1 µg/kg/min</td><td>1 mg dans 100 mL SSI → 10 µg/mL</td><td class="val-rouge">0,75 mL/h</td><td class="val-rouge">1,2 mL/h</td></tr>
+        <tr><td>Adrénaline choc</td><td>0,01 mg/kg IVD</td><td>1 mg dans 10 mL SSI → 100 µg/mL</td><td class="val-rouge">0,5 mL</td><td class="val-rouge">0,8 mL</td></tr>
+        <tr><td>Adrénaline ACR</td><td>0,01 mg/kg · 0,1 mL/kg</td><td>1 mg dans 10 mL SSI → 100 µg/mL</td><td class="val-rouge">0,5 mL</td><td class="val-rouge">0,8 mL</td></tr>
+      </table>
+      <div class="note">Anaphylaxie grade ≥ 2 : adrénaline IM d'abord 10 µg/kg (0,01 mL/kg pur).</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header violet">🧠 HTIC / Osmothérapie — &lt; 10 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Produit</th><th>Dose</th><th>Préparation</th><th>5 kg</th><th>8 kg</th></tr>
+        <tr><td>SSH 3 %</td><td>3 mL/kg · IVL 5–15 min</td><td>100 mL NaCl 0,9 % + 10 mL NaCl 20 %</td><td class="val-rouge">15 mL</td><td class="val-rouge">24 mL</td></tr>
+        <tr><td>Mannitol 20 %</td><td>5 mL/kg · IVL 20 min</td><td>Pur</td><td class="val-rouge">25 mL</td><td class="val-rouge">40 mL</td></tr>
+      </table>
+      <div class="note">SSH 3 % préféré en préhospitalier (double effet volume + osmotique). Objectif PPC &gt; 40–45 mmHg.</div>
+    </div>
+  </div>
+
+</div><!-- fin panel crèche -->
+
+<!-- ============================================================ -->
+<!-- PANEL MATERNELLE 10–20 kg -->
+<!-- ============================================================ -->
+<div id="panel-maternelle" class="panel">
+
+  <div class="alerte">10–20 kg · 1 à 6 ans. Estimation : parents d'abord · sinon (âge+4)×2.</div>
+
+  <div class="section">
+    <div class="section-header bleu">📊 Paramètres vitaux normaux — 10–20 kg</div>
+    <div class="section-body">
+      <div class="grid2">
+        <div class="mini-card"><div class="label">FR (/min)</div><div class="bigval">20–30</div></div>
+        <div class="mini-card"><div class="label">FC (/min)</div><div class="bigval">60–160</div></div>
+        <div class="mini-card"><div class="label">PAS (mmHg)</div><div class="bigval">&gt; 70</div></div>
+        <div class="mini-card"><div class="label">PAM (mmHg)</div><div class="bigval">&gt; 55</div></div>
+      </div>
+      <table style="margin-top:10px">
+        <tr><th>Objectif</th><th>Hors TC</th><th>Avec TC</th></tr>
+        <tr><td>PAS mini</td><td class="val">&gt; 72–74</td><td class="val-rouge">&gt; 90</td></tr>
+        <tr><td>PAM mini</td><td class="val">&gt; 45–50</td><td class="val-rouge">&gt; 55–60</td></tr>
+        <tr><td>SpO₂</td><td colspan="2" class="val">94–98 %</td></tr>
+        <tr><td>EtCO₂</td><td colspan="2" class="val">35–40 mmHg</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header orange">🔧 Matériel — 10–20 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Item</th><th>Taille / Calibre</th></tr>
+        <tr><td>Sonde IOT</td><td class="val">4 – 4,5</td></tr>
+        <tr><td>Repère labial</td><td class="val">12–13 cm (10 kg) · 14–15 cm (15 kg)</td></tr>
+        <tr><td>Mandrin béquillé</td><td class="val">CH 10</td></tr>
+        <tr><td>Lame laryngoscope</td><td class="val">1–2 courbe ou droite</td></tr>
+        <tr><td>Guedel</td><td class="val">Taille 1 – 1,5</td></tr>
+        <tr><td>VVP / IO</td><td class="val">22G bleu ou 24G jaune / IO bleu 25 mm</td></tr>
+        <tr><td>Exsufflation PNO</td><td class="val">Cathlon vert 18G</td></tr>
+        <tr><td>Drain thoracique</td><td class="val">CH 10–12</td></tr>
+        <tr><td>Sonde gastrique</td><td class="val">CH 8–10</td></tr>
+        <tr><td>Garrot</td><td class="val">Pédiatrique</td></tr>
+        <tr><td>Ceinture pelvienne</td><td class="val">Pédiatrique</td></tr>
+      </table>
+      <div class="note">CEE ACR : 4 J/kg (45–50 J)</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header vert">💉 Voies d'abord & Remplissage — 10–20 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Geste</th><th>Modalité / Volume</th></tr>
+        <tr><td>1ère intention</td><td class="val">VVP 22G bleu</td></tr>
+        <tr><td>Si échec × 2</td><td class="val-rouge">IO bleu 25 mm</td></tr>
+        <tr><td>Débit de base NaCl 0,9 %</td><td class="val">40–50 mL/h</td></tr>
+        <tr><td>Remplissage SSI/RL</td><td class="val">10 mL/kg → 100–200 mL, renouvelable</td></tr>
+        <tr><td>Transfusion CGR</td><td class="val">20 mL/kg → 200 mL</td></tr>
+        <tr><td>Exacyl</td><td class="val">20 mg/kg IVL 10 min → 2–4 mL pur</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header rouge">💊 ISR — 10–20 kg</div>
+    <div class="section-body">
+      <div class="isr-box">
+        <h4>Protocole standard</h4>
+        <div class="step"><div class="step-num">1</div><div>Pré-oxygénation FiO₂ 100 % min 3 min</div></div>
+        <div class="step"><div class="step-num">2</div><div><strong>Kétamine</strong> 2–4 mg/kg IVD</div></div>
+        <div class="step"><div class="step-num">3</div><div><strong>Célocurine</strong> 1,5–2 mg/kg IVD</div></div>
+        <div class="step"><div class="step-num">4</div><div>OU <strong>Rocuronium</strong> 1 mg/kg IVD</div></div>
+      </div>
+      <div class="note">Etomidate 0,3 mg/kg possible à partir de 24 mois si hémodynamique stable et TC isolé.</div>
+      <table style="margin-top:10px">
+        <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>10 kg</th><th>15 kg</th><th>20 kg</th></tr>
+        <tr><td>Kétamine 10 mg/mL</td><td>2–4 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">2–4 mL</td><td class="val-rouge">3–6 mL</td><td class="val-rouge">4–8 mL</td></tr>
+        <tr><td>Célocurine 50 mg/mL</td><td>1,5–2 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">0,3–0,4 mL</td><td class="val-rouge">0,45–0,6 mL</td><td class="val-rouge">0,6–0,8 mL</td></tr>
+        <tr><td>OU Rocuronium 10 mg/mL</td><td>1 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">1 mL</td><td class="val-rouge">1,5 mL</td><td class="val-rouge">2 mL</td></tr>
+      </table>
+      <table style="margin-top:10px">
+        <tr><th>Sédation entretien</th><th>Posologie</th><th>10 kg</th><th>15 kg</th><th>20 kg</th></tr>
+        <tr><td>Hypnovel 1 mg/mL</td><td>0,1–0,3 mg/kg/h</td><td class="val">1–3 mL/h</td><td class="val">1,5–4,5 mL/h</td><td class="val">2–6 mL/h</td></tr>
+        <tr><td>OU Kétamine 10 mg/mL</td><td>2–4 mg/kg/h</td><td class="val">2–4 mL/h</td><td class="val">3–6 mL/h</td><td class="val">4–8 mL/h</td></tr>
+        <tr><td>+ Sufenta 5 µg/mL</td><td>0,2–0,5 µg/kg/h</td><td class="val">0,4–1 mL/h</td><td class="val">0,6–1,5 mL/h</td><td class="val">0,8–2 mL/h</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header bleu">🫁 Ventilation mécanique — 10–20 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Paramètre</th><th>Réglage</th></tr>
+        <tr><td>Mode</td><td class="val">VVC (volume contrôlé) / enfant</td></tr>
+        <tr><td>VT cible</td><td class="val">6 mL/kg → 60–120 mL</td></tr>
+        <tr><td>FR initiale</td><td class="val">25 /min (20–30)</td></tr>
+        <tr><td>I/E</td><td class="val">1/2</td></tr>
+        <tr><td>PEEP</td><td class="val">5 cmH₂O</td></tr>
+        <tr><td>FiO₂</td><td class="val">100 % puis QSP SpO₂ 94–98 %</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header violet">💉 Analgésie en VS — 10–20 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Dose</th><th>Préparation</th><th>10 kg</th><th>15 kg</th><th>20 kg</th></tr>
+        <tr class="drug-row"><td>Morphine 1 mg/mL</td><td>0,1 mg/kg puis 0,05 /5 min</td><td>1 amp + 9 mL SSI</td><td class="val-rouge">1 mL + 0,5 mL</td><td class="val-rouge">1,5 mL + 0,75 mL</td><td class="val-rouge">2 mL + 1 mL</td></tr>
+        <tr class="drug-row"><td>Kétamine analg. 1 mg/mL</td><td>0,2–0,5 mg/kg</td><td>Diluer</td><td class="val-rouge">2–5 mL</td><td class="val-rouge">3–7,5 mL</td><td class="val-rouge">4–10 mL</td></tr>
+        <tr class="drug-row"><td>Paracétamol 10 mg/mL</td><td>15 mg/kg</td><td>Pur · IVL</td><td class="val-rouge">15 mL</td><td class="val-rouge">22,5 mL</td><td class="val-rouge">30 mL</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header rouge">💊 Amines vasopressives — 10–20 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Amine</th><th>Dose départ</th><th>Dilution</th><th>10 kg</th><th>15 kg</th><th>20 kg</th></tr>
+        <tr><td>Noradrénaline</td><td>0,1 µg/kg/min</td><td>1 mg dans 100 mL SSI → 10 µg/mL</td><td class="val-rouge">1,5 mL/h</td><td class="val-rouge">2,25 mL/h</td><td class="val-rouge">3 mL/h</td></tr>
+        <tr><td>Adrénaline choc</td><td>0,01 mg/kg IVD</td><td>1 mg dans 10 mL SSI → 100 µg/mL</td><td class="val-rouge">1 mL</td><td class="val-rouge">1,5 mL</td><td class="val-rouge">2 mL</td></tr>
+        <tr><td>Adrénaline ACR</td><td>0,01 mg/kg · 0,1 mL/kg</td><td>1 mg dans 10 mL SSI → 100 µg/mL</td><td class="val-rouge">1 mL</td><td class="val-rouge">1,5 mL</td><td class="val-rouge">2 mL</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header violet">🧠 HTIC / Osmothérapie — 10–20 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Produit</th><th>Dose</th><th>Préparation</th><th>10 kg</th><th>15 kg</th><th>20 kg</th></tr>
+        <tr><td>SSH 3 %</td><td>3 mL/kg · IVL 10 min</td><td>100 mL NaCl 0,9 % + 10 mL NaCl 20 %</td><td class="val-rouge">30 mL</td><td class="val-rouge">45 mL</td><td class="val-rouge">60 mL</td></tr>
+        <tr><td>Mannitol 20 %</td><td>5 mL/kg · IVL 20 min</td><td>Pur</td><td class="val-rouge">50 mL</td><td class="val-rouge">75 mL</td><td class="val-rouge">100 mL</td></tr>
+      </table>
+      <div class="note">Objectif PPC : &gt; 45–50 mmHg.</div>
+    </div>
+  </div>
+
+</div><!-- fin panel maternelle -->
+
+<!-- ============================================================ -->
+<!-- PANEL PRIMAIRE 20–30 kg -->
+<!-- ============================================================ -->
+<div id="panel-primaire" class="panel">
+
+  <div class="alerte">20–30 kg · 6 à 10 ans. Estimation : parents d'abord · sinon (âge+4)×2.</div>
+
+  <div class="section">
+    <div class="section-header bleu">📊 Paramètres vitaux normaux — 20–30 kg</div>
+    <div class="section-body">
+      <div class="grid2">
+        <div class="mini-card"><div class="label">FR (/min)</div><div class="bigval">15–25</div></div>
+        <div class="mini-card"><div class="label">FC (/min)</div><div class="bigval">60–140</div></div>
+        <div class="mini-card"><div class="label">PAS (mmHg)</div><div class="bigval">&gt; 75</div></div>
+        <div class="mini-card"><div class="label">PAM (mmHg)</div><div class="bigval">&gt; 55</div></div>
+      </div>
+      <table style="margin-top:10px">
+        <tr><th>Objectif</th><th>Hors TC</th><th>Avec TC</th></tr>
+        <tr><td>PAS mini</td><td class="val">&gt; 82–88</td><td class="val-rouge">&gt; 100</td></tr>
+        <tr><td>PAM mini</td><td class="val">&gt; 50–55</td><td class="val-rouge">&gt; 65–70</td></tr>
+        <tr><td>SpO₂</td><td colspan="2" class="val">94–98 %</td></tr>
+        <tr><td>EtCO₂</td><td colspan="2" class="val">35–40 mmHg</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header orange">🔧 Matériel — 20–30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Item</th><th>Taille / Calibre</th></tr>
+        <tr><td>Sonde IOT</td><td class="val">5 – 6</td></tr>
+        <tr><td>Repère labial</td><td class="val">15–17 cm (5–7 ans) · 18–20 cm (8–10 ans)</td></tr>
+        <tr><td>Mandrin béquillé</td><td class="val">CH 10–12</td></tr>
+        <tr><td>Lame laryngoscope</td><td class="val">2–3 courbe</td></tr>
+        <tr><td>Guedel</td><td class="val">Taille 2</td></tr>
+        <tr><td>VVP / IO</td><td class="val">20G rose ou 22G bleu / IO bleu 25 mm</td></tr>
+        <tr><td>Exsufflation PNO</td><td class="val">Cathlon gris 16G longue</td></tr>
+        <tr><td>Drain thoracique</td><td class="val">CH 16–20</td></tr>
+        <tr><td>Sonde gastrique</td><td class="val">CH 10–12</td></tr>
+        <tr><td>Garrot</td><td class="val">Pédiatrique</td></tr>
+        <tr><td>Ceinture pelvienne</td><td class="val">Pédiatrique</td></tr>
+      </table>
+      <div class="note">CEE ACR : 4 J/kg (80–100 J) · Tuyaux adulte à partir de 25 kg · Respirateur mode adulte</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header vert">💉 Voies d'abord & Remplissage — 20–30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Geste</th><th>Modalité / Volume</th></tr>
+        <tr><td>1ère intention</td><td class="val">VVP 18–20G rose</td></tr>
+        <tr><td>Si échec × 2</td><td class="val-rouge">IO bleu 25 mm</td></tr>
+        <tr><td>Débit de base NaCl 0,9 %</td><td class="val">60 mL/h</td></tr>
+        <tr><td>Remplissage SSI/RL</td><td class="val">10 mL/kg → 200–300 mL, renouvelable</td></tr>
+        <tr><td>Transfusion CGR</td><td class="val">20 mL/kg · 1–2 CGR</td></tr>
+        <tr><td>Exacyl</td><td class="val">20 mg/kg IVL 10 min → 8–10 mL pur</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header rouge">💊 ISR — 20–30 kg</div>
+    <div class="section-body">
+      <div class="isr-box">
+        <h4>Protocole standard</h4>
+        <div class="step"><div class="step-num">1</div><div>Pré-oxygénation FiO₂ 100 % min 3 min</div></div>
+        <div class="step"><div class="step-num">2</div><div><strong>Kétamine</strong> 2–4 mg/kg IVD</div></div>
+        <div class="step"><div class="step-num">3</div><div><strong>Célocurine</strong> 1–1,5 mg/kg IVD</div></div>
+        <div class="step"><div class="step-num">4</div><div>OU <strong>Rocuronium</strong> 1 mg/kg IVD</div></div>
+      </div>
+      <div class="note">Etomidate 0,3 mg/kg si TC isolé stable et HD correcte. Sugammadex disponible si Rocuronium utilisé : 10 mg/kg.</div>
+      <table style="margin-top:10px">
+        <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>20 kg</th><th>25 kg</th><th>30 kg</th></tr>
+        <tr><td>Kétamine 10 mg/mL</td><td>2–4 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">4–8 mL</td><td class="val-rouge">5–10 mL</td><td class="val-rouge">6–12 mL</td></tr>
+        <tr><td>Célocurine 50 mg/mL</td><td>1–1,5 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">0,4–0,6 mL</td><td class="val-rouge">0,5–0,75 mL</td><td class="val-rouge">0,6–0,9 mL</td></tr>
+        <tr><td>OU Rocuronium 10 mg/mL</td><td>1 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">2 mL</td><td class="val-rouge">2,5 mL</td><td class="val-rouge">3 mL</td></tr>
+      </table>
+      <table style="margin-top:10px">
+        <tr><th>Sédation entretien</th><th>Posologie</th><th>20 kg</th><th>25 kg</th><th>30 kg</th></tr>
+        <tr><td>Hypnovel 1 mg/mL</td><td>0,1–0,3 mg/kg/h</td><td class="val">2–6 mL/h</td><td class="val">2,5–7,5 mL/h</td><td class="val">3–9 mL/h</td></tr>
+        <tr><td>OU Kétamine 10 mg/mL</td><td>2–4 mg/kg/h</td><td class="val">4–8 mL/h</td><td class="val">5–10 mL/h</td><td class="val">6–12 mL/h</td></tr>
+        <tr><td>+ Sufenta 5 µg/mL</td><td>0,2–0,5 µg/kg/h</td><td class="val">0,8–2 mL/h</td><td class="val">1–2,5 mL/h</td><td class="val">1,2–3 mL/h</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header bleu">🫁 Ventilation mécanique — 20–30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Paramètre</th><th>Réglage</th></tr>
+        <tr><td>Mode</td><td class="val">VVC (volume contrôlé) / adulte</td></tr>
+        <tr><td>VT cible</td><td class="val">6 mL/kg → 120–180 mL</td></tr>
+        <tr><td>FR initiale</td><td class="val">18 /min (15–25)</td></tr>
+        <tr><td>I/E</td><td class="val">1/2</td></tr>
+        <tr><td>PEEP</td><td class="val">5 cmH₂O</td></tr>
+        <tr><td>FiO₂</td><td class="val">100 % puis QSP SpO₂ 94–98 %</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header violet">💉 Analgésie en VS — 20–30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Dose</th><th>Préparation</th><th>20 kg</th><th>25 kg</th><th>30 kg</th></tr>
+        <tr class="drug-row"><td>Morphine 1 mg/mL</td><td>0,1 mg/kg puis 0,05 /5 min</td><td>1 amp + 9 mL SSI</td><td class="val-rouge">2 mL + 1 mL</td><td class="val-rouge">2,5 mL + 1,25 mL</td><td class="val-rouge">3 mL + 1,5 mL</td></tr>
+        <tr class="drug-row"><td>Kétamine analg. 1 mg/mL</td><td>0,2 mg/kg</td><td>Diluer</td><td class="val-rouge">4 mL</td><td class="val-rouge">5 mL</td><td class="val-rouge">6 mL</td></tr>
+        <tr class="drug-row"><td>Paracétamol 10 mg/mL</td><td>15 mg/kg</td><td>Pur · IVL</td><td class="val-rouge">30 mL</td><td class="val-rouge">37,5 mL</td><td class="val-rouge">45 mL</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header rouge">💊 Amines vasopressives — 20–30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Amine</th><th>Dose départ</th><th>Dilution</th><th>20 kg</th><th>25 kg</th><th>30 kg</th></tr>
+        <tr><td>Noradrénaline</td><td>0,1 µg/kg/min</td><td>4 mg dans 40 mL G5 % → 100 µg/mL</td><td class="val-rouge">1,8 mL/h</td><td class="val-rouge">2,25 mL/h</td><td class="val-rouge">2,7 mL/h</td></tr>
+        <tr><td>Adrénaline choc</td><td>0,01 mg/kg IVD</td><td>1 mg dans 10 mL SSI → 100 µg/mL</td><td class="val-rouge">2 mL</td><td class="val-rouge">2,5 mL</td><td class="val-rouge">3 mL</td></tr>
+        <tr><td>Adrénaline ACR</td><td>0,01 mg/kg · 0,1 mL/kg</td><td>1 mg dans 10 mL SSI → 100 µg/mL</td><td class="val-rouge">2 mL</td><td class="val-rouge">2,5 mL</td><td class="val-rouge">3 mL</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header violet">🧠 HTIC / Osmothérapie — 20–30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Produit</th><th>Dose</th><th>Préparation</th><th>20 kg</th><th>25 kg</th><th>30 kg</th></tr>
+        <tr><td>SSH 3 %</td><td>3 mL/kg · IVL 10 min</td><td>100 mL NaCl 0,9 % + 10 mL NaCl 20 %</td><td class="val-rouge">60 mL</td><td class="val-rouge">75 mL</td><td class="val-rouge">90 mL</td></tr>
+        <tr><td>Mannitol 20 %</td><td>3 mL/kg · IVL 20 min</td><td>Retirer 190 mL poche 250 mL</td><td class="val-rouge">60 mL</td><td class="val-rouge">75 mL</td><td class="val-rouge">90 mL</td></tr>
+      </table>
+      <div class="note">Objectif PPC : &gt; 50–55 mmHg.</div>
+    </div>
+  </div>
+
+</div><!-- fin panel primaire -->
+
+<!-- ============================================================ -->
+<!-- PANEL ADOS > 30 kg -->
+<!-- ============================================================ -->
+<div id="panel-adulte" class="panel">
+
+  <div class="alerte">&gt; 30 kg · &gt; 10 ans. À partir de 50 kg : protocoles adultes applicables.</div>
+
+  <div class="section">
+    <div class="section-header bleu">📊 Paramètres vitaux normaux — &gt; 30 kg</div>
+    <div class="section-body">
+      <div class="grid2">
+        <div class="mini-card"><div class="label">FR (/min)</div><div class="bigval">12–20</div></div>
+        <div class="mini-card"><div class="label">FC (/min)</div><div class="bigval">60–120</div></div>
+        <div class="mini-card"><div class="label">PAS (mmHg)</div><div class="bigval">&gt; 80</div></div>
+        <div class="mini-card"><div class="label">PAM (mmHg)</div><div class="bigval">&gt; 65</div></div>
+      </div>
+      <table style="margin-top:10px">
+        <tr><th>Objectif</th><th>Hors TC</th><th>Avec TC</th></tr>
+        <tr><td>PAS mini</td><td class="val">&gt; 88–90</td><td class="val-rouge">&gt; 100–110</td></tr>
+        <tr><td>PAM mini</td><td class="val">&gt; 55–65</td><td class="val-rouge">&gt; 70–80</td></tr>
+        <tr><td>SpO₂</td><td colspan="2" class="val">94–98 %</td></tr>
+        <tr><td>EtCO₂</td><td colspan="2" class="val">35–40 mmHg</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header orange">🔧 Matériel — &gt; 30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Item</th><th>Taille / Calibre</th></tr>
+        <tr><td>Sonde IOT</td><td class="val">6,5 – 7,5</td></tr>
+        <tr><td>Repère labial</td><td class="val">17–20 cm</td></tr>
+        <tr><td>Mandrin béquillé</td><td class="val">CH 14–15</td></tr>
+        <tr><td>Lame laryngoscope</td><td class="val">3 courbe</td></tr>
+        <tr><td>Guedel</td><td class="val">Taille 2–3</td></tr>
+        <tr><td>VVP / IO</td><td class="val">18G rose ou 16G gris / IO bleu 25 mm</td></tr>
+        <tr><td>Exsufflation PNO</td><td class="val">Stylo exsufflateur 14G ou Cathlon gris 16G</td></tr>
+        <tr><td>Drain thoracique</td><td class="val">CH 20–24</td></tr>
+        <tr><td>Sonde gastrique</td><td class="val">CH 12–14</td></tr>
+        <tr><td>Garrot</td><td class="val">Adulte</td></tr>
+        <tr><td>Ceinture pelvienne</td><td class="val">Adulte</td></tr>
+      </table>
+      <div class="note">CEE ACR : 4 J/kg (150–200 J) · Tuyaux adulte · Respirateur mode adulte</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header vert">💉 Voies d'abord & Remplissage — &gt; 30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Geste</th><th>Modalité / Volume</th></tr>
+        <tr><td>1ère intention</td><td class="val">VVP 16–18G</td></tr>
+        <tr><td>Si échec × 2</td><td class="val-rouge">IO bleu 25 mm</td></tr>
+        <tr><td>Débit de base NaCl 0,9 %</td><td class="val">80 mL/h</td></tr>
+        <tr><td>Remplissage SSI/RL</td><td class="val">10 mL/kg → 300–500 mL, renouvelable</td></tr>
+        <tr><td>Transfusion CGR</td><td class="val">20 mL/kg · 2 CGR + PFC</td></tr>
+        <tr><td>Exacyl</td><td class="val">20 mg/kg IVL 10 min → 10–15 mL pur (max 1 g)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header rouge">💊 ISR — &gt; 30 kg</div>
+    <div class="section-body">
+      <div class="isr-box">
+        <h4>Protocole standard</h4>
+        <div class="step"><div class="step-num">1</div><div>Pré-oxygénation FiO₂ 100 % min 3 min</div></div>
+        <div class="step"><div class="step-num">2</div><div><strong>Kétamine</strong> 2–4 mg/kg IVD</div></div>
+        <div class="step"><div class="step-num">3</div><div><strong>Célocurine</strong> 1 mg/kg IVD</div></div>
+        <div class="step"><div class="step-num">4</div><div>OU <strong>Rocuronium</strong> 1 mg/kg IVD</div></div>
+      </div>
+      <div class="note">Etomidate 0,3 mg/kg si TC isolé stable. Sugammadex : 10–16 mg/kg si Rocuronium. Propofol 2 mg/kg CI si HD instable ou TC.</div>
+      <table style="margin-top:10px">
+        <tr><th>Médicament</th><th>Dose</th><th>Dilution</th><th>35 kg</th><th>40 kg</th><th>50 kg</th></tr>
+        <tr><td>Kétamine 10 mg/mL</td><td>2–4 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">7–14 mL</td><td class="val-rouge">8–16 mL</td><td class="val-rouge">10–20 mL</td></tr>
+        <tr><td>Célocurine 50 mg/mL</td><td>1 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">0,7 mL</td><td class="val-rouge">0,8 mL</td><td class="val-rouge">1 mL</td></tr>
+        <tr><td>OU Rocuronium 10 mg/mL</td><td>1 mg/kg</td><td>Pure · IVD</td><td class="val-rouge">3,5 mL</td><td class="val-rouge">4 mL</td><td class="val-rouge">5 mL</td></tr>
+      </table>
+      <table style="margin-top:10px">
+        <tr><th>Sédation entretien</th><th>Posologie</th><th>35 kg</th><th>40 kg</th><th>50 kg</th></tr>
+        <tr><td>Hypnovel 1 mg/mL</td><td>0,1–0,3 mg/kg/h</td><td class="val">3,5–10,5 mL/h</td><td class="val">4–12 mL/h</td><td class="val">5–15 mL/h</td></tr>
+        <tr><td>OU Kétamine 10 mg/mL</td><td>2–4 mg/kg/h</td><td class="val">7–14 mL/h</td><td class="val">8–16 mL/h</td><td class="val">10–20 mL/h</td></tr>
+        <tr><td>+ Sufenta 5 µg/mL</td><td>0,2–0,5 µg/kg/h</td><td class="val">1,4–3,5 mL/h</td><td class="val">1,6–4 mL/h</td><td class="val">2–5 mL/h</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header bleu">🫁 Ventilation mécanique — &gt; 30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Paramètre</th><th>Réglage</th></tr>
+        <tr><td>Mode</td><td class="val">VVC (volume contrôlé) / adulte</td></tr>
+        <tr><td>VT cible</td><td class="val">6 mL/kg → 180–300 mL</td></tr>
+        <tr><td>FR initiale</td><td class="val">16–18 /min (12–20)</td></tr>
+        <tr><td>I/E</td><td class="val">1/2</td></tr>
+        <tr><td>PEEP</td><td class="val">5 cmH₂O</td></tr>
+        <tr><td>FiO₂</td><td class="val">100 % puis QSP SpO₂ 94–98 %</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header violet">💉 Analgésie en VS — &gt; 30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Médicament</th><th>Dose</th><th>Préparation</th><th>35 kg</th><th>40 kg</th><th>50 kg</th></tr>
+        <tr class="drug-row"><td>Morphine 1 mg/mL</td><td>0,1 mg/kg puis 0,05 /5 min</td><td>1 amp + 9 mL SSI</td><td class="val-rouge">3,5 mL + 1,75 mL</td><td class="val-rouge">4 mL + 2 mL</td><td class="val-rouge">5 mL + 2,5 mL</td></tr>
+        <tr class="drug-row"><td>Kétamine analg. 1 mg/mL</td><td>0,2 mg/kg</td><td>Diluer</td><td class="val-rouge">7 mL</td><td class="val-rouge">8 mL</td><td class="val-rouge">10 mL</td></tr>
+        <tr class="drug-row"><td>Paracétamol 10 mg/mL</td><td>15 mg/kg (max 1 g)</td><td>Pur · IVL</td><td class="val-rouge">52,5 mL</td><td class="val-rouge">60 mL</td><td class="val-rouge">75 mL</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header rouge">💊 Amines vasopressives — &gt; 30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Amine</th><th>Dose départ</th><th>Dilution</th><th>35 kg</th><th>40 kg</th><th>50 kg</th></tr>
+        <tr><td>Noradrénaline</td><td>0,1 µg/kg/min</td><td>4 mg dans 40 mL G5 % → 100 µg/mL</td><td class="val-rouge">2,1 mL/h</td><td class="val-rouge">2,4 mL/h</td><td class="val-rouge">3 mL/h</td></tr>
+        <tr><td>Adrénaline choc</td><td>0,01 mg/kg IVD</td><td>1 mg dans 10 mL SSI → 100 µg/mL</td><td class="val-rouge">3,5 mL</td><td class="val-rouge">4 mL</td><td class="val-rouge">5 mL ⚑</td></tr>
+        <tr><td>Adrénaline ACR</td><td>0,01 mg/kg · 0,1 mL/kg</td><td>1 mg dans 10 mL SSI → 100 µg/mL</td><td class="val-rouge">3,5 mL</td><td class="val-rouge">4 mL</td><td class="val-rouge">5 mL ⚑</td></tr>
+      </table>
+      <div class="note-violet" style="margin-top:6px">⚑ = max 1 mg = 5 mL · au-delà de 50 kg : toujours 5 mL</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header violet">🧠 HTIC / Osmothérapie — &gt; 30 kg</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Produit</th><th>Dose</th><th>Préparation</th><th>35 kg</th><th>40 kg</th><th>50 kg</th></tr>
+        <tr><td>SSH 3 %</td><td>3 mL/kg · IVL 10 min</td><td>100 mL NaCl 0,9 % + 10 mL NaCl 20 %</td><td class="val-rouge">105 mL</td><td class="val-rouge">120 mL</td><td class="val-rouge">150 mL</td></tr>
+        <tr><td>Mannitol 20 %</td><td>3 mL/kg · IVL 20 min</td><td>Retirer 145–100 mL poche 250 mL</td><td class="val-rouge">105 mL</td><td class="val-rouge">120 mL</td><td class="val-rouge">150 mL</td></tr>
+      </table>
+      <div class="note">Objectif PPC : &gt; 65–70 mmHg. Surveiller ionogramme et osmolarité.</div>
+    </div>
+  </div>
+
+</div><!-- fin panel adulte -->
+
+<!-- ============================================================ -->
+<!-- PANEL MODE SSE -->
+<!-- ============================================================ -->
+<div id="panel-sse" class="panel">
+
+  <div class="alerte">Mode SSE : pas de poids disponible. On raisonne uniquement par catégorie visuelle. Doses simplifiées et pré-calculées — logique différente du SMUR.</div>
+
+  <!-- RAPPEL CATÉGORIES -->
+  <div class="section">
+    <div class="section-header bleu">👶 Identification des catégories</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Catégorie</th><th>Poids</th><th>Âge indicatif</th></tr>
+        <tr><td><span class="pill rouge">CRÈCHE</span></td><td class="val">&lt; 10 kg</td><td>Moins de 1 an</td></tr>
+        <tr><td><span class="pill orange">MATERNELLE</span></td><td class="val">10–20 kg</td><td>1 à 6 ans</td></tr>
+        <tr><td><span class="pill vert">PRIMAIRE</span></td><td class="val">20–30 kg</td><td>6 à 10 ans</td></tr>
+        <tr><td><span class="pill violet">ADULTES</span></td><td class="val">&gt; 30 kg</td><td>Plus de 10 ans</td></tr>
+      </table>
+      <div class="note">En SSE, l'identification est visuelle et rapide. En cas de doute entre deux catégories, choisir la catégorie inférieure (sous-dosage mieux toléré que surdosage).</div>
+    </div>
+  </div>
+
+  <!-- PARAMÈTRES VITAUX SSE -->
+  <div class="section">
+    <div class="section-header bleu">📊 Paramètres vitaux — normes par catégorie SSE</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Paramètre</th><th><span class="pill rouge">CRÈCHE</span></th><th><span class="pill orange">MATERN.</span></th><th><span class="pill vert">PRIMAIRE</span></th><th><span class="pill violet">ADULTES</span></th></tr>
+        <tr><td>FR (/min)</td><td class="val">20–40</td><td class="val">20–30</td><td class="val">15–20</td><td class="val">10–15</td></tr>
+        <tr><td>SpO₂ (%)</td><td class="val">&gt;94</td><td class="val">&gt;94</td><td class="val">&gt;94</td><td class="val">&gt;94</td></tr>
+        <tr><td>FC (/min)</td><td class="val">80–180</td><td class="val">60–160</td><td class="val">60–160</td><td class="val">60–120</td></tr>
+        <tr><td>PAS (mmHg)</td><td class="val">&gt;70</td><td class="val">&gt;70</td><td class="val">&gt;75</td><td class="val">&gt;80</td></tr>
+        <tr><td>PAM (mmHg)</td><td class="val">&gt;50</td><td class="val">&gt;55</td><td class="val">&gt;55</td><td class="val">&gt;65</td></tr>
+        <tr><td>PAM si TC</td><td class="val-rouge">&gt;60</td><td class="val-rouge">&gt;65</td><td class="val-rouge">&gt;65</td><td class="val-rouge">&gt;75</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- MATÉRIEL SSE -->
+  <div class="section">
+    <div class="section-header orange">🔧 Matériel sac SSE par catégorie</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Item</th><th><span class="pill rouge">CRÈCHE</span></th><th><span class="pill orange">MATERN.</span></th><th><span class="pill vert">PRIMAIRE</span></th><th><span class="pill violet">ADULTES</span></th></tr>
+        <tr><td>Garrot</td><td class="val">Péd</td><td class="val">Péd</td><td class="val">Péd</td><td class="val">Péd/Adulte</td></tr>
+        <tr><td>Guedel</td><td class="val">0 / 1</td><td class="val">1 / 1,5</td><td class="val">1,5 / 2</td><td class="val">3</td></tr>
+        <tr><td>Ceinture pelvienne</td><td class="val">Non</td><td class="val">Péd</td><td class="val">Péd</td><td class="val">Adulte</td></tr>
+        <tr><td>VVP</td><td class="val">24G jaune</td><td class="val">24G ou 22G</td><td class="val">22G bleu</td><td class="val">≥ 20G rose</td></tr>
+        <tr><td>IO</td><td class="val">Bleu 25 mm</td><td class="val">Bleu 25 mm</td><td class="val">Bleu 25 mm</td><td class="val">Bleu/jaune</td></tr>
+        <tr><td>Exsufflation</td><td class="val">20G rose</td><td class="val">18G vert</td><td class="val">16G gris</td><td class="val">Stylo 14G</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- MÉDICAMENTS SSE — HÉMODYNAMIQUE -->
+  <div class="section">
+    <div class="section-header rouge">💊 Hémodynamique SSE — doses pré-calculées</div>
+    <div class="section-body">
+      <div class="note" style="margin-bottom:10px">Doses administrées sans dilution (IVDL ou dans le remplissage), sauf mention contraire.</div>
+      <table>
+        <tr><th>Médicament</th><th><span class="pill rouge">CRÈCHE</span></th><th><span class="pill orange">MATERN.</span></th><th><span class="pill vert">PRIMAIRE</span></th><th><span class="pill violet">ADULTES</span></th></tr>
+
+        <tr><td colspan="5" style="background:var(--bleu-bg);color:var(--bleu);font-size:11px;font-weight:700;padding:5px 8px">REMPLISSAGE — RL ou NaCl 0,9 % · débit libre · sans dilution</td></tr>
+        <tr><td>Volume</td><td class="val-rouge">100 mL</td><td class="val-rouge">200 mL</td><td class="val-rouge">400 mL</td><td class="val-rouge">500 mL</td></tr>
+
+        <tr><td colspan="5" style="background:var(--rouge-bg);color:var(--rouge);font-size:11px;font-weight:700;padding:5px 8px">EXACYL — 100 mg/mL · ampoule 5 mL · IVDL ou dans remplissage · sans dilution · avant H3 !</td></tr>
+        <tr><td>Volume</td><td class="val-rouge">1 mL = 100 mg</td><td class="val-rouge">2 mL = 200 mg</td><td class="val-rouge">4 mL = 400 mg</td><td class="val-rouge">5–10 mL</td></tr>
+
+        <tr><td colspan="5" style="background:var(--rouge-bg);color:var(--rouge);font-size:11px;font-weight:700;padding:5px 8px">ADRÉNALINE choc — Dil.1 : 1 mL amp + 9 mL SSI → 0,1 mg/mL · Dil.2 : 1 mL dil.1 + 39 mL SSI → 1 mL = 2,5 µg · IVDL</td></tr>
+        <tr><td>Volume dil.2</td><td class="val-rouge">1 mL = 2,5 µg</td><td class="val-rouge">2 mL = 5 µg</td><td class="val-rouge">4 mL = 10 µg</td><td class="val-rouge">0,5 mL = 50 µg</td></tr>
+
+        <tr><td colspan="5" style="background:var(--violet-bg);color:var(--violet);font-size:11px;font-weight:700;padding:5px 8px">NaCl 5,85 % — pipette 10 mL · IVDL ou dans remplissage · sans dilution · si HTIC</td></tr>
+        <tr><td>Volume</td><td class="val-rouge">10 mL</td><td class="val-rouge">20 mL</td><td class="val-rouge">40 mL</td><td class="val-rouge">50 mL</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ANTALGIE SSE -->
+  <div class="section">
+    <div class="section-header violet">💉 Antalgie SSE — algorithme et doses</div>
+    <div class="section-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="background:var(--vert-bg);border-radius:6px;padding:8px 10px;font-size:12px">
+          <div style="font-weight:700;color:var(--vert);margin-bottom:4px">PEU / MOYENNEMENT DOULOUREUX</div>
+          <div style="color:var(--gris)"><strong>Prise orale sûre :</strong> Paracétamol oral +/− Morphine buvable</div>
+          <div style="color:var(--gris);margin-top:4px"><strong>Prise orale non sûre :</strong> Paracétamol IV +/− Kétamine IN</div>
+        </div>
+        <div style="background:var(--rouge-bg);border-radius:6px;padding:8px 10px;font-size:12px">
+          <div style="font-weight:700;color:var(--rouge);margin-bottom:4px">TRÈS DOULOUREUX</div>
+          <div style="color:var(--gris)"><strong>Attaque :</strong> Kétamine IN + Morphine buvable immédiat</div>
+          <div style="color:var(--gris);margin-top:4px"><strong>Entretien :</strong> Kétamine IN +/− Morphine IV titration puis entretien</div>
+        </div>
+      </div>
+      <div class="note" style="margin-bottom:8px">Critères enfant très douloureux : cris/gémissements · front plissé/bouche crispée · agitation/raidissement · attitude de protection/prostration · inconsolabilité</div>
+      <table>
+        <tr><th>Médicament</th><th><span class="pill rouge">CRÈCHE</span></th><th><span class="pill orange">MATERN.</span></th><th><span class="pill vert">PRIMAIRE</span></th><th><span class="pill violet">ADULTES</span></th></tr>
+
+        <tr><td colspan="5" style="background:var(--violet-bg);color:var(--violet);font-size:11px;font-weight:700;padding:5px 8px">KÉTAMINE IN — 250 mg/5 mL · utilisation pure · atomiseur nasal · diviser en 2 narines si vol > 0,5 mL</td></tr>
+        <tr><td>Dose analg. (0,5 mg/kg)</td><td class="val-rouge">0,5 mL = 25 mg</td><td class="val-rouge">0,8 mL = 40 mg</td><td class="val-rouge">1,5 mL = 75 mg</td><td class="val-rouge">1,5 mL = 75 mg</td></tr>
+
+        <tr><td colspan="5" style="background:var(--violet-bg);color:var(--violet);font-size:11px;font-weight:700;padding:5px 8px">MORPHINE BUVABLE — 10 mg/5 mL · voie orale · 2 gouttes/kg (max 10 gouttes)</td></tr>
+        <tr><td>Dose (0,2 mg/kg PO)</td><td class="val-rouge">0,8 mL = 1,6 mg</td><td class="val-rouge">1,5 mL = 3 mg</td><td class="val-rouge">3 mL = 6 mg</td><td class="val-rouge">5 mL = 10 mg</td></tr>
+
+        <tr><td colspan="5" style="background:var(--violet-bg);color:var(--violet);font-size:11px;font-weight:700;padding:5px 8px">MORPHINE IV — 10 mg/mL · Dil : 1 amp + 9 mL SSI → 1 mg/mL · titration IVD</td></tr>
+        <tr><td>Dose init. (0,1 mg/kg)</td><td class="val-rouge">0,5 mL = 0,5 mg</td><td class="val-rouge">0,8–1 mL</td><td class="val-rouge">1,25–1,5 mL</td><td class="val-rouge">1,75–3 mL</td></tr>
+        <tr><td>Paliers (0,02 mg/kg)</td><td class="val-rouge">0,2 mL /5 min</td><td class="val-rouge">0,3 mL /5 min</td><td class="val-rouge">0,5 mL /5 min</td><td class="val-rouge">0,7–1,2 mL /5 min</td></tr>
+
+        <tr><td colspan="5" style="background:var(--vert-bg);color:var(--vert);font-size:11px;font-weight:700;padding:5px 8px">PARACÉTAMOL ORAL — 15 mg/kg · voie orale ou rectale</td></tr>
+        <tr><td>Dose</td><td class="val-rouge">≈ 75–100 mg</td><td class="val-rouge">150–250 mg</td><td class="val-rouge">300–450 mg</td><td class="val-rouge">500–1000 mg</td></tr>
+
+        <tr><td colspan="5" style="background:var(--vert-bg);color:var(--vert);font-size:11px;font-weight:700;padding:5px 8px">PARACÉTAMOL IV — 1000 mg/100 mL · utilisation pure · IVL 15 min · 15 mg/kg</td></tr>
+        <tr><td>Volume</td><td class="val-rouge">15 mL = 150 mg</td><td class="val-rouge">30 mL = 300 mg</td><td class="val-rouge">50 mL = 500 mg</td><td class="val-rouge">100 mL = 1 g</td></tr>
+
+        <tr><td colspan="5" style="background:var(--orange-bg);color:var(--orange);font-size:11px;font-weight:700;padding:5px 8px">NALOXONE (antidote morphiniques) — 0,4 mg/mL · Dil : 1 mL + 9 mL SSI → 0,04 mg/mL</td></tr>
+        <tr><td>Dose (10 µg/kg)</td><td class="val-rouge">injecter 1 mL</td><td class="val-rouge">injecter 2 mL</td><td class="val-rouge">injecter 3 mL</td><td class="val-rouge">injecter 3 mL</td></tr>
+        <tr><td>Répéter si besoin</td><td colspan="4" style="font-size:12px;color:#777">Toutes les 3–5 min jusqu'à efficacité · bolus max 0,1 mg</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ISR SSE -->
+  <div class="section">
+    <div class="section-header rouge">🔴 Induction (ISR) SSE — doses pré-calculées</div>
+    <div class="section-body">
+      <div class="note" style="margin-bottom:8px">En SSE, privilégier la kétamine seule si VVP impossible. ISR complète si VVP/IO disponible.</div>
+      <table>
+        <tr><th>Médicament</th><th><span class="pill rouge">CRÈCHE</span></th><th><span class="pill orange">MATERN.</span></th><th><span class="pill vert">PRIMAIRE</span></th><th><span class="pill violet">ADULTES</span></th></tr>
+
+        <tr><td colspan="5" style="background:var(--rouge-bg);color:var(--rouge);font-size:11px;font-weight:700;padding:5px 8px">KÉTAMINE IV/IO — 10 mg/mL · utilisation pure · IVD · 3–5 mg/kg (Crèche) · 2–4 mg/kg (autres)</td></tr>
+        <tr><td>Volume ISR</td><td class="val-rouge">1,5–2,5 mL</td><td class="val-rouge">3–6 mL</td><td class="val-rouge">4–10 mL</td><td class="val-rouge">9–20 mL</td></tr>
+
+        <tr><td colspan="5" style="background:var(--rouge-bg);color:var(--rouge);font-size:11px;font-weight:700;padding:5px 8px">KÉTAMINE IN — 250 mg/5 mL · pure · atomiseur · si pas de VVP · 2 mg/kg</td></tr>
+        <tr><td>Volume</td><td class="val-rouge">0,1 mL/kg</td><td class="val-rouge">0,1 mL/kg</td><td class="val-rouge">0,1 mL/kg</td><td class="val-rouge">0,1 mL/kg</td></tr>
+
+        <tr><td colspan="5" style="background:var(--rouge-bg);color:var(--rouge);font-size:11px;font-weight:700;padding:5px 8px">CÉLOCURINE — 50 mg/mL · utilisation pure · IVD · 2 mg/kg (Crèche) · 1–1,5 mg/kg (autres) · ⚠ frigo</td></tr>
+        <tr><td>Volume</td><td class="val-rouge">0,3–0,4 mL</td><td class="val-rouge">0,3–0,6 mL</td><td class="val-rouge">0,5–0,9 mL</td><td class="val-rouge">0,6–1,5 mL</td></tr>
+      </table>
+      <div class="note">CI Célocurine : hyperK, crush syndrome. Rocuronium 1 mg/kg si disponible.</div>
+    </div>
+  </div>
+
+  <!-- ANTIDOTES NRBC SSE -->
+  <div class="section">
+    <div class="section-header rouge">☣️ Antidotes NRBC pédiatriques SSE</div>
+    <div class="section-body">
+      <div style="margin-bottom:12px">
+        <table>
+          <tr><th>Toxique</th><th>Délai</th><th>Signes clés</th><th>Antidote</th></tr>
+          <tr>
+            <td><strong>Neurotoxiques organophosphorés</strong> (Sarin, Novitchok…)</td>
+            <td class="val-rouge">&lt; 20 min</td>
+            <td>MYOSIS · fasciculations · bronchospasme · hypersécrétion · convulsions</td>
+            <td class="val-rouge">Atropine + Diazépam/Clonazépam + Pralidoxime</td>
+          </tr>
+          <tr>
+            <td><strong>Vésicants</strong> (Ypérite, Lewisite)</td>
+            <td>6–48 h</td>
+            <td>Brûlures cutanées/oculaires · phlyctènes différées</td>
+            <td>Antalgiques · BAL si Lewisite</td>
+          </tr>
+          <tr>
+            <td><strong>Suffocants</strong> (Chlore, Phosgène…)</td>
+            <td>0–12 h</td>
+            <td>DR progressive · toux · bronchospasme · OAP · conscience normale</td>
+            <td>O₂ · Nébulisation β2-mimétique</td>
+          </tr>
+          <tr>
+            <td><strong>Cyanés</strong> (HCN, Chlorure cyanogène)</td>
+            <td class="val-rouge">Instantané</td>
+            <td>MYDRIASE · conscience altérée · convulsions · collapsus</td>
+            <td class="val-rouge">Hydroxocobalamine (Cyanokit)</td>
+          </tr>
+          <tr>
+            <td><strong>Opiacés</strong> (dérivés fentanyl)</td>
+            <td>Variable</td>
+            <td>MYOSIS · bradypnée/apnée · coma · ACR</td>
+            <td class="val-rouge">Naloxone · <span style="background:var(--orange-bg);color:var(--orange);padding:1px 5px;border-radius:4px;font-size:11px;font-weight:700">DUST DAHO</span></td>
+          </tr>
+          <tr>
+            <td><strong>Radiologiques</strong> (contamination interne)</td>
+            <td>—</td>
+            <td>Selon exposition</td>
+            <td>Ca-DTPa</td>
+          </tr>
+        </table>
+        <div class="note"><strong>DUST DAHO</strong> : Décontamination d'Urgence, Symptomes, Traitements, Décontamination Approfondie, HOpital</div>
+      </div>
+
+      <div style="font-size:12px;font-weight:700;color:var(--rouge);margin:10px 0 6px">Doses antidotes par catégorie</div>
+      <table>
+        <tr><th>Antidote</th><th><span class="pill rouge">CRÈCHE</span></th><th><span class="pill orange">MATERN.</span></th><th><span class="pill vert">PRIMAIRE</span></th><th><span class="pill violet">ADULTES</span></th></tr>
+
+        <tr><td colspan="5" style="background:var(--rouge-bg);color:var(--rouge);font-size:11px;font-weight:700;padding:5px 8px">ATROPINE IV — Dil : retirer 40 mL d'un pochon 100 mL SSI + 1 amp 20 mL (20 mg) → 0,5 mg/mL · IVD · répéter jusqu'à assèchement muqueuses</td></tr>
+        <tr><td>Dose (0,05 mg/kg)</td><td class="val-rouge">1 mL = 0,5 mg</td><td class="val-rouge">2 mL = 1 mg</td><td class="val-rouge">4 mL = 2 mg</td><td class="val-rouge">1 mL pure = 2 mg</td></tr>
+
+        <tr><td colspan="5" style="background:var(--rouge-bg);color:var(--rouge);font-size:11px;font-weight:700;padding:5px 8px">CLONAZÉPAM (Rivotril) IV — Dil : retirer 55 mL + 5 amp 1 mL → 0,1 mg/mL · IVD · répéter si convulsions</td></tr>
+        <tr><td>Dose (0,015 mg/kg)</td><td class="val-rouge">1 mL = 0,1 mg</td><td class="val-rouge">2 mL = 0,2 mg</td><td class="val-rouge">5 mL = 0,5 mg</td><td class="val-rouge">1 mL pur = 1 mg</td></tr>
+
+        <tr><td colspan="5" style="background:var(--rouge-bg);color:var(--rouge);font-size:11px;font-weight:700;padding:5px 8px">DIAZÉPAM (Valium) IV — Dil : retirer 80 mL + 10 amp 2 mL → 2,5 mg/mL · IVD · si Clonazépam non dispo</td></tr>
+        <tr><td>Dose (0,3 mg/kg)</td><td class="val-rouge">1 mL = 2,5 mg</td><td class="val-rouge">2 mL = 5 mg</td><td class="val-rouge">3 mL = 7,5 mg</td><td class="val-rouge">2 mL pur = 10 mg</td></tr>
+
+        <tr><td colspan="5" style="background:var(--orange-bg);color:var(--orange);font-size:11px;font-weight:700;padding:5px 8px">HYDROXOCOBALAMINE / CYANOKIT — Reconstituer 5 g dans 200 mL SSI → 25 mg/mL · transférer dans pochon 100 mL vide · IVL 15 min · 70 mg/kg</td></tr>
+        <tr><td>Volume à transférer</td><td class="val-rouge">30 mL = 750 mg</td><td class="val-rouge">60 mL = 1500 mg</td><td class="val-rouge">90 mL = 2250 mg</td><td class="val-rouge">200 mL = 5000 mg</td></tr>
+
+        <tr><td colspan="5" style="background:var(--orange-bg);color:var(--orange);font-size:11px;font-weight:700;padding:5px 8px">PRALIDOXIME (Contrathion) IV — Reconstituer 200 mg dans 10 mL SSI → 20 mg/mL · ajouter dans pochon 100 mL SSI</td></tr>
+        <tr><td>Nb flacons</td><td class="val-rouge">1 flacon = 200 mg</td><td class="val-rouge">2 flacons = 400 mg</td><td class="val-rouge">4 flacons = 800 mg</td><td class="val-rouge">5 flacons = 1000 mg</td></tr>
+
+        <tr><td colspan="5" style="background:var(--gris-clair);color:var(--gris);font-size:11px;font-weight:700;padding:5px 8px">BAL / DIMERCAPROL IM — Lewisite uniquement · Dil : retirer 60 mL + 5 amp 2 mL → 20 mg/mL · IM</td></tr>
+        <tr><td>Dose (3 mg/kg)</td><td class="val-rouge">1 mL = 20 mg</td><td class="val-rouge">2 mL = 40 mg</td><td class="val-rouge">3 mL = 60 mg</td><td class="val-rouge">2 mL pur = 200 mg</td></tr>
+
+        <tr><td colspan="5" style="background:var(--gris-clair);color:var(--gris);font-size:11px;font-weight:700;padding:5px 8px">Ca-DTPa IV — contamination radiologique interne · injection dans pochon 100 mL SSI</td></tr>
+        <tr><td>Volume</td><td class="val-rouge">0,5 mL = 125 mg</td><td class="val-rouge">1 mL = 250 mg</td><td class="val-rouge">1,5 mL = 375 mg</td><td class="val-rouge">2 mL = 500 mg</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- MARCHE-RYAN SSE -->
+  <div class="section">
+    <div class="section-header bleu">📋 Aide cognitive MARCHE-RYAN SSE</div>
+    <div class="section-body">
+      <div style="margin-bottom:10px">
+        <div style="font-size:12px;font-weight:700;color:var(--rouge);margin-bottom:6px">SAFE — Avant tout</div>
+        <table>
+          <tr><td style="width:28px;font-weight:700;color:var(--rouge)">S</td><td>Stop the burning process — Éteindre la menace</td></tr>
+          <tr><td style="font-weight:700;color:var(--rouge)">A</td><td>Assess the scene — Évaluer la situation</td></tr>
+          <tr><td style="font-weight:700;color:var(--rouge)">F</td><td>Free of danger — Se mettre à l'abri</td></tr>
+          <tr><td style="font-weight:700;color:var(--rouge)">E</td><td>Evaluate — Triage START · identifier UE pour évacuation immédiate</td></tr>
+        </table>
+      </div>
+      <hr class="sep">
+      <div style="font-size:12px;font-weight:700;color:var(--bleu);margin-bottom:6px;margin-top:8px">MARCHE — Blessé grave</div>
+      <table>
+        <tr><td style="width:28px;font-weight:700;color:var(--bleu)">M</td><td><strong>Maîtriser les hémorragies</strong> — Garrot (heure !), pansement hémostatique, ceinture pelvienne, déshabiller</td></tr>
+        <tr><td style="font-weight:700;color:var(--bleu)">A</td><td><strong>Airways</strong> — Désobstruction, position tête, Guedel, coniotomie</td></tr>
+        <tr><td style="font-weight:700;color:var(--bleu)">R</td><td><strong>Respiration (FTVO)</strong> — PNO ouvert : pansement 3 côtés · PNO fermé : exsufflation</td></tr>
+        <tr><td style="font-weight:700;color:var(--bleu)">C</td><td><strong>Circulation (F4P)</strong> — VVP/IO, remplissage, Exacyl, adrénaline si choc</td></tr>
+        <tr><td style="font-weight:700;color:var(--bleu)">H</td><td><strong>Head &amp; hypothermie</strong> — AVPU, pupilles, NaCl 5,85 % si HTIC, couverture survie</td></tr>
+        <tr><td style="font-weight:700;color:var(--bleu)">E</td><td><strong>Évacuer</strong> — Préparer brancardage, prioriser, 2ème MARCHE, transmissions</td></tr>
+      </table>
+      <hr class="sep">
+      <div style="font-size:12px;font-weight:700;color:var(--vert);margin-bottom:6px;margin-top:8px">RYAN — Réévaluation</div>
+      <table>
+        <tr><td style="width:28px;font-weight:700;color:var(--vert)">R</td><td>Réévaluer efficacité</td></tr>
+        <tr><td style="font-weight:700;color:var(--vert)">Y</td><td>Yeux — protéger/nettoyer</td></tr>
+        <tr><td style="font-weight:700;color:var(--vert)">A</td><td>Antalgie</td></tr>
+        <tr><td style="font-weight:700;color:var(--vert)">N</td><td>Nettoyer / Pansements / Antibiotiques</td></tr>
+      </table>
+      <div class="note">Points clés SSE : vérifier SINUS/FMA · identifier précocement les UE · anticiper les demandes matériel · communication ascendante et descendante</div>
+    </div>
+  </div>
+
+  <!-- NORADRÉNALINE SSE IVSE -->
+  <div class="section">
+    <div class="section-header rouge">💊 Noradrénaline IVSE — si disponible en SSE</div>
+    <div class="section-body">
+      <div class="note" style="margin-bottom:8px">Dilution : 4 mg (= 2 mL) + 38 mL SSI → 100 µg/mL · OU 1 amp + 36 mL SSI → 200 µg/mL</div>
+      <table>
+        <tr><th>Catégorie</th><th>Débit départ (100 µg/mL)</th></tr>
+        <tr><td><span class="pill rouge">CRÈCHE</span></td><td class="val-rouge">0,8 mL/h</td></tr>
+        <tr><td><span class="pill orange">MATERNELLE</span></td><td class="val-rouge">1,2 mL/h</td></tr>
+        <tr><td><span class="pill vert">PRIMAIRE</span></td><td class="val-rouge">2,4 mL/h</td></tr>
+        <tr><td><span class="pill violet">ADULTES</span></td><td class="val-rouge">2,5 mL/h</td></tr>
+      </table>
+      <div class="note">Formule vitesse → dose : D = (V / P) × 1,7 · Formule dose → vitesse : V = (D × P) / 1,7 · D en µg/kg/min, V en mL/h, P en kg</div>
+    </div>
+  </div>
+
+</div><!-- fin panel SSE -->
+
+<!-- SECTION COMMUNE -->
+<div style="padding: 12px 14px 24px; border-top: 2px solid var(--bleu);">
+
+  <div class="section">
+    <div class="section-header bleu">🚑 Filière traumatologie pédiatrique sévère</div>
+    <div class="section-body">
+      <div class="alerte">Tout enfant traumatisé sévère doit être orienté vers Lapeyronie (CHU Montpellier) — contact via la ligne bilan SAMU habituelle.</div>
+      <div class="step"><div class="step-num">1</div><div>Contact par la <strong>ligne bilan SAMU habituelle</strong> dès la prise en charge</div></div>
+      <div style="height:6px"></div>
+      <div class="step"><div class="step-num">2</div><div>Le SAMU transmet au réanimateur DAR A (Lapeyronie) qui organise l'accueil</div></div>
+      <div style="height:6px"></div>
+      <div class="step"><div class="step-num">3</div><div>Admission systématique en <strong>salle de déchoquage DAR A</strong>, quel que soit le nombre de places</div></div>
+      <div style="height:6px"></div>
+      <div class="step"><div class="step-num">4</div><div>Annoncer : âge, poids estimé, mécanisme, lésions, constantes, traitements déjà réalisés</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header bleu">📋 Règles générales — Toutes tranches de poids</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Règle</th><th>Détail</th></tr>
+        <tr><td>Estimation poids</td><td>Parents d'abord · sinon (âge+4)×2</td></tr>
+        <tr><td>Score neurologique</td><td>AVPU en 1er · puis Glasgow adapté à l'âge</td></tr>
+        <tr><td>Douleur &lt; 5 ans</td><td>EVENDOL : seuil traitement ≥ 4/15</td></tr>
+        <tr><td>Douleur &gt; 5 ans</td><td>EVA : seuil traitement ≥ 4/10</td></tr>
+        <tr><td>Glycémie</td><td>Toujours Dextro · G10 % 3 mL/kg si &lt; 0,6 g/L</td></tr>
+        <tr><td>Température</td><td>Objectif ≥ 36°C · couverture de survie systématique</td></tr>
+        <tr><td>Induction en TC</td><td>Pas de propofol si HD instable ou TC sévère</td></tr>
+        <tr><td>Noradrénaline</td><td>Brancher AVANT l'intubation en cas de choc</td></tr>
+        <tr><td>ACR enfant</td><td>Cause hypoxique ou hypovolémique jusqu'à preuve du contraire</td></tr>
+        <tr><td>CEE</td><td>4 J/kg systématiquement · patchs péd ≤ 10 kg · adulte &gt; 10 kg</td></tr>
+        <tr><td>Hypothermie profonde</td><td>≤ 3 CEE si T° &lt; 30°C · adrénaline CI &lt; 30°C · aucun décès si T° &lt; 34°C</td></tr>
+        <tr><td>SSH 3 %</td><td>Préparation : 250 mL NaCl 0,9 % → retirer 27 mL → ajouter 27 mL NaCl 20 %</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<p class="footer-note">Protocoles de référence : OCCI Trauma 2023, SMUR pédiatrique, Necker SSE · SDS30 · v1.4 juin 2026 · Ce document ne remplace pas le contact SAMU/SMUR pédiatrique</p>
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+
+</body>
+</html>
