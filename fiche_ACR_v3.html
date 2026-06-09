@@ -126,6 +126,9 @@
     gap: 10px;
     margin-bottom: 12px;
   }
+  @media (max-width: 480px) {
+    .algo { grid-template-columns: 1fr; }
+  }
   .algo-box {
     border-radius: 8px;
     overflow: hidden;
@@ -331,9 +334,13 @@
             <div style="font-size:11px;color:#888;margin-bottom:6px;text-align:center">FV · TV sans pouls</div>
             <div class="choc-line"><span class="badge badge-bleu">CEE 1</span>4 J/kg → CT 2 min</div>
             <div class="choc-line"><span class="badge badge-bleu">CEE 2</span>4 J/kg → CT 2 min</div>
-            <div class="choc-line"><span class="badge badge-bleu">CEE 3</span>4 J/kg +<br><strong>Adrénaline</strong> 0,01 mg/kg<br><strong>Amiodarone</strong> 5 mg/kg</div>
+            <div class="choc-line"><span class="badge badge-bleu">CEE 3</span>4 J/kg → CT 2 min</div>
+            <div class="choc-line"><span class="badge badge-rouge">+</span><strong>Adrénaline</strong> 0,01 mg/kg</div>
+            <div class="choc-line"><span class="badge badge-rouge">+</span><strong>Amiodarone</strong> 5 mg/kg</div>
             <div class="choc-line"><span class="badge badge-bleu">CEE 4</span>4 J/kg → CT 2 min</div>
-            <div class="choc-line"><span class="badge badge-bleu">CEE 5</span>4 J/kg +<br><strong>Adrénaline</strong> 0,01 mg/kg<br><strong>Amiodarone</strong> 5 mg/kg</div>
+            <div class="choc-line"><span class="badge badge-bleu">CEE 5</span>4 J/kg → CT 2 min</div>
+            <div class="choc-line"><span class="badge badge-rouge">+</span><strong>Adrénaline</strong> 0,01 mg/kg</div>
+            <div class="choc-line"><span class="badge badge-rouge">+</span><strong>Amiodarone</strong> 5 mg/kg</div>
             <div style="font-size:11px;color:var(--bleu);text-align:center;margin-top:6px;font-weight:700">→ CEE + Adré / 4 min</div>
           </div>
         </div>
