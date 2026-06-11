@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACR Pédiatrique — SDS30</title>
+<style>
+  :root {
+    --rouge:      #c0392b;
+    --rouge-dk:   #96281b;
+    --rouge-bg:   #fdf3f2;
+    --bleu:       #1a5c8a;
+    --bleu-bg:    #eaf2f8;
+    --orange:     #c96a00;
+    --orange-bg:  #fef6e8;
+    --vert:       #1a6b3a;
+    --vert-bg:    #eaf5ee;
+    --violet:     #5a2d82;
+    --violet-bg:  #f3eef9;
+    --gris-bg:    #f0f2f5;
+    --gris-card:  #e8eaed;
+    --blanc:      #ffffff;
+    --texte:      #1a1a1a;
+    --texte-soft: #666;
+    --bordure:    #d8dce3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--gris-bg);
+    color: var(--texte);
+    max-width: 720px;
+    margin: 0 auto;
+    font-size: 14px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--rouge);
+    padding: 14px 18px 12px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  .header-top {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px;
+  }
+  .back-btn {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 20px;
+    line-height: 1;
+    padding: 2px 4px;
+  }
+  header h1 {
+    font-size: 17px; font-weight: 900;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    flex: 1;
+  }
+  header p {
+    font-size: 10px;
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 0.3px;
+  }
+
+  /* ── ONGLETS POIDS ── */
+  .weight-tabs {
+    display: flex;
+    background: var(--rouge-dk);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .weight-tabs::-webkit-scrollbar { display: none; }
+  .weight-tab {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 8px;
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .weight-tab .kg {
+    display: block;
+    font-size: 14px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 1px;
+  }
+  .weight-tab.active {
+    color: #fff;
+    border-bottom-color: #fff;
+    background: rgba(255,255,255,0.1);
+  }
+  .weight-tab.active .kg { color: #fff; }
+
+  /* ── NAV RAPIDE ── */
+  .quick-nav {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--blanc);
+    border-bottom: 1px solid var(--bordure);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .quick-nav::-webkit-scrollbar { display: none; }
+  .qnav-btn {
+    background: var(--gris-bg);
+    border: 1px solid var(--bordure);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--texte-soft);
+    cursor: pointer;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.12s;
+  }
+  .qnav-btn:active, .qnav-btn.active {
+    background: var(--rouge);
+    color: #fff;
+    border-color: var(--rouge);
+  }
+
+  /* ── CONTENU ── */
+  .content { padding: 14px 14px 48px; }
+
+  /* ── PANNEAU GLOBAL (commun à toutes les tranches) ── */
+  .panel-global { display: block; }
+  .panel-poids  { display: none; }
+  .panel-poids.active { display: block; }
+
+  /* ── CARD SECTION ── */
+  .card {
+    background: var(--blanc);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+
+  /* header de section avec border-left coloré */
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    border-left: 5px solid var(--rouge);
+    gap: 8px;
+  }
+  .card-head.bleu   { border-left-color: var(--bleu); }
+  .card-head.vert   { border-left-color: var(--vert); }
+  .card-head.orange { border-left-color: var(--orange); }
+  .card-head.violet { border-left-color: var(--violet); }
+
+  .card-head-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .card-head-icon { font-size: 18px; flex-shrink: 0; }
+  .card-head-title {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--texte);
+    line-height: 1.3;
+  }
+  .card-head-sub {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--texte-soft);
+    text-transform: none;
+    letter-spacing: 0;
+    display: block;
+    margin-top: 1px;
+  }
+  .card-chevron {
+    color: var(--texte-soft);
+    font-size: 13px;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  .card.open .card-chevron { transform: rotate(180deg); }
+
+  .card-body {
+    display: none;
+    padding: 0 14px 14px;
+    border-top: 1px solid var(--bordure);
+  }
+  .card.open .card-body { display: block; }
+  .card.always-open .card-body { display: block; border-top: none; }
+  .card.always-open .card-chevron { display: none; }
+
+  /* ── ALGO RAPIDE (toujours visible) ── */
+  .algo-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 12px 14px 14px;
+  }
+  @media (max-width: 420px) { .algo-strip { grid-template-columns: 1fr; } }
+
+  .algo-col {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--bordure);
+  }
+  .algo-col-head {
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    text-align: center;
+    color: #fff;
+  }
+  .algo-col-head.rouge { background: var(--rouge); }
+  .algo-col-head.bleu  { background: var(--bleu); }
+  .algo-col-sub {
+    font-size: 10px;
+    font-weight: 400;
+    opacity: 0.8;
+    display: block;
+    margin-top: 1px;
+  }
+  .algo-col-body { padding: 8px 10px; background: #fff; }
+
+  .step-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px dashed var(--bordure);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .step-line:last-child { border-bottom: none; }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 800;
+    flex-shrink: 0;
+    letter-spacing: 0.2px;
+  }
+  .pill-rouge  { background: var(--rouge-bg);  color: var(--rouge); }
+  .pill-bleu   { background: var(--bleu-bg);   color: var(--bleu); }
+  .pill-vert   { background: var(--vert-bg);   color: var(--vert); }
+  .pill-orange { background: var(--orange-bg); color: var(--orange); }
+
+  /* ── DOSES EN GRAND ── */
+  .dose-grid {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .dose-card {
+    background: var(--gris-bg);
+    border-radius: 10px;
+    padding: 12px 14px;
+    border-left: 4px solid var(--rouge);
+  }
+  .dose-card.bleu   { border-left-color: var(--bleu); }
+  .dose-card.vert   { border-left-color: var(--vert); }
+  .dose-card.orange { border-left-color: var(--orange); }
+  .dose-card.violet { border-left-color: var(--violet); }
+
+  .dose-drug {
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--texte-soft);
+    margin-bottom: 6px;
+  }
+  .dose-prep {
+    font-size: 11px;
+    color: var(--texte-soft);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .dose-weights {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .dose-w {
+    background: var(--blanc);
+    border-radius: 8px;
+    padding: 8px 6px;
+    text-align: center;
+    border: 1px solid var(--bordure);
+  }
+  .dose-w .wlabel {
+    font-size: 10px;
+    color: var(--texte-soft);
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: block;
+  }
+  .dose-w .wval {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--rouge);
+    line-height: 1;
+    display: block;
+  }
+  .dose-w .wunit {
+    font-size: 10px;
+    color: var(--texte-soft);
+    display: block;
+    margin-top: 1px;
+  }
+  .dose-card.bleu   .dose-w .wval { color: var(--bleu); }
+  .dose-card.vert   .dose-w .wval { color: var(--vert); }
+  .dose-card.orange .dose-w .wval { color: var(--orange); }
+  .dose-card.violet .dose-w .wval { color: var(--violet); }
+
+  /* ── MATÉRIEL ── */
+  .materiel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .mat-item {
+    background: var(--gris-bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .mat-label {
+    font-size: 10px;
+    color: var(--texte-soft);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 3px;
+  }
+  .mat-val {
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--texte);
+  }
+  .mat-sub {
+    font-size: 11px;
+    color: var(--texte-soft);
+    margin-top: 1px;
+  }
+
+  /* ── ALERTE ── */
+  .alerte {
+    background: var(--rouge-bg);
+    border-left: 4px solid var(--rouge);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--rouge);
+    font-weight: 600;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .alerte-vert {
+    background: var(--vert-bg);
+    border-left: 4px solid var(--vert);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--vert);
+    font-weight: 600;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+  .note {
+    background: var(--orange-bg);
+    border-left: 4px solid var(--orange);
+    border-radius: 0 8px 8px 0;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--orange);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* ── TABLEAU SIMPLE ── */
+  .simple-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+  .simple-table td { padding: 7px 8px; border-bottom: 1px solid var(--bordure); vertical-align: top; line-height: 1.4; }
+  .simple-table tr:last-child td { border-bottom: none; }
+  .simple-table td:first-child { color: var(--texte-soft); font-size: 11px; width: 40%; }
+  .simple-table td:last-child { font-weight: 600; }
+
+  /* ── CAUSES 4H4T ── */
+  .h4t-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .h4t-col { background: var(--gris-bg); border-radius: 8px; padding: 10px 12px; }
+  .h4t-title {
+    font-size: 11px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--bleu); margin-bottom: 8px;
+  }
+  .h4t-item {
+    font-size: 13px; font-weight: 600;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--bordure);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .h4t-item:last-child { border-bottom: none; }
+  .h4t-item::before { content: '•'; color: var(--bleu); font-size: 16px; }
+
+  /* ── STEPS EQUIPE ── */
+  .team-step {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--bordure);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .team-step:last-child { border-bottom: none; }
+  .team-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--bleu); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ── FOOTER ── */
+  .footer-note {
+    text-align: center;
+    font-size: 10px;
+    color: #aaa;
+    padding: 16px 14px 8px;
+    border-top: 1px solid var(--bordure);
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top">
+    <a class="back-btn" href="index.html">‹</a>
+    <h1>❤️ ACR Pédiatrique</h1>
+  </div>
+  <p>SDS30 · v3.0 · ERC Guidelines 2025 Paediatric Life Support</p>
+</header>
+
+<!-- ONGLETS POIDS -->
+<div class="weight-tabs" id="weightTabs">
+  <div class="weight-tab active" data-panel="global" onclick="switchTab(this,'global')">
+    <span class="kg">Tous</span>Commun
+  </div>
+  <div class="weight-tab" data-panel="creche" onclick="switchTab(this,'creche')">
+    <span class="kg">&lt;10 kg</span>Crèche
+  </div>
+  <div class="weight-tab" data-panel="maternelle" onclick="switchTab(this,'maternelle')">
+    <span class="kg">10–20 kg</span>Maternelle
+  </div>
+  <div class="weight-tab" data-panel="primaire" onclick="switchTab(this,'primaire')">
+    <span class="kg">20–30 kg</span>Primaire
+  </div>
+  <div class="weight-tab" data-panel="adulte" onclick="switchTab(this,'adulte')">
+    <span class="kg">&gt;30 kg</span>Ados
+  </div>
+</div>
+
+<!-- NAV RAPIDE -->
+<div class="quick-nav">
+  <button class="qnav-btn" onclick="navTo('algo')">⚡ Algorithme</button>
+  <button class="qnav-btn" onclick="navTo('doses')">💊 Doses</button>
+  <button class="qnav-btn" onclick="navTo('materiel')">🔧 Matériel</button>
+  <button class="qnav-btn" onclick="navTo('causes')">🔍 4H4T</button>
+  <button class="qnav-btn" onclick="navTo('ecmo')">🏥 ECMO</button>
+  <button class="qnav-btn" onclick="navTo('hypo')">🌡️ Hypothermie</button>
+</div>
+
+<div class="content">
+
+<!-- ════════════════════════════════════════════
+     PANNEAU COMMUN
+════════════════════════════════════════════ -->
+<div class="panel-global panel-poids active" id="panel-global">
+
+  <!-- ALERTE PRINCIPALE -->
+  <div class="alerte">⚠ Cause hypoxique ou hypovolémique jusqu'à preuve du contraire — sécuriser les VAS en priorité.</div>
+
+  <!-- BRIEFING EQUIPE -->
+  <div class="card" id="algo">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">🚗</span>
+        <div>
+          <div class="card-head-title">Briefing d'équipe</div>
+          <span class="card-head-sub">Avant l'arrivée · rôles · dilutions</span>
+        </div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="team-step"><div class="team-num">1</div><div><strong>Rôles</strong> — Médecin : VAS + Ventilation + IOT · IDE : VVP/IO + médicaments · Ambulancier : scope + compressions</div></div>
+      <div class="team-step"><div class="team-num">2</div><div><strong>Dilution adrénaline</strong> — 1 amp (1 mg) + 9 mL SSI = 0,1 mg/mL · dose = <strong>0,1 mL/kg</strong> toutes les 4 min</div></div>
+      <div class="team-step"><div class="team-num">3</div><div><strong>Aides cognitives</strong> — Poids estimé · tranche de poids · énergie CEE · taille sonde IOT</div></div>
+      <div class="team-step"><div class="team-num">4</div><div><strong>Ceintures attachées</strong> pendant tout le transport</div></div>
+    </div>
+  </div>
+
+  <!-- PRISE EN CHARGE INITIALE -->
+  <div class="card open">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">🔴</span>
+        <div>
+          <div class="card-head-title">Prise en charge initiale</div>
+          <span class="card-head-sub">ABC + chronomètre</span>
+        </div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="team-step"><div class="team-num" style="background:var(--rouge)">A</div><div><strong>LVAS</strong> — Position tête · Guedel · Aspiration · Désobstruction <span class="pill pill-rouge">CHRONO</span></div></div>
+      <div class="team-step"><div class="team-num" style="background:var(--rouge)">B</div><div><strong>Ventilation</strong> — 5 insufflations initiales · IOT rapidement · EtCO₂ · FiO₂ 100 %</div></div>
+      <div class="team-step"><div class="team-num" style="background:var(--rouge)">C</div><div><strong>CT + Scope</strong> — Mise en place défibrillateur · <strong>ANALYSE RYTHME</strong> · VVP/IO</div></div>
+      <div class="note">Intubé : CT continues + ventilateur (PEP 7–10, FR 10/min, FiO₂ 100 %)<br>Non intubé : CT 15:2</div>
+    </div>
+  </div>
+
+  <!-- ALGO -->
+  <div class="card open">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">📋</span>
+        <div>
+          <div class="card-head-title">Algorithme</div>
+          <span class="card-head-sub">Non défibrillable · Défibrillable</span>
+        </div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div class="algo-strip">
+        <div class="algo-col">
+          <div class="algo-col-head rouge">Non défibrillable<span class="algo-col-sub">AESP · Asystolie</span></div>
+          <div class="algo-col-body">
+            <div class="step-line"><span class="pill pill-rouge">T0</span><strong>Adrénaline</strong> 0,1 mL/kg dès que possible</div>
+            <div class="step-line"><span class="pill pill-bleu">2 min</span>CT → Analyse rythme</div>
+            <div class="step-line"><span class="pill pill-bleu">2 min</span>CT → Analyse rythme</div>
+            <div class="step-line"><span class="pill pill-rouge">4 min</span><strong>Adrénaline</strong> 0,1 mL/kg</div>
+            <div class="step-line"><span class="pill pill-bleu">2 min</span>CT → Analyse rythme</div>
+            <div style="font-size:11px;color:var(--rouge);text-align:center;margin-top:8px;font-weight:800">↻ Adrénaline / 4 min</div>
+          </div>
+        </div>
+        <div class="algo-col">
+          <div class="algo-col-head bleu">Défibrillable<span class="algo-col-sub">FV · TV sans pouls</span></div>
+          <div class="algo-col-body">
+            <div class="step-line"><span class="pill pill-bleu">CEE 1</span>4 J/kg → CT 2 min</div>
+            <div class="step-line"><span class="pill pill-bleu">CEE 2</span>4 J/kg → CT 2 min</div>
+            <div class="step-line"><span class="pill pill-bleu">CEE 3</span>4 J/kg → CT 2 min</div>
+            <div class="step-line"><span class="pill pill-rouge">+</span><strong>Adrénaline</strong> 0,1 mL/kg</div>
+            <div class="step-line"><span class="pill pill-rouge">+</span><strong>Amiodarone</strong> 5 mg/kg</div>
+            <div class="step-line"><span class="pill pill-bleu">CEE 4</span>4 J/kg → CT 2 min</div>
+            <div class="step-line"><span class="pill pill-bleu">CEE 5</span>4 J/kg → CT 2 min</div>
+            <div class="step-line"><span class="pill pill-rouge">+</span><strong>Adrénaline</strong> 0,1 mL/kg</div>
+            <div class="step-line"><span class="pill pill-rouge">+</span><strong>Amiodarone</strong> 5 mg/kg</div>
+            <div style="font-size:11px;color:var(--bleu);text-align:center;margin-top:8px;font-weight:800">↻ CEE + Adré / 4 min</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAUSES 4H4T -->
+  <div class="card" id="causes">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">🔍</span>
+        <div>
+          <div class="card-head-title">Causes réversibles — 4H · 4T</div>
+          <span class="card-head-sub">À chercher et traiter dès le début</span>
+        </div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="h4t-grid">
+        <div class="h4t-col">
+          <div class="h4t-title">4H</div>
+          <div class="h4t-item">Hypoxie</div>
+          <div class="h4t-item">Hypovolémie</div>
+          <div class="h4t-item">Hypo/Hyperkaliémie</div>
+          <div class="h4t-item">Hypothermie</div>
+        </div>
+        <div class="h4t-col">
+          <div class="h4t-title">4T</div>
+          <div class="h4t-item">Pneumothorax</div>
+          <div class="h4t-item">Tamponnade</div>
+          <div class="h4t-item">Thrombose (EP)</div>
+          <div class="h4t-item">Toxiques</div>
+        </div>
+      </div>
+      <div class="note">Température · Dextro · FAST-écho sans interrompre la RCP · Antidotes si intoxication</div>
+    </div>
+  </div>
+
+  <!-- ECMO -->
+  <div class="card" id="ecmo">
+    <div class="card-head violet" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">🏥</span>
+        <div>
+          <div class="card-head-title">ECMO</div>
+          <span class="card-head-sub">Rythme chocable réfractaire</span>
+        </div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="alerte">FV/TV persistante après 3 CEE → transport vers centre ECMO dans les 15 min · SAMU sans délai</div>
+      <table class="simple-table">
+        <tr><td>Rythme défibrillable persistant</td><td style="color:var(--violet)">Contact SAMU immédiat · orientation ECMO</td></tr>
+        <tr><td>RCP pendant transport</td><td>CT continues · qualité · chrono actif</td></tr>
+        <tr><td>Hypothermie réfractaire</td><td>ECMO indiquée même si asystolie</td></tr>
+      </table>
+      <div class="alerte-vert">RCP de qualité = condition du succès de l'ECMO · Ne pas interrompre les CT</div>
+    </div>
+  </div>
+
+  <!-- HYPOTHERMIE -->
+  <div class="card" id="hypo">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">🌡️</span>
+        <div>
+          <div class="card-head-title">Hypothermie profonde</div>
+          <span class="card-head-sub">Modifications de l'algorithme</span>
+        </div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>T° &lt; 30°C</td><td>Max 3 CEE · <strong>1 dose unique adrénaline</strong> · pas amiodarone<br><small style="color:var(--rouge)">Si ECMO imminente : pas d'adrénaline</small></td></tr>
+        <tr><td>T° 30–35°C</td><td>Adrénaline toutes les 8 min · 2ème amiodarone après 8 min</td></tr>
+        <tr><td>Décès</td><td style="color:var(--rouge);font-weight:800">Impossible à déclarer si T° &lt; 34°C</td></tr>
+      </table>
+      <div class="note">Transport vers centre ECMO si hypothermie profonde réfractaire</div>
+    </div>
+  </div>
+
+  <!-- DÉFIBRILLATEUR -->
+  <div class="card">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">⚡</span>
+        <div>
+          <div class="card-head-title">Défibrillateur</div>
+          <span class="card-head-sub">Réglages · patchs · sécurité</span>
+        </div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>Mode</td><td>Asynchrone</td></tr>
+        <tr><td>Énergie</td><td><strong>4 J/kg</strong> à chaque CEE</td></tr>
+        <tr><td>&lt; 25 kg (≈ &lt; 8 ans)</td><td>Patchs pédiatriques · position <strong>antéro-postérieure</strong></td></tr>
+        <tr><td>≥ 25 kg</td><td>Patchs adultes · antéro-latérale ou antéro-postérieure</td></tr>
+        <tr><td>Surface</td><td style="color:var(--rouge);font-weight:800">Sèche impérativement</td></tr>
+        <tr><td>Après CEE</td><td>Reprendre CT immédiatement</td></tr>
+      </table>
+      <div class="note">Éloigner O₂ avant CEE sauf patient intubé</div>
+    </div>
+  </div>
+
+  <!-- ARRÊT RCP -->
+  <div class="card">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">🛑</span>
+        <div>
+          <div class="card-head-title">Arrêt de la RCP</div>
+          <span class="card-head-sub">Critères · décision</span>
+        </div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>Asystolie persistante</td><td>RCP &gt; 20 min sans cause réversible identifiée</td></tr>
+        <tr><td>Directives anticipées</td><td>Valables et pertinentes · fiche Patient Remarquable</td></tr>
+        <tr><td>Décision</td><td>Multidisciplinaire · contact SAMU</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- POST-RCP -->
+  <div class="card">
+    <div class="card-head vert" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">✅</span>
+        <div>
+          <div class="card-head-title">Post-RCP</div>
+          <span class="card-head-sub">Après retour à un rythme perfusant</span>
+        </div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>Ventilation</td><td>FR normale pour l'âge · EtCO₂ 35–40 mmHg</td></tr>
+        <tr><td>SpO₂</td><td><strong>94–98 %</strong></td></tr>
+        <tr><td>Bilan</td><td>Dx · GDS · NFS · Groupe · Iono · Hémocultures · Toxiques</td></tr>
+        <tr><td>Orientation</td><td style="color:var(--rouge);font-weight:800">Contact SAMU · Réanimation pédiatrique</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:16px 0 4px;font-size:12px;color:var(--texte-soft);font-weight:700">
+    👇 Sélectionne une tranche de poids pour les doses
+  </div>
+
+</div><!-- /panel-global -->
+
+
+<!-- ════════════════════════════════════════════
+     MACRO pour chaque tranche de poids
+════════════════════════════════════════════ -->
+
+<!-- ===== CRÈCHE < 10 kg ===== -->
+<div class="panel-poids" id="panel-creche">
+  <div class="alerte">⚠ Poids &lt; 10 kg · Patchs pédiatriques · IO bleu 25 mm</div>
+
+  <div class="materiel-grid">
+    <div class="mat-item"><div class="mat-label">CEE — 4 J/kg</div><div class="mat-val">20–40 J</div></div>
+    <div class="mat-item"><div class="mat-label">Patchs</div><div class="mat-val">Pédia</div><div class="mat-sub">Antéro-postérieur</div></div>
+    <div class="mat-item"><div class="mat-label">Sonde IOT</div><div class="mat-val">3 – 3,5</div></div>
+    <div class="mat-item"><div class="mat-label">IO</div><div class="mat-val">Bleu 25 mm</div></div>
+  </div>
+
+  <div class="card open" data-section="doses" style="margin-top:10px">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Doses</div><span class="card-head-sub">Adrénaline · Amiodarone · 2ème ligne</span></div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+
+      <div class="dose-card">
+        <div class="dose-drug">💉 Adrénaline — toutes les 4 min</div>
+        <div class="dose-prep">1 amp + 9 mL SSI → 0,1 mg/mL · <strong>0,1 mL/kg</strong></div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,8</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">⚡ Amiodarone — après CEE 3 et CEE 5 uniquement</div>
+        <div class="dose-prep">Cordarone 150 mg/3 mL · pur · IVD · 5 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,8</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card" data-section="materiel">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">🔧</span>
+        <div><div class="card-head-title">Drogues 2ème ligne</div><span class="card-head-sub">Bicarbonate · Calcium · Glucose · Mg</span></div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card" style="margin-top:0">
+        <div class="dose-drug">Bicarbonate 4,2 % — 2 mL/kg </div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">10</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">16</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card vert" style="margin-top:8px">
+        <div class="dose-drug">Gluconate Ca 10 % — 0,5 mL/kg </div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">1,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">2,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">4</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card orange" style="margin-top:8px">
+        <div class="dose-drug">Glucose 10 % — 2 mL/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">10</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">16</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">MgSO₄ 15 % — 0,3 mL/kg (torsades)</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,9</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">1,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">2,4</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">Remplissage SSI/RL — 10 mL/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">30</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">50</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">80</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">Insuline + G10 % — hyperK &gt; 6,5 mmol/L</div>
+        <div class="dose-prep">Insuline 0,1 U/kg + G10 % 5 mL/kg IVD</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval" style="font-size:13px">0,3U<br>+15mL</span><span class="wunit"> </span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval" style="font-size:13px">0,5U<br>+25mL</span><span class="wunit"> </span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval" style="font-size:13px">0,8U<br>+40mL</span><span class="wunit"> </span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel-creche -->
+
+
+<!-- ===== MATERNELLE 10–20 kg ===== -->
+<div class="panel-poids" id="panel-maternelle">
+  <div class="alerte">⚠ Poids 10–20 kg · Patchs pédiatriques si &lt; 25 kg · IO bleu 25 mm</div>
+
+  <div class="materiel-grid">
+    <div class="mat-item"><div class="mat-label">CEE — 4 J/kg</div><div class="mat-val">40–80 J</div></div>
+    <div class="mat-item"><div class="mat-label">Patchs</div><div class="mat-val">Pédia/Adulte</div><div class="mat-sub">&lt;25 kg : antéro-post.</div></div>
+    <div class="mat-item"><div class="mat-label">Sonde IOT</div><div class="mat-val">3,5 – 4,5</div></div>
+    <div class="mat-item"><div class="mat-label">IO</div><div class="mat-val">Bleu 25 mm</div></div>
+  </div>
+
+  <div class="card open" data-section="doses" style="margin-top:10px">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Doses</div><span class="card-head-sub">Adrénaline · Amiodarone · 2ème ligne</span></div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card">
+        <div class="dose-drug">💉 Adrénaline — toutes les 4 min</div>
+        <div class="dose-prep">1 amp + 9 mL SSI → 0,1 mg/mL · <strong>0,1 mL/kg</strong></div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">1</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">1,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">2</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">⚡ Amiodarone — après CEE 3 et CEE 5 uniquement</div>
+        <div class="dose-prep">Cordarone 150 mg/3 mL · pur · IVD · 5 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">1</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">1,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">2</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-section="materiel">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">🔧</span>
+        <div><div class="card-head-title">Drogues 2ème ligne</div><span class="card-head-sub">Bicarbonate · Calcium · Glucose · Mg</span></div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card" style="margin-top:0">
+        <div class="dose-drug">Bicarbonate 4,2 % — 2 mL/kg </div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">20</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">30</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">40</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card vert" style="margin-top:8px">
+        <div class="dose-drug">Gluconate Ca 10 % — 0,5 mL/kg </div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">7,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">10</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card orange" style="margin-top:8px">
+        <div class="dose-drug">Glucose 10 % — 2 mL/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">20</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">30</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">40</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">MgSO₄ 15 % — 0,3 mL/kg (torsades)</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">4,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">6</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">Remplissage SSI/RL — 10 mL/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">100</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">150</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">200</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel-maternelle -->
+
+
+<!-- ===== PRIMAIRE 20–30 kg ===== -->
+<div class="panel-poids" id="panel-primaire">
+  <div class="alerte">⚠ Poids 20–30 kg · Patchs adultes · IO bleu 25 mm</div>
+
+  <div class="materiel-grid">
+    <div class="mat-item"><div class="mat-label">CEE — 4 J/kg</div><div class="mat-val">80–120 J</div></div>
+    <div class="mat-item"><div class="mat-label">Patchs</div><div class="mat-val">Adultes</div></div>
+    <div class="mat-item"><div class="mat-label">Sonde IOT</div><div class="mat-val">5 – 6</div></div>
+    <div class="mat-item"><div class="mat-label">IO</div><div class="mat-val">Bleu 25 mm</div></div>
+  </div>
+
+  <div class="card open" data-section="doses" style="margin-top:10px">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Doses</div><span class="card-head-sub">Adrénaline · Amiodarone · 2ème ligne</span></div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card">
+        <div class="dose-drug">💉 Adrénaline — toutes les 4 min</div>
+        <div class="dose-prep">1 amp + 9 mL SSI → 0,1 mg/mL · <strong>0,1 mL/kg</strong></div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">2,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">3</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">⚡ Amiodarone — après CEE 3 et CEE 5 uniquement</div>
+        <div class="dose-prep">Cordarone 150 mg/3 mL · pur · IVD · 5 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">2,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">3</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-section="materiel">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">🔧</span>
+        <div><div class="card-head-title">Drogues 2ème ligne</div><span class="card-head-sub">Bicarbonate · Calcium · Glucose · Mg</span></div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card" style="margin-top:0">
+        <div class="dose-drug">Bicarbonate 4,2 % — 2 mL/kg </div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">40</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">50</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">60</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card vert" style="margin-top:8px">
+        <div class="dose-drug">Gluconate Ca 10 % — 0,5 mL/kg </div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">10</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">12,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">15</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card orange" style="margin-top:8px">
+        <div class="dose-drug">Glucose 10 % — 2 mL/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">40</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">50</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">60</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">MgSO₄ 15 % — 0,3 mL/kg (torsades)</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">7,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">9</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">Remplissage SSI/RL — 10 mL/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">200</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">250</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">300</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel-primaire -->
+
+
+<!-- ===== ADOS > 30 kg ===== -->
+<div class="panel-poids" id="panel-adulte">
+  <div class="alerte">⚠ Poids &gt; 30 kg · Patchs adultes · IO bleu 25 mm</div>
+
+  <div class="materiel-grid">
+    <div class="mat-item"><div class="mat-label">CEE — 4 J/kg</div><div class="mat-val">150–200 J</div></div>
+    <div class="mat-item"><div class="mat-label">Patchs</div><div class="mat-val">Adultes</div></div>
+    <div class="mat-item"><div class="mat-label">Sonde IOT</div><div class="mat-val">6,5 – 7,5</div></div>
+    <div class="mat-item"><div class="mat-label">IO</div><div class="mat-val">Bleu 25 mm</div></div>
+  </div>
+
+  <div class="card open" data-section="doses" style="margin-top:10px">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Doses</div><span class="card-head-sub">Adrénaline · Amiodarone · 2ème ligne</span></div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card">
+        <div class="dose-drug">💉 Adrénaline — toutes les 4 min</div>
+        <div class="dose-prep">1 amp + 9 mL SSI → 0,1 mg/mL · <strong>0,1 mL/kg</strong> · max 5 mL (= 1 mg)</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">3,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">≥50 kg</span><span class="wval">5 ⚑</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">⚡ Amiodarone — après CEE 3 et CEE 5 uniquement</div>
+        <div class="dose-prep">Cordarone 150 mg/3 mL · pur · IVD · max 300 mg = 6 mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">3,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">≥60 kg</span><span class="wval">6 ⚑</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-section="materiel">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left">
+        <span class="card-head-icon">🔧</span>
+        <div><div class="card-head-title">Drogues 2ème ligne</div><span class="card-head-sub">Bicarbonate · Calcium · Glucose · Mg</span></div>
+      </div>
+      <span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card" style="margin-top:0">
+        <div class="dose-drug">Bicarbonate 4,2 % — 2 mL/kg </div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">70</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">80</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">100</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card vert" style="margin-top:8px">
+        <div class="dose-drug">Gluconate Ca 10 % — 0,5 mL/kg </div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">17,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">20</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">25</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card orange" style="margin-top:8px">
+        <div class="dose-drug">Glucose 10 % — 2 mL/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">70</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">80</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">100</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">MgSO₄ 15 % — 0,3 mL/kg (torsades)</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">10,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">12</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">15</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">Remplissage SSI/RL — 10 mL/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">350</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">400</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">500</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel-adulte -->
+
+</div><!-- /content -->
+
+<p class="footer-note">SDS30 · v3.0 · juin 2026<br>Référence : ERC Guidelines 2025 Paediatric Life Support<br>Ce document ne remplace pas le contact SAMU/SMUR pédiatrique</p>
+
+<script>
+  function switchTab(el, panelId) {
+    document.querySelectorAll('.weight-tab').forEach(function(t) { t.classList.remove('active'); });
+    el.classList.add('active');
+    document.querySelectorAll('.panel-poids').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('panel-' + panelId).classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  function toggleCard(headEl) {
+    var card = headEl.parentElement;
+    while (card && !card.classList.contains('card')) { card = card.parentElement; }
+    if (!card || card.classList.contains('always-open')) return;
+    card.classList.toggle('open');
+  }
+
+  function navTo(sectionId) {
+    // 1. Trouver le panneau actif
+    var activePanel = document.querySelector('.panel-poids.active');
+
+    // 2. Chercher par data-section dans le panneau actif
+    var target = null;
+    if (activePanel) {
+      target = activePanel.querySelector('[data-section="' + sectionId + '"]');
+    }
+    // 3. Fallback : chercher par id (sections globales : algo, causes, ecmo, hypo)
+    if (!target) {
+      target = document.getElementById(sectionId);
+    }
+
+    if (!target) return;
+
+    // 4. Ouvrir la carte parente si elle est repliée
+    var card = target;
+    while (card && !card.classList.contains('card')) { card = card.parentElement; }
+    if (card && !card.classList.contains('open')) {
+      card.classList.add('open');
+    }
+
+    // 5. Scroller avec délai pour laisser le DOM se mettre à jour
+    setTimeout(function() {
+      var rect = target.getBoundingClientRect();
+      var top = rect.top + window.pageYOffset - 130;
+      window.scrollTo({top: top, behavior: 'smooth'});
+    }, 80);
+  }
+</script>
+
+</body>
+</html>
