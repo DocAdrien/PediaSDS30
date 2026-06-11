@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noyade Pédiatrique — SDS30</title>
+<style>
+  :root {
+    --accent:     #0a7a8a;
+    --accent-dk:  #065a68;
+    --accent-bg:  #e6f7f9;
+    --rouge:      #c0392b;
+    --rouge-bg:   #fdf3f2;
+    --bleu:       #1a5c8a;
+    --bleu-bg:    #eaf2f8;
+    --orange:     #c96a00;
+    --orange-bg:  #fef6e8;
+    --vert:       #1a6b3a;
+    --vert-bg:    #eaf5ee;
+    --violet:     #5a2d82;
+    --violet-bg:  #f3eef9;
+    --gris-bg:    #f0f2f5;
+    --blanc:      #ffffff;
+    --texte:      #1a1a1a;
+    --texte-soft: #666;
+    --bordure:    #d8dce3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gris-bg); color: var(--texte); max-width: 720px; margin: 0 auto; font-size: 14px; }
+
+  header { background: var(--accent); padding: 14px 18px 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .back-btn { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 20px; line-height: 1; padding: 2px 4px; }
+  header h1 { font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 0.3px; flex: 1; }
+  header p { font-size: 10px; color: rgba(255,255,255,0.65); }
+
+  .weight-tabs { display: flex; background: var(--accent-dk); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .weight-tabs::-webkit-scrollbar { display: none; }
+  .weight-tab { flex: 1; min-width: 80px; padding: 10px 8px; text-align: center; color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+  .weight-tab .kg { display: block; font-size: 14px; font-weight: 900; color: rgba(255,255,255,0.75); margin-bottom: 1px; }
+  .weight-tab.active { color: #fff; border-bottom-color: #fff; background: rgba(255,255,255,0.1); }
+  .weight-tab.active .kg { color: #fff; }
+
+  .quick-nav { display: flex; gap: 8px; padding: 10px 14px; background: var(--blanc); border-bottom: 1px solid var(--bordure); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .quick-nav::-webkit-scrollbar { display: none; }
+  .qnav-btn { background: var(--gris-bg); border: 1px solid var(--bordure); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 700; color: var(--texte-soft); cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+  .qnav-btn:active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .content { padding: 14px 14px 48px; }
+  .panel-poids { display: none; }
+  .panel-poids.active { display: block; }
+
+  .card { background: var(--blanc); border-radius: 12px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; border-left: 5px solid var(--accent); gap: 8px; }
+  .card-head.rouge  { border-left-color: var(--rouge); }
+  .card-head.bleu   { border-left-color: var(--bleu); }
+  .card-head.orange { border-left-color: var(--orange); }
+  .card-head.vert   { border-left-color: var(--vert); }
+  .card-head.violet { border-left-color: var(--violet); }
+  .card-head-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .card-head-icon { font-size: 18px; flex-shrink: 0; }
+  .card-head-title { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; color: var(--texte); line-height: 1.3; }
+  .card-head-sub { font-size: 11px; font-weight: 400; color: var(--texte-soft); text-transform: none; letter-spacing: 0; display: block; margin-top: 1px; }
+  .card-chevron { color: var(--texte-soft); font-size: 13px; flex-shrink: 0; transition: transform 0.2s; }
+  .card.open .card-chevron { transform: rotate(180deg); }
+  .card-body { display: none; padding: 0 14px 14px; border-top: 1px solid var(--bordure); }
+  .card.open .card-body { display: block; }
+
+  /* STADES */
+  .stades-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  @media (max-width: 420px) { .stades-grid { grid-template-columns: 1fr; } }
+  .stade { border-radius: 8px; overflow: hidden; }
+  .stade-head { padding: 7px 10px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: #fff; text-align: center; }
+  .stade-body { padding: 8px 10px; font-size: 11px; line-height: 1.5; background: var(--gris-bg); }
+
+  /* SITUATIONS */
+  .sit-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; }
+  @media (max-width: 480px) { .sit-grid { grid-template-columns: 1fr; } }
+  .sit { border-radius: 8px; overflow: hidden; }
+  .sit-head { padding: 7px 10px; font-size: 11px; font-weight: 800; text-align: center; color: #fff; line-height: 1.3; }
+  .sit-body { padding: 8px 10px; font-size: 11px; line-height: 1.6; background: var(--gris-bg); }
+
+  /* DOSES */
+  .dose-card { background: var(--gris-bg); border-radius: 10px; padding: 12px 14px; border-left: 4px solid var(--accent); margin-top: 8px; }
+  .dose-card.rouge  { border-left-color: var(--rouge); }
+  .dose-card.bleu   { border-left-color: var(--bleu); }
+  .dose-card.orange { border-left-color: var(--orange); }
+  .dose-card.violet { border-left-color: var(--violet); }
+  .dose-card.vert   { border-left-color: var(--vert); }
+  .dose-drug { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; color: var(--texte-soft); margin-bottom: 4px; }
+  .dose-prep { font-size: 11px; color: var(--texte-soft); margin-bottom: 8px; line-height: 1.4; }
+  .dose-weights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .dose-w { background: var(--blanc); border-radius: 8px; padding: 8px 6px; text-align: center; border: 1px solid var(--bordure); }
+  .dose-w .wlabel { font-size: 10px; color: var(--texte-soft); font-weight: 700; margin-bottom: 4px; display: block; }
+  .dose-w .wval { font-size: 18px; font-weight: 900; color: var(--accent); line-height: 1; display: block; }
+  .dose-w .wunit { font-size: 10px; color: var(--texte-soft); display: block; margin-top: 1px; }
+  .dose-card.rouge  .dose-w .wval { color: var(--rouge); }
+  .dose-card.bleu   .dose-w .wval { color: var(--bleu); }
+  .dose-card.orange .dose-w .wval { color: var(--orange); }
+  .dose-card.violet .dose-w .wval { color: var(--violet); }
+  .dose-card.vert   .dose-w .wval { color: var(--vert); }
+
+  /* VENTILATION */
+  .venti-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .venti-item { background: var(--gris-bg); border-radius: 8px; padding: 8px 10px; }
+  .venti-label { font-size: 10px; color: var(--texte-soft); font-weight: 700; text-transform: uppercase; margin-bottom: 3px; }
+  .venti-val { font-size: 15px; font-weight: 900; color: var(--texte); }
+  .venti-val.rouge { color: var(--rouge); }
+  .venti-sub { font-size: 11px; color: var(--texte-soft); margin-top: 1px; }
+
+  .materiel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .mat-item { background: var(--blanc); border-radius: 8px; padding: 10px 12px; border: 1px solid var(--bordure); }
+  .mat-label { font-size: 10px; color: var(--texte-soft); font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
+  .mat-val { font-size: 15px; font-weight: 900; color: var(--texte); }
+  .mat-sub { font-size: 11px; color: var(--texte-soft); margin-top: 1px; }
+
+  .alerte { background: var(--rouge-bg); border-left: 4px solid var(--rouge); border-radius: 0 8px 8px 0; padding: 10px 12px; font-size: 12px; color: var(--rouge); font-weight: 600; margin-bottom: 10px; line-height: 1.5; }
+  .alerte-cyan { background: var(--accent-bg); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: 10px 12px; font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 10px; line-height: 1.5; }
+  .note { background: var(--orange-bg); border-left: 4px solid var(--orange); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--orange); margin-top: 8px; line-height: 1.5; }
+  .note-vert { background: var(--vert-bg); border-left: 4px solid var(--vert); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--vert); margin-top: 8px; line-height: 1.5; }
+
+  .simple-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+  .simple-table td { padding: 7px 8px; border-bottom: 1px solid var(--bordure); vertical-align: top; line-height: 1.4; }
+  .simple-table tr:last-child td { border-bottom: none; }
+  .simple-table td:first-child { color: var(--texte-soft); font-size: 11px; width: 38%; }
+  .simple-table td:last-child { font-weight: 600; }
+
+  .footer-note { text-align: center; font-size: 10px; color: #aaa; padding: 16px 14px 8px; border-top: 1px solid var(--bordure); margin-top: 8px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <a class="back-btn" href="index.html">‹</a>
+    <h1>💧 Noyade Pédiatrique</h1>
+  </div>
+  <p>SDS30 · v3.0 · ERC Guidelines 2025 Paediatric Life Support</p>
+</header>
+
+<div class="weight-tabs">
+  <div class="weight-tab active" onclick="switchTab(this,'global')"><span class="kg">Tous</span>Commun</div>
+  <div class="weight-tab" onclick="switchTab(this,'creche')"><span class="kg">&lt;10 kg</span>Crèche</div>
+  <div class="weight-tab" onclick="switchTab(this,'maternelle')"><span class="kg">10–20 kg</span>Maternelle</div>
+  <div class="weight-tab" onclick="switchTab(this,'primaire')"><span class="kg">20–30 kg</span>Primaire</div>
+  <div class="weight-tab" onclick="switchTab(this,'adulte')"><span class="kg">&gt;30 kg</span>Ados</div>
+</div>
+
+<div class="quick-nav">
+  <button class="qnav-btn" onclick="navTo('stades')">📊 Stades</button>
+  <button class="qnav-btn" onclick="navTo('arbre')">🔀 Arbre décisionnel</button>
+  <button class="qnav-btn" onclick="navTo('doses')">💊 ISR / Doses</button>
+  <button class="qnav-btn" onclick="navTo('ventilation')">🫁 Ventilation</button>
+  <button class="qnav-btn" onclick="navTo('rechauffement')">🌡️ Réchauffement</button>
+  <button class="qnav-btn" onclick="navTo('orientation')">🏥 Orientation</button>
+</div>
+
+<div class="content">
+
+<!-- ═══ PANNEAU COMMUN ═══ -->
+<div class="panel-poids active" id="panel-global">
+
+  <div class="alerte-cyan">⚠ Pronostic lié à l'hypoxie · Mise au sec dès que possible · Objectifs : oxygénation · T° · hémodynamique · neuroprotection</div>
+
+  <!-- EXTRACTION -->
+  <div class="card" id="extraction">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🏊</span>
+        <div><div class="card-head-title">Sécurité — Extraction</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>Entrée dans l'eau</td><td style="color:var(--rouge)">Non sauf si formé et équipé · position horizontale · ne pas retarder</td></tr>
+        <tr><td>À la sortie</td><td>Déshabiller · sécher · mettre au sec immédiatement</td></tr>
+        <tr><td>Immobilisation cervicale</td><td>Uniquement si suspicion TC sévère (plongeon, sports nautiques) · non systématique</td></tr>
+        <tr><td>Aspiration</td><td>Ne pas chercher à évacuer toute l'eau · SNG après intubation</td></tr>
+      </table>
+      <div class="note">Penser TC associé : plongeon, chute, choc · rechercher contexte : malaise, épilepsie, intoxication</div>
+    </div>
+  </div>
+
+  <!-- STADES -->
+  <div class="card open" id="stades">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">📊</span>
+        <div><div class="card-head-title">Classification — 4 stades</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="stades-grid">
+        <div class="stade"><div class="stade-head" style="background:var(--vert)">Stade I — Aquastress</div><div class="stade-body">Pas d'inhalation · angoisse · hyperventilation · tachycardie · tremblements</div></div>
+        <div class="stade"><div class="stade-head" style="background:var(--orange)">Stade II — Petite noyade</div><div class="stade-body">Encombrement broncho-pulmonaire · cyanose · hypothermie · agitation</div></div>
+        <div class="stade"><div class="stade-head" style="background:var(--rouge)">Stade III — Grande noyade</div><div class="stade-body">Détresse respiratoire aiguë · obnubilation ou coma</div></div>
+        <div class="stade"><div class="stade-head" style="background:#2c2c2c">Stade IV — Anoxie</div><div class="stade-body">Arrêt cardiaque → <strong>fiche ACR pédiatrique</strong> + spécificités hypothermie</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARBRE DÉCISIONNEL -->
+  <div class="card open" id="arbre">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🔀</span>
+        <div><div class="card-head-title">Arbre décisionnel — 3 situations</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="sit-grid">
+        <div class="sit">
+          <div class="sit-head" style="background:var(--vert)">Gêne respi modérée<br>Conscience normale</div>
+          <div class="sit-body">O₂ LN pur QSP SpO₂ &gt; 94 %<br>Si échec : VNI (CPAP 5+5)<br><br>Remplissage SSI 10 mL/kg<br>Si hypotension : Noradrénaline (CI si T° &lt; 32°C)<br><br>Transport demi-assis si conscient</div>
+        </div>
+        <div class="sit">
+          <div class="sit-head" style="background:var(--rouge)">Insuffisance respi aiguë<br>et/ou troubles conscience</div>
+          <div class="sit-body">Intubation ISR<br>PEP élevée jusqu'à 10 cmH₂O<br>EtCO₂ 35–40 mmHg<br><br>Remplissage SSI prudent<br>Si hypotension : Noradrénaline (CI si T° &lt; 32°C)</div>
+        </div>
+        <div class="sit">
+          <div class="sit-head" style="background:#2c2c2c">ACR</div>
+          <div class="sit-body">→ <strong>Fiche ACR pédiatrique</strong><br><br>T° &lt; 30°C : max 3 CEE · 1 dose unique adré<br>T° 30–35°C : adré toutes les 8 min<br>Pas de décès si T° &lt; 34°C<br>ECMO si hypothermie réfractaire</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RÉCHAUFFEMENT -->
+  <div class="card" id="rechauffement">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🌡️</span>
+        <div><div class="card-head-title">Réchauffement</div><span class="card-head-sub">Lutte contre l'hypothermie</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="alerte">T° &lt; 28°C : risque de FV · T° &lt; 32°C : CI à la Noradrénaline</div>
+      <table class="simple-table">
+        <tr><td>T° cible</td><td>&gt; 36,5°C · <strong>au moins 1°C/h</strong> · arrêt réchauffement actif à 35°C</td></tr>
+        <tr><td>Externe</td><td>Couverture chauffante · UMH chauffée à 30°C · précharger si possible</td></tr>
+        <tr><td>Gaz respiratoires</td><td>Réchauffés dès que possible</td></tr>
+        <tr><td>ACR + hypothermie</td><td style="color:var(--rouge);font-weight:800">T° ≥ 33°C objectif · ECMO si hypothermie profonde réfractaire → SAMU</td></tr>
+      </table>
+      <div class="note">Ne pas déclarer le décès si T° &lt; 34°C</div>
+    </div>
+  </div>
+
+  <!-- NEUROPROTECTION -->
+  <div class="card">
+    <div class="card-head violet" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🧠</span>
+        <div><div class="card-head-title">Neuroprotection</div><span class="card-head-sub">ACSOS · HTIC · glycémie</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>ACSOS</td><td>SpO₂ 94–98 % · EtCO₂ 35–40 mmHg · normoglycémie · normothermie</td></tr>
+        <tr><td>Si HTIC</td><td style="color:var(--rouge)">SSH 3 % : 3 mL/kg IVL 10 min · ou Mannitol 20 % : 5 mL/kg IVL 15 min</td></tr>
+        <tr><td>TC associé suspecté</td><td>TDMc à organiser · proclive 20° si intubé</td></tr>
+        <tr><td>Glycémie</td><td>Dextro systématique · G10 % 3 mL/kg si &lt; 0,6 g/L</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- TRANSPORT -->
+  <div class="card">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🚑</span>
+        <div><div class="card-head-title">Transport</div><span class="card-head-sub">Vigilance · monitorage</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>Position</td><td>Demi-assis si conscient · décubitus dorsal si intubé</td></tr>
+        <tr><td>Monitorage</td><td style="color:var(--rouge)">FC · TA · T° +++ (sonde thermique) · SpO₂ · EtCO₂</td></tr>
+        <tr><td>Réévaluation</td><td>Pupilles · conscience · auscultation à chaque étape</td></tr>
+        <tr><td>Antibiothérapie</td><td>Pas d'indication systématique · uniquement si inhalation de boue</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ORIENTATION -->
+  <div class="card" id="orientation">
+    <div class="card-head vert" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🏥</span>
+        <div><div class="card-head-title">Orientation</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>Stade I · stable</td><td style="color:var(--vert)">Urgences pédiatriques</td></tr>
+        <tr><td>Stade II/III · GCS 9–12</td><td style="color:var(--orange)">Soins continus pédiatriques</td></tr>
+        <tr><td>Stade III/IV · coma · instable · T° &lt; 32°C</td><td style="color:var(--rouge);font-weight:800">Réanimation pédiatrique</td></tr>
+      </table>
+      <div class="note-vert">Contact SAMU systématique pour tout stade ≥ II · annoncer T°, SpO₂, EtCO₂, contexte</div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:16px 0 4px;font-size:12px;color:var(--texte-soft);font-weight:700">
+    👇 Sélectionne une tranche de poids pour les doses
+  </div>
+
+</div><!-- /panel-global -->
+
+
+<!-- ═══ CRÈCHE < 10 kg ═══ -->
+<div class="panel-poids" id="panel-creche">
+  <div class="alerte-cyan">⚠ &lt; 10 kg · Tuyaux pédiatriques · Mode nourrisson · IO bleu 25 mm</div>
+
+  <div class="materiel-grid">
+    <div class="mat-item"><div class="mat-label">SpO₂ cible</div><div class="mat-val">94–98 %</div></div>
+    <div class="mat-item"><div class="mat-label">EtCO₂ cible</div><div class="mat-val">35–40 mmHg</div></div>
+  </div>
+
+  <div class="card open" data-section="ventilation" id="ventilation">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🫁</span>
+        <div><div class="card-head-title">Ventilation mécanique</div><span class="card-head-sub">Réglages spécifiques noyade</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="venti-grid">
+        <div class="venti-item"><div class="venti-label">Mode</div><div class="venti-val" style="font-size:13px">VPC · nourrisson</div></div>
+        <div class="venti-item"><div class="venti-label">VT cible</div><div class="venti-val">6 mL/kg</div><div class="venti-sub">→ 48–60 mL</div></div>
+        <div class="venti-item"><div class="venti-label">FR</div><div class="venti-val">30–40 /min</div></div>
+        <div class="venti-item"><div class="venti-label">PEP initiale</div><div class="venti-val rouge">8 cmH₂O</div><div class="venti-sub">↑ jusqu'à 10 si hypoxie</div></div>
+        <div class="venti-item"><div class="venti-label">FiO₂</div><div class="venti-val">100 %</div><div class="venti-sub">puis QSP SpO₂</div></div>
+        <div class="venti-item"><div class="venti-label">I/E</div><div class="venti-val">1/2</div></div>
+      </div>
+      <div class="note">Pression plateau &lt; 28 cmH₂O · Vider estomac si distension gênant ventilation</div>
+    </div>
+  </div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💉</span>
+        <div><div class="card-head-title">ISR</div><span class="card-head-sub">Kétamine · Célocurine · Rocuronium</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Kétamine 10 mg/mL · 3–5 mg/kg · + O₂ apnéique LN 15 L/min</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,9–1,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">1,5–2,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">2,4–4</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Célocurine 50 mg/mL · 2 mg/kg ⚠ frigo</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,12</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,32</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">OU Rocuronium 10 mg/mL · 1 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,8</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Sédation entretien</div><span class="card-head-sub">Propofol si HD stable · sinon Hypnovel + Sufenta</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card bleu" style="margin-top:0">
+        <div class="dose-drug">Propofol 10 mg/mL · 2–6 mg/kg/h</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,6–1,8</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">1–3</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">1,6–4,8</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">OU Hypnovel 1 mg/mL · 0,1–0,3 mg/kg/h</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,3–0,9</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,5–1,5</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,8–2,4</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">+ Sufenta 5 µg/mL · 0,2–0,5 µg/kg/h</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,12–0,3</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,2–0,5</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,32–0,8</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Hémodynamique + Neuroprotection</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Remplissage SSI · 10 mL/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">30</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">50</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">80</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Noradrénaline · 0,1 µg/kg/min · CI si T° &lt; 32°C</div>
+        <div class="dose-prep">1 mg dans 100 mL SSI → 10 µg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,45</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,75</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">1,2</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">SSH 3 % (si HTIC) · 3 mL/kg IVL 10 min</div>
+        <div class="dose-prep">100 mL NaCl 0,9 % + 10 mL NaCl 20 %</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">9</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">15</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">24</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card vert" style="margin-top:8px">
+        <div class="dose-drug">Mannitol 20 % (si TC) · 5 mL/kg IVL 15 min</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">15</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">25</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">40</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /creche -->
+
+
+<!-- ═══ MATERNELLE 10–20 kg ═══ -->
+<div class="panel-poids" id="panel-maternelle">
+  <div class="alerte-cyan">⚠ 10–20 kg · Tuyaux pédiatriques · Mode enfant · IO bleu 25 mm</div>
+  <div class="materiel-grid">
+    <div class="mat-item"><div class="mat-label">SpO₂ cible</div><div class="mat-val">94–98 %</div></div>
+    <div class="mat-item"><div class="mat-label">EtCO₂ cible</div><div class="mat-val">35–40 mmHg</div></div>
+  </div>
+
+  <div class="card open" data-section="ventilation">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🫁</span>
+        <div><div class="card-head-title">Ventilation mécanique</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="venti-grid">
+        <div class="venti-item"><div class="venti-label">Mode</div><div class="venti-val" style="font-size:13px">VVC · enfant</div></div>
+        <div class="venti-item"><div class="venti-label">VT cible</div><div class="venti-val">6 mL/kg</div><div class="venti-sub">→ 60–120 mL</div></div>
+        <div class="venti-item"><div class="venti-label">FR</div><div class="venti-val">25 /min</div></div>
+        <div class="venti-item"><div class="venti-label">PEP initiale</div><div class="venti-val rouge">8 cmH₂O</div><div class="venti-sub">↑ jusqu'à 10 si hypoxie</div></div>
+        <div class="venti-item"><div class="venti-label">FiO₂</div><div class="venti-val">100 %</div><div class="venti-sub">puis QSP SpO₂</div></div>
+        <div class="venti-item"><div class="venti-label">I/E</div><div class="venti-val">1/2</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💉</span>
+        <div><div class="card-head-title">ISR</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Kétamine 10 mg/mL · 2–4 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">2–4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">3–6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">4–8</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Célocurine 50 mg/mL · 1,5 mg/kg ⚠ frigo</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">0,3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">0,45</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">0,6</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">OU Rocuronium 10 mg/mL · 1 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">1</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">1,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">2</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Sédation + Hémodynamique + Neuroprotection</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card bleu" style="margin-top:0">
+        <div class="dose-drug">Propofol 10 mg/mL · 2–6 mg/kg/h</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">2–6</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">3–9</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">4–12</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">OU Hypnovel 1 mg/mL · 0,1–0,3 mg/kg/h</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">1–3</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">1,5–4,5</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">2–6</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">+ Sufenta 5 µg/mL · 0,2–0,5 µg/kg/h</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">0,4–1</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">0,6–1,5</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">0,8–2</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Noradrénaline · 0,1 µg/kg/min · CI si T° &lt; 32°C</div>
+        <div class="dose-prep">1 mg dans 100 mL SSI → 10 µg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">1,5</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">2,25</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">3</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">SSH 3 % (si HTIC) · 3 mL/kg IVL 10 min</div>
+        <div class="dose-prep">100 mL NaCl 0,9 % + 10 mL NaCl 20 %</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">30</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">45</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">60</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /maternelle -->
+
+
+<!-- ═══ PRIMAIRE 20–30 kg ═══ -->
+<div class="panel-poids" id="panel-primaire">
+  <div class="alerte-cyan">⚠ 20–30 kg · Tuyaux adulte · Mode adulte · IO bleu 25 mm</div>
+  <div class="materiel-grid">
+    <div class="mat-item"><div class="mat-label">SpO₂ cible</div><div class="mat-val">94–98 %</div></div>
+    <div class="mat-item"><div class="mat-label">EtCO₂ cible</div><div class="mat-val">35–40 mmHg</div></div>
+  </div>
+
+  <div class="card open" data-section="ventilation">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🫁</span>
+        <div><div class="card-head-title">Ventilation mécanique</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="venti-grid">
+        <div class="venti-item"><div class="venti-label">Mode</div><div class="venti-val" style="font-size:13px">VVC · adulte</div></div>
+        <div class="venti-item"><div class="venti-label">VT cible</div><div class="venti-val">6 mL/kg</div><div class="venti-sub">→ 120–180 mL</div></div>
+        <div class="venti-item"><div class="venti-label">FR</div><div class="venti-val">18 /min</div></div>
+        <div class="venti-item"><div class="venti-label">PEP initiale</div><div class="venti-val rouge">8 cmH₂O</div><div class="venti-sub">↑ jusqu'à 10–15 si hypoxie</div></div>
+        <div class="venti-item"><div class="venti-label">FiO₂</div><div class="venti-val">100 %</div><div class="venti-sub">puis QSP SpO₂</div></div>
+        <div class="venti-item"><div class="venti-label">I/E</div><div class="venti-val">1/2</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💉</span>
+        <div><div class="card-head-title">ISR</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Kétamine 10 mg/mL · 2–4 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">4–8</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">5–10</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">6–12</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Célocurine 50 mg/mL · 1 mg/kg ⚠ frigo</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">0,4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">0,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">0,6</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">OU Rocuronium 10 mg/mL · 1 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">2,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">3</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Sédation + Hémodynamique + Neuroprotection</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card bleu" style="margin-top:0">
+        <div class="dose-drug">Propofol 10 mg/mL · 2–6 mg/kg/h</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">4–12</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">5–15</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">6–18</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">OU Hypnovel 1 mg/mL · 0,1–0,3 mg/kg/h</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">2–6</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">2,5–7,5</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">3–9</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Noradrénaline · 0,1 µg/kg/min · CI si T° &lt; 32°C</div>
+        <div class="dose-prep">4 mg dans 40 mL G5 % → 100 µg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">1,8</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">2,25</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">2,7</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">SSH 3 % (si HTIC) · 3 mL/kg IVL 10 min</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">60</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">75</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">90</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /primaire -->
+
+
+<!-- ═══ ADOS > 30 kg ═══ -->
+<div class="panel-poids" id="panel-adulte">
+  <div class="alerte-cyan">⚠ &gt; 30 kg · Tuyaux adulte · Mode adulte · IO bleu 25 mm</div>
+  <div class="materiel-grid">
+    <div class="mat-item"><div class="mat-label">SpO₂ cible</div><div class="mat-val">94–98 %</div></div>
+    <div class="mat-item"><div class="mat-label">EtCO₂ cible</div><div class="mat-val">35–40 mmHg</div></div>
+  </div>
+
+  <div class="card open" data-section="ventilation">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🫁</span>
+        <div><div class="card-head-title">Ventilation mécanique</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="venti-grid">
+        <div class="venti-item"><div class="venti-label">Mode</div><div class="venti-val" style="font-size:13px">VVC · adulte</div></div>
+        <div class="venti-item"><div class="venti-label">VT cible</div><div class="venti-val">6 mL/kg</div><div class="venti-sub">→ 180–300 mL</div></div>
+        <div class="venti-item"><div class="venti-label">FR</div><div class="venti-val">16–18 /min</div></div>
+        <div class="venti-item"><div class="venti-label">PEP initiale</div><div class="venti-val rouge">8 cmH₂O</div><div class="venti-sub">↑ jusqu'à 10–15 si hypoxie</div></div>
+        <div class="venti-item"><div class="venti-label">FiO₂</div><div class="venti-val">100 %</div><div class="venti-sub">puis QSP SpO₂</div></div>
+        <div class="venti-item"><div class="venti-label">I/E</div><div class="venti-val">1/2</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💉</span>
+        <div><div class="card-head-title">ISR</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Kétamine 10 mg/mL · 2–4 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">7–14</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">8–16</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">10–20</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Célocurine 50 mg/mL · 1 mg/kg ⚠ frigo</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">0,7</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">0,8</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">1</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card bleu" style="margin-top:8px">
+        <div class="dose-drug">OU Rocuronium 10 mg/mL · 1 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">3,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">5</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Sédation + Hémodynamique + Neuroprotection</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card bleu" style="margin-top:0">
+        <div class="dose-drug">Propofol 10 mg/mL · 2–6 mg/kg/h</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">7–21</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">8–24</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">10–30</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">OU Hypnovel 1 mg/mL · 0,1–0,3 mg/kg/h</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">3,5–10,5</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">4–12</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">5–15</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Noradrénaline · 0,1 µg/kg/min · CI si T° &lt; 32°C</div>
+        <div class="dose-prep">4 mg dans 40 mL G5 % → 100 µg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">2,1</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">2,4</span><span class="wunit">mL/h</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">3</span><span class="wunit">mL/h</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">SSH 3 % (si HTIC) · 3 mL/kg IVL 10 min</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">105</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">120</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">150</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /adulte -->
+
+</div><!-- /content -->
+
+<p class="footer-note">SDS30 · v3.0 · juin 2026<br>Référence : ERC Guidelines 2025 Paediatric Life Support<br>Ce document ne remplace pas le contact SAMU/SMUR pédiatrique</p>
+
+<script>
+  function switchTab(el, panelId) {
+    document.querySelectorAll('.weight-tab').forEach(function(t) { t.classList.remove('active'); });
+    el.classList.add('active');
+    document.querySelectorAll('.panel-poids').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('panel-' + panelId).classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+  function toggleCard(headEl) {
+    var card = headEl.parentElement;
+    while (card && !card.classList.contains('card')) { card = card.parentElement; }
+    if (!card || card.classList.contains('always-open')) return;
+    card.classList.toggle('open');
+  }
+  function navTo(sectionId) {
+    var activePanel = document.querySelector('.panel-poids.active');
+    var target = null;
+    if (activePanel) { target = activePanel.querySelector('[data-section="' + sectionId + '"]'); }
+    if (!target) { target = document.getElementById(sectionId); }
+    if (!target) { target = document.querySelector('[data-section="' + sectionId + '"]'); }
+    if (!target) return;
+    var card = target;
+    while (card && !card.classList.contains('card')) { card = card.parentElement; }
+    if (card && !card.classList.contains('open')) { card.classList.add('open'); }
+    setTimeout(function() {
+      var top = target.getBoundingClientRect().top + window.pageYOffset - 130;
+      window.scrollTo({top: top, behavior: 'smooth'});
+    }, 80);
+  }
+</script>
+</body>
+</html>
