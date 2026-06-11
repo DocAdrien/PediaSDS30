@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#c0392b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SDS30 Pedia">
+<title>SDS30 Pedia</title>
+<style>
+  :root {
+    --rouge:      #c0392b;
+    --rouge-dark: #96281b;
+    --bleu:       #1a5c8a;
+    --cyan:       #0a7a8a;
+    --violet:     #5a2d82;
+    --orange:     #c96a00;
+    --vert:       #1a6b3a;
+    --gris-bg:    #f0f2f5;
+    --gris-card:  #e4e7ec;
+    --blanc:      #ffffff;
+    --texte:      #1a1a1a;
+    --texte-soft: #555;
+    --bordure:    #d0d5dd;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--gris-bg);
+    color: var(--texte);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--rouge);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.2);
+  }
+  .header-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .header-text h1 {
+    font-size: 22px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+  }
+  .header-text p {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 1px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .hero {
+    background: linear-gradient(135deg, var(--rouge-dark) 0%, var(--rouge) 100%);
+    padding: 20px 20px 24px;
+    text-align: center;
+    color: #fff;
+  }
+  .hero h2 {
+    font-size: 17px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .hero p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    max-width: 420px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--texte-soft);
+    margin-bottom: 10px;
+    margin-top: 28px;
+    padding-left: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--bordure);
+  }
+  .section-label:first-of-type { margin-top: 0; }
+
+  /* ── GRILLE TUILES ── */
+  .tuiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .tuile-large { grid-column: 1 / -1; }
+
+  .tuile {
+    border-radius: 14px;
+    text-decoration: none;
+    color: #fff;
+    padding: 20px 18px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.12s, box-shadow 0.12s;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
+  .tuile:active { transform: scale(0.97); box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+
+  /* Deco cercle en fond */
+  .tuile::after {
+    content: '';
+    position: absolute;
+    right: -20px; top: -20px;
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .tuile.rouge  { background: linear-gradient(135deg, #c0392b, #96281b); }
+  .tuile.violet { background: linear-gradient(135deg, #6c3483, #4a235a); }
+  .tuile.cyan   { background: linear-gradient(135deg, #117a8b, #0a5260); }
+  .tuile.bleu   { background: linear-gradient(135deg, #1a5c8a, #0f3d5c); }
+  .tuile.vert   { background: linear-gradient(135deg, #1e8449, #145a32); }
+  .tuile.orange { background: linear-gradient(135deg, #d68910, #9a6008); }
+
+  .tuile-num {
+    font-size: 42px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.15);
+    position: absolute;
+    right: 14px;
+    top: 8px;
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+  .tuile-icon {
+    font-size: 26px;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .tuile-title {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  .tuile-desc {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.4;
+  }
+  .tuile-arrow {
+    align-self: flex-end;
+    font-size: 18px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 6px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    font-size: 11px;
+    color: #aaa;
+    padding: 0 16px 24px;
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+
+  /* ── INSTALL BANNER ── */
+  #install-banner {
+    display: none;
+    background: #1a1a1a;
+    color: white;
+    padding: 10px 16px;
+    font-size: 12px;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  #install-banner.visible { display: flex; }
+  #install-btn {
+    background: var(--rouge);
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #install-close {
+    background: none; border: none;
+    color: rgba(255,255,255,0.4);
+    font-size: 20px; cursor: pointer; padding: 0 4px;
+  }
+
+  @media (max-width: 360px) {
+    .tuile-title { font-size: 12px; }
+    .tuile { min-height: 90px; padding: 16px 14px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="install-banner">
+  <span>📲 Installer l'appli sur votre téléphone</span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button id="install-btn">Installer</button>
+    <button id="install-close">×</button>
+  </div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo">🚑</div>
+      <div class="header-text">
+        <h1>SDS30 Pedia</h1>
+        <p>Protocoles SMUR pédiatriques</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <h2>Protocoles opérationnels</h2>
+  <p>Fiches de référence pédiatriques — Usage SMUR uniquement</p>
+</div>
+
+<main>
+
+  <!-- URGENCES VITALES -->
+  <div class="section-label">Urgences vitales</div>
+  <div class="tuiles">
+
+    <a class="tuile rouge tuile-large" href="fiche_ACR_v4.html">
+      <span class="tuile-num">1</span>
+      <div>
+        <div class="tuile-icon">❤️</div>
+        <div class="tuile-title">Arrêt Cardio-Respiratoire</div>
+        <div class="tuile-desc">Algorithme PALS · drogues · défibrillation · ECMO</div>
+      </div>
+      <span class="tuile-arrow">›</span>
+    </a>
+
+    <a class="tuile violet" href="fiche_convulsions_v3.html">
+      <span class="tuile-num">2</span>
+      <div>
+        <div class="tuile-icon">⚡</div>
+        <div class="tuile-title">Convulsions — État de mal</div>
+        <div class="tuile-desc">Benzo · Keppra · Gardénal</div>
+      </div>
+      <span class="tuile-arrow">›</span>
+    </a>
+
+    <a class="tuile cyan" href="fiche_noyade_v3_new.html">
+      <span class="tuile-num">3</span>
+      <div>
+        <div class="tuile-icon">💧</div>
+        <div class="tuile-title">Noyade</div>
+        <div class="tuile-desc">Stades · ISR · hypothermie · ECMO</div>
+      </div>
+      <span class="tuile-arrow">›</span>
+    </a>
+
+  </div>
+
+  <!-- RÉFÉRENCE -->
+  <div class="section-label">Référence générale</div>
+  <div class="tuiles">
+
+    <a class="tuile bleu tuile-large" href="tronc_commun_v3.html">
+      <span class="tuile-num">4</span>
+      <div>
+        <div class="tuile-icon">📋</div>
+        <div class="tuile-title">Tronc commun pédiatrie</div>
+        <div class="tuile-desc">ISR · ventilation · amines · analgésie · osmothérapie</div>
+      </div>
+      <span class="tuile-arrow">›</span>
+    </a>
+
+  </div>
+
+</main>
+
+<footer>
+  <p>SDS30 Pedia · v2.0 · juin 2026</p>
+  <p>Référence : ERC Guidelines 2025 Paediatric Life Support</p>
+  <p>Ce document ne remplace pas le contact SAMU/SMUR pédiatrique</p>
+</footer>
+
+<script>
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('install-banner').classList.add('visible');
+  });
+  document.getElementById('install-btn').addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      document.getElementById('install-banner').classList.remove('visible');
+    }
+  });
+  document.getElementById('install-close').addEventListener('click', () => {
+    document.getElementById('install-banner').classList.remove('visible');
+  });
+</script>
+
+</body>
+</html>
