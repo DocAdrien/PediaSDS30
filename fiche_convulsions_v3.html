@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convulsions Pédiatriques — SDS30</title>
+<style>
+  :root {
+    --accent:     #5a2d82;
+    --accent-dk:  #3d1f59;
+    --accent-bg:  #f3eef9;
+    --rouge:      #c0392b;
+    --rouge-bg:   #fdf3f2;
+    --bleu:       #1a5c8a;
+    --bleu-bg:    #eaf2f8;
+    --orange:     #c96a00;
+    --orange-bg:  #fef6e8;
+    --vert:       #1a6b3a;
+    --vert-bg:    #eaf5ee;
+    --gris-bg:    #f0f2f5;
+    --blanc:      #ffffff;
+    --texte:      #1a1a1a;
+    --texte-soft: #666;
+    --bordure:    #d8dce3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gris-bg); color: var(--texte); max-width: 720px; margin: 0 auto; font-size: 14px; }
+
+  header { background: var(--accent); padding: 14px 18px 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .back-btn { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 20px; line-height: 1; padding: 2px 4px; }
+  header h1 { font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 0.3px; flex: 1; }
+  header p { font-size: 10px; color: rgba(255,255,255,0.65); letter-spacing: 0.3px; }
+
+  .weight-tabs { display: flex; background: var(--accent-dk); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .weight-tabs::-webkit-scrollbar { display: none; }
+  .weight-tab { flex: 1; min-width: 80px; padding: 10px 8px; text-align: center; color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
+  .weight-tab .kg { display: block; font-size: 14px; font-weight: 900; color: rgba(255,255,255,0.75); margin-bottom: 1px; }
+  .weight-tab.active { color: #fff; border-bottom-color: #fff; background: rgba(255,255,255,0.1); }
+  .weight-tab.active .kg { color: #fff; }
+
+  .quick-nav { display: flex; gap: 8px; padding: 10px 14px; background: var(--blanc); border-bottom: 1px solid var(--bordure); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .quick-nav::-webkit-scrollbar { display: none; }
+  .qnav-btn { background: var(--gris-bg); border: 1px solid var(--bordure); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 700; color: var(--texte-soft); cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+  .qnav-btn:active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .content { padding: 14px 14px 48px; }
+  .panel-poids { display: none; }
+  .panel-poids.active { display: block; }
+
+  .card { background: var(--blanc); border-radius: 12px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; border-left: 5px solid var(--accent); gap: 8px; }
+  .card-head.rouge  { border-left-color: var(--rouge); }
+  .card-head.bleu   { border-left-color: var(--bleu); }
+  .card-head.orange { border-left-color: var(--orange); }
+  .card-head.vert   { border-left-color: var(--vert); }
+  .card-head-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .card-head-icon { font-size: 18px; flex-shrink: 0; }
+  .card-head-title { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; color: var(--texte); line-height: 1.3; }
+  .card-head-sub { font-size: 11px; font-weight: 400; color: var(--texte-soft); text-transform: none; letter-spacing: 0; display: block; margin-top: 1px; }
+  .card-chevron { color: var(--texte-soft); font-size: 13px; flex-shrink: 0; transition: transform 0.2s; }
+  .card.open .card-chevron { transform: rotate(180deg); }
+  .card-body { display: none; padding: 0 14px 14px; border-top: 1px solid var(--bordure); }
+  .card.open .card-body { display: block; }
+
+  /* TIMELINE */
+  .timeline { display: flex; flex-direction: column; padding-top: 8px; }
+  .tl-step { display: flex; gap: 10px; padding-bottom: 16px; position: relative; }
+  .tl-step::before { content: ''; position: absolute; left: 22px; top: 32px; bottom: 0; width: 2px; background: var(--bordure); }
+  .tl-step:last-child::before { display: none; }
+  .tl-left { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .tl-time { min-width: 44px; text-align: center; padding: 4px 6px; border-radius: 8px; font-size: 11px; font-weight: 800; color: #fff; background: var(--accent); }
+  .tl-time.orange { background: var(--orange); }
+  .tl-time.rouge  { background: var(--rouge); }
+  .tl-right { flex: 1; min-width: 0; }
+  .tl-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; color: var(--texte-soft); margin-bottom: 6px; }
+  .tl-body { font-size: 13px; line-height: 1.5; }
+  .drug-row { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px dashed var(--bordure); font-size: 13px; }
+  .drug-row:last-child { border-bottom: none; }
+  .dname { font-weight: 700; }
+  .droute { font-size: 11px; padding: 1px 7px; border-radius: 8px; font-weight: 700; flex-shrink: 0; }
+  .droute-iv { background: var(--bleu-bg); color: var(--bleu); }
+  .droute-in { background: var(--accent-bg); color: var(--accent); }
+  .droute-ir { background: var(--orange-bg); color: var(--orange); }
+
+  /* DOSES EN GRAND */
+  .dose-card { background: var(--gris-bg); border-radius: 10px; padding: 12px 14px; border-left: 4px solid var(--accent); margin-top: 8px; }
+  .dose-card.rouge  { border-left-color: var(--rouge); }
+  .dose-card.orange { border-left-color: var(--orange); }
+  .dose-card.vert   { border-left-color: var(--vert); }
+  .dose-card.bleu   { border-left-color: var(--bleu); }
+  .dose-drug { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; color: var(--texte-soft); margin-bottom: 4px; }
+  .dose-prep { font-size: 11px; color: var(--texte-soft); margin-bottom: 8px; line-height: 1.4; }
+  .dose-weights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .dose-w { background: var(--blanc); border-radius: 8px; padding: 8px 6px; text-align: center; border: 1px solid var(--bordure); }
+  .dose-w .wlabel { font-size: 10px; color: var(--texte-soft); font-weight: 700; margin-bottom: 4px; display: block; }
+  .dose-w .wval { font-size: 20px; font-weight: 900; color: var(--accent); line-height: 1; display: block; }
+  .dose-w .wunit { font-size: 10px; color: var(--texte-soft); display: block; margin-top: 1px; }
+  .dose-card.rouge  .dose-w .wval { color: var(--rouge); }
+  .dose-card.orange .dose-w .wval { color: var(--orange); }
+  .dose-card.bleu   .dose-w .wval { color: var(--bleu); }
+  .dose-card.vert   .dose-w .wval { color: var(--vert); }
+
+  .alerte { background: var(--rouge-bg); border-left: 4px solid var(--rouge); border-radius: 0 8px 8px 0; padding: 10px 12px; font-size: 12px; color: var(--rouge); font-weight: 600; margin-bottom: 10px; line-height: 1.5; }
+  .note { background: var(--orange-bg); border-left: 4px solid var(--orange); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--orange); margin-top: 8px; line-height: 1.5; }
+  .note-violet { background: var(--accent-bg); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--accent); margin-top: 8px; line-height: 1.5; }
+  .note-vert { background: var(--vert-bg); border-left: 4px solid var(--vert); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--vert); margin-top: 8px; line-height: 1.5; }
+
+  .simple-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+  .simple-table td { padding: 7px 8px; border-bottom: 1px solid var(--bordure); vertical-align: top; line-height: 1.4; }
+  .simple-table tr:last-child td { border-bottom: none; }
+  .simple-table td:first-child { color: var(--texte-soft); font-size: 11px; width: 42%; }
+  .simple-table td:last-child { font-weight: 600; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; font-size: 12px; }
+  .grid2-col { background: var(--gris-bg); border-radius: 8px; padding: 10px 12px; }
+  .grid2-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent); margin-bottom: 6px; }
+  .grid2-item { padding: 4px 0; border-bottom: 1px solid var(--bordure); font-size: 12px; font-weight: 600; }
+  .grid2-item:last-child { border-bottom: none; }
+
+  .footer-note { text-align: center; font-size: 10px; color: #aaa; padding: 16px 14px 8px; border-top: 1px solid var(--bordure); margin-top: 8px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <a class="back-btn" href="index.html">‹</a>
+    <h1>⚡ Convulsions — État de mal</h1>
+  </div>
+  <p>SDS30 · v3.0 · ERC Guidelines 2025 Paediatric Life Support</p>
+</header>
+
+<div class="weight-tabs">
+  <div class="weight-tab active" onclick="switchTab(this,'global')"><span class="kg">Tous</span>Commun</div>
+  <div class="weight-tab" onclick="switchTab(this,'creche')"><span class="kg">&lt;10 kg</span>Crèche</div>
+  <div class="weight-tab" onclick="switchTab(this,'maternelle')"><span class="kg">10–20 kg</span>Maternelle</div>
+  <div class="weight-tab" onclick="switchTab(this,'primaire')"><span class="kg">20–30 kg</span>Primaire</div>
+  <div class="weight-tab" onclick="switchTab(this,'adulte')"><span class="kg">&gt;30 kg</span>Ados</div>
+</div>
+
+<div class="quick-nav">
+  <button class="qnav-btn" onclick="navTo('algo')">⏱ Algorithme</button>
+  <button class="qnav-btn" onclick="navTo('doses')">💊 Doses</button>
+  <button class="qnav-btn" onclick="navTo('mesures')">🔧 Mesures générales</button>
+  <button class="qnav-btn" onclick="navTo('febrile')">🌡️ Fébrile</button>
+  <button class="qnav-btn" onclick="navTo('intubation')">🔴 Intubation</button>
+</div>
+
+<div class="content">
+
+<!-- ═══ PANNEAU COMMUN ═══ -->
+<div class="panel-poids active" id="panel-global">
+
+  <!-- CONVULSIONS FEBRILES -->
+  <div class="card" id="febrile">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🌡️</span>
+        <div><div class="card-head-title">Convulsions fébriles</div><span class="card-head-sub">La situation la plus fréquente · 6 mois–5 ans</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td><strong style="color:var(--vert)">Simple</strong> (80 %)</td><td>&lt; 15 min · généralisée · épisode unique sur 24h · enfant 6 mois–5 ans</td></tr>
+        <tr><td><strong style="color:var(--rouge)">Complexe</strong> (20 %)</td><td>≥ 15 min OU focale OU récidive dans les 24h OU déficit post-critique persistant</td></tr>
+      </table>
+      <div class="note-vert" style="margin-top:10px">✅ CF simple terminée → mesures générales · antipyrexie · surveillance · pas de ttt antiépileptique</div>
+      <div class="alerte" style="margin-top:8px">CF simple en cours ≥ 5 min → traiter comme un EME ↓</div>
+      <div style="background:var(--rouge-bg);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px">
+        <div style="font-weight:800;color:var(--rouge);margin-bottom:6px">⚠ Signes d'alarme</div>
+        <div class="grid2" style="margin-top:0">
+          <div>· Âge &lt; 6 mois ou &gt; 5 ans<br>· Crise focale<br>· Déficit post-critique</div>
+          <div>· Fièvre sans foyer évident<br>· Purpura associé<br>· Fontanelle bombante</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MESURES GENERALES -->
+  <div class="card" id="mesures">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🔧</span>
+        <div><div class="card-head-title">Mesures générales</div><span class="card-head-sub">Toujours · dès l'arrivée</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>Sécuriser</td><td>Dégager l'environnement · ne pas empêcher les mouvements · rien dans la bouche</td></tr>
+        <tr><td>VAS</td><td>Libération · O₂ · SpO₂ &gt; 94 %</td></tr>
+        <tr><td>Position</td><td>PLS si possible · sinon en post-critique</td></tr>
+        <tr><td>T° &gt; 38°C</td><td>Déshabiller · rafraîchir · paracétamol IR</td></tr>
+        <tr><td>Glycémie</td><td>Dextro systématique</td></tr>
+        <tr><td>Monitorage</td><td>FC · TA · SpO₂ · ECG</td></tr>
+      </table>
+      <div class="note">Toujours anticiper et préparer le traitement suivant · Épileptique connu : utiliser les molécules efficaces antérieurement</div>
+    </div>
+  </div>
+
+  <!-- CAUSES SECONDAIRES -->
+  <div class="card">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🔍</span>
+        <div><div class="card-head-title">Causes secondaires</div><span class="card-head-sub">À rechercher systématiquement</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="grid2">
+        <div class="grid2-col">
+          <div class="grid2-title">Métabolique</div>
+          <div class="grid2-item">Hypoglycémie</div>
+          <div class="grid2-item">Hyperthermie</div>
+          <div class="grid2-item">Trouble ionique</div>
+          <div class="grid2-item">Intoxication (CO…)</div>
+        </div>
+        <div class="grid2-col">
+          <div class="grid2-title">Neurologique</div>
+          <div class="grid2-item">Méningite / encéphalite</div>
+          <div class="grid2-item">HTIC</div>
+          <div class="grid2-item">Traumatisme crânien</div>
+          <div class="grid2-item">Maltraitance</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALGORITHME -->
+  <div class="card open" id="algo">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">⏱️</span>
+        <div><div class="card-head-title">Algorithme — Traitement de la crise</div><span class="card-head-sub">État de mal épileptique · dès 5 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="timeline">
+
+        <div class="tl-step">
+          <div class="tl-left"><div class="tl-time">0 min</div></div>
+          <div class="tl-right">
+            <div class="tl-label">Mesures générales</div>
+            <div class="tl-body">VAS · O₂ · Dextro · pose VVP · selon contexte débuter ttt avant 5 min</div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-left"><div class="tl-time">5 min</div></div>
+          <div class="tl-right">
+            <div class="tl-label">1ère ligne — Benzodiazépines</div>
+            <div class="tl-body">
+              <div class="drug-row"><span class="dname">Clonazépam</span><span class="droute droute-iv">IV</span><span>0,015 mg/kg IVD · <strong>1ère intention si VVP</strong></span></div>
+              <div class="drug-row"><span class="dname">Midazolam</span><span class="droute droute-in">IN</span><span>0,3 mg/kg · si pas de VVP</span></div>
+              <div class="drug-row"><span class="dname">Diazépam</span><span class="droute droute-ir">IR</span><span>0,5 mg/kg · si IN non possible</span></div>
+            </div>
+            <div class="note-violet">Max 2 doses de benzo au total · tenir compte des doses déjà données (Valium IR, Buccolam)</div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-left"><div class="tl-time orange">15 min</div></div>
+          <div class="tl-right">
+            <div class="tl-label">2ème ligne — Après 2 doses de benzodiazépines</div>
+            <div class="tl-body">
+              <div class="drug-row"><span class="dname">Lévétiracétam (Keppra)</span><span class="droute droute-iv">IV</span><span><strong>40–60 mg/kg</strong> IVL 5 min · max 4,5 g</span></div>
+            </div>
+            <div class="note">Monitoring cardio-respiratoire rapproché</div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-left"><div class="tl-time rouge">20 min</div></div>
+          <div class="tl-right">
+            <div class="tl-label">3ème ligne — Si échec Keppra</div>
+            <div class="tl-body">
+              <div class="drug-row"><span class="dname">Phénobarbital (Gardénal)</span><span class="droute droute-iv">IV</span><span><strong>20 mg/kg</strong> IVL 10 min · 1 mL/kg</span></div>
+            </div>
+            <div class="note">Monitoring cardio-respiratoire rapproché · hypotension artérielle possible</div>
+          </div>
+        </div>
+
+        <div class="tl-step">
+          <div class="tl-left"><div class="tl-time rouge">30 min</div></div>
+          <div class="tl-right">
+            <div class="tl-label">4ème ligne — EME réfractaire · anesthésie avant 40 min</div>
+            <div class="tl-body">
+              <div class="drug-row"><span class="dname">Midazolam</span><span class="droute droute-iv">IV</span><span><strong>0,2 mg/kg</strong> bolus · répéter /5 min</span></div>
+            </div>
+            <div class="note-violet">⚠ Préparer l'intubation · ISR si échec ou apnée · Viser l'arrêt clinique + suppression EEG</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- INTUBATION -->
+  <div class="card" id="intubation">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🔴</span>
+        <div><div class="card-head-title">Intubation</div><span class="card-head-sub">Indications · ISR</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>Indication</td><td>EME réfractaire malgré 4ème ligne · défaillance respi/circulatoire · EME secondaire grave</td></tr>
+        <tr><td>Kétamine</td><td>2–4 mg/kg IVD</td></tr>
+        <tr><td>Célocurine</td><td>2 mg/kg si &lt; 2 ans · 1 mg/kg si &gt; 2 ans ⚠ frigo</td></tr>
+        <tr><td>OU Rocuronium</td><td>1 mg/kg IVD</td></tr>
+        <tr><td>EtCO₂ cible</td><td>40 mmHg (normocapnie) — éviter hypocapnie</td></tr>
+      </table>
+      <div class="note">Phénytoïne IV : alternative si Keppra indisponible · 20 mg/kg IVL 20 min · contact SAMU</div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:16px 0 4px;font-size:12px;color:var(--texte-soft);font-weight:700">
+    👇 Sélectionne une tranche de poids pour les doses
+  </div>
+
+</div><!-- /panel-global -->
+
+
+<!-- ═══ CRÈCHE < 10 kg ═══ -->
+<div class="panel-poids" id="panel-creche">
+  <div class="alerte">⚠ Poids &lt; 10 kg · IO bleu 25 mm si échec VVP × 2</div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">1ère ligne — Benzodiazépines</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card">
+        <div class="dose-drug">Clonazépam (Rivotril) <span class="droute droute-iv" style="font-size:10px">IV</span></div>
+        <div class="dose-prep">0,015 mg/kg · 1 amp + 9 mL SSI → 0,1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,45</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,75</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">1,2</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">Midazolam (Hypnovel) <span class="droute droute-in" style="font-size:10px">IN</span></div>
+        <div class="dose-prep">0,3 mg/kg · pur 5 mg/mL · ÷ 2 narines</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,18</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,48</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card orange" style="margin-top:8px">
+        <div class="dose-drug">Diazépam (Valium) <span class="droute droute-ir" style="font-size:10px">IR</span></div>
+        <div class="dose-prep">0,5 mg/kg · suppositoire</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">1,5</span><span class="wunit">mg</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">2,5</span><span class="wunit">mg</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">4</span><span class="wunit">mg</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card open">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">2ème ligne — Keppra</div><span class="card-head-sub">40–60 mg/kg · max 4,5 g · IVL 5 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card orange" style="margin-top:0">
+        <div class="dose-drug">Lévétiracétam 500 mg/5 mL · pur</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">1,2–1,8</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">2–3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">3,2–4,8</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">3ème ligne — Gardénal</div><span class="card-head-sub">20 mg/kg · 1 mL/kg · IVL 10 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Phénobarbital · 1 mL + 9 mL SSI → 20 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">8</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">4ème ligne — Midazolam IV</div><span class="card-head-sub">0,2 mg/kg · répéter /5 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Hypnovel · 1 mL + 9 mL SSI → 0,5 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">1,2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">3,2</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /creche -->
+
+
+<!-- ═══ MATERNELLE 10–20 kg ═══ -->
+<div class="panel-poids" id="panel-maternelle">
+  <div class="alerte">⚠ Poids 10–20 kg · IO bleu 25 mm si échec VVP × 2</div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">1ère ligne — Benzodiazépines</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card">
+        <div class="dose-drug">Clonazépam (Rivotril) <span class="droute droute-iv" style="font-size:10px">IV</span> · max 1,5 mg ⚑</div>
+        <div class="dose-prep">0,015 mg/kg · 1 amp + 9 mL SSI → 0,1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">1,5 ⚑</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">1,5 ⚑</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">1,5 ⚑</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">Midazolam (Hypnovel) <span class="droute droute-in" style="font-size:10px">IN</span></div>
+        <div class="dose-prep">0,3 mg/kg · pur 5 mg/mL · ÷ 2 narines</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">0,6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">0,9</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">1,2</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card orange" style="margin-top:8px">
+        <div class="dose-drug">Diazépam (Valium) <span class="droute droute-ir" style="font-size:10px">IR</span> · max 10 mg ⚑</div>
+        <div class="dose-prep">0,5 mg/kg · suppositoire</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">5</span><span class="wunit">mg</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">7,5</span><span class="wunit">mg</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">10 ⚑</span><span class="wunit">mg</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card open">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">2ème ligne — Keppra</div><span class="card-head-sub">40–60 mg/kg · max 4,5 g · IVL 5 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card orange" style="margin-top:0">
+        <div class="dose-drug">Lévétiracétam 500 mg/5 mL · pur</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">4–6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">6–9</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">8–10</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">3ème ligne — Gardénal</div><span class="card-head-sub">20 mg/kg · 1 mL/kg · IVL 10 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Phénobarbital · 1 mL + 9 mL SSI → 20 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">10</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">15</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">20</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">4ème ligne — Midazolam IV</div><span class="card-head-sub">0,2 mg/kg · répéter /5 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Hypnovel · 1 mL + 9 mL SSI → 0,5 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">8</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /maternelle -->
+
+
+<!-- ═══ PRIMAIRE 20–30 kg ═══ -->
+<div class="panel-poids" id="panel-primaire">
+  <div class="alerte">⚠ Poids 20–30 kg · IO bleu 25 mm si échec VVP × 2</div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">1ère ligne — Benzodiazépines</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card">
+        <div class="dose-drug">Clonazépam (Rivotril) <span class="droute droute-iv" style="font-size:10px">IV</span> · max 1,5 mg ⚑</div>
+        <div class="dose-prep">0,015 mg/kg · 1 amp + 9 mL SSI → 0,1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">1,5 ⚑</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">1,5 ⚑</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">1,5 ⚑</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">Midazolam (Hypnovel) <span class="droute droute-in" style="font-size:10px">IN</span></div>
+        <div class="dose-prep">0,3 mg/kg · pur 5 mg/mL · ÷ 2 narines</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">1,2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">1,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">1,8</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card orange" style="margin-top:8px">
+        <div class="dose-drug">Diazépam (Valium) <span class="droute droute-ir" style="font-size:10px">IR</span> · max 10 mg ⚑</div>
+        <div class="dose-prep">0,5 mg/kg · suppositoire</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">10 ⚑</span><span class="wunit">mg</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">10 ⚑</span><span class="wunit">mg</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">10 ⚑</span><span class="wunit">mg</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card open">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">2ème ligne — Keppra</div><span class="card-head-sub">40–60 mg/kg · max 4,5 g · IVL 5 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card orange" style="margin-top:0">
+        <div class="dose-drug">Lévétiracétam 500 mg/5 mL · pur</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">8–12</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">10–15</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">12–18</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">3ème ligne — Gardénal</div><span class="card-head-sub">20 mg/kg · 1 mL/kg · IVL 10 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Phénobarbital · 1 mL + 9 mL SSI → 20 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">20</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">25</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">30</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">4ème ligne — Midazolam IV</div><span class="card-head-sub">0,2 mg/kg · répéter /5 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Hypnovel · 1 mL + 9 mL SSI → 0,5 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">8</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">10</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">12</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /primaire -->
+
+
+<!-- ═══ ADOS > 30 kg ═══ -->
+<div class="panel-poids" id="panel-adulte">
+  <div class="alerte">⚠ Poids &gt; 30 kg · IO bleu 25 mm si échec VVP × 2</div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">1ère ligne — Benzodiazépines</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card">
+        <div class="dose-drug">Clonazépam (Rivotril) <span class="droute droute-iv" style="font-size:10px">IV</span> · max 1,5 mg ⚑</div>
+        <div class="dose-prep">0,015 mg/kg · 1 amp + 9 mL SSI → 0,1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">1,5 ⚑</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">1,5 ⚑</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">1,5 ⚑</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">Midazolam (Hypnovel) <span class="droute droute-in" style="font-size:10px">IN</span></div>
+        <div class="dose-prep">0,3 mg/kg · pur 5 mg/mL · ÷ 2 narines</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">2,1</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">2,4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">3</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card orange" style="margin-top:8px">
+        <div class="dose-drug">Diazépam (Valium) <span class="droute droute-ir" style="font-size:10px">IR</span> · max 10 mg ⚑</div>
+        <div class="dose-prep">0,5 mg/kg · suppositoire</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">10 ⚑</span><span class="wunit">mg</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">10 ⚑</span><span class="wunit">mg</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">10 ⚑</span><span class="wunit">mg</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card open">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">2ème ligne — Keppra</div><span class="card-head-sub">40–60 mg/kg · max 4,5 g · IVL 5 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card orange" style="margin-top:0">
+        <div class="dose-drug">Lévétiracétam 500 mg/5 mL · pur</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">14–21</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">16–24</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">≥75 kg</span><span class="wval">45 ⚑</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">3ème ligne — Gardénal</div><span class="card-head-sub">20 mg/kg · 1 mL/kg · IVL 10 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Phénobarbital · 1 mL + 9 mL SSI → 20 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">35</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">40</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">50</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">4ème ligne — Midazolam IV</div><span class="card-head-sub">0,2 mg/kg · répéter /5 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card rouge" style="margin-top:0">
+        <div class="dose-drug">Hypnovel · 1 mL + 9 mL SSI → 0,5 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">14</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">16</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">20</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /adulte -->
+
+</div><!-- /content -->
+
+<p class="footer-note">SDS30 · v3.0 · juin 2026<br>Référence : ERC Guidelines 2025 Paediatric Life Support<br>Ce document ne remplace pas le contact SAMU/SMUR pédiatrique</p>
+
+<script>
+  function switchTab(el, panelId) {
+    document.querySelectorAll('.weight-tab').forEach(function(t) { t.classList.remove('active'); });
+    el.classList.add('active');
+    document.querySelectorAll('.panel-poids').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('panel-' + panelId).classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+  function toggleCard(headEl) {
+    var card = headEl.parentElement;
+    while (card && !card.classList.contains('card')) { card = card.parentElement; }
+    if (!card || card.classList.contains('always-open')) return;
+    card.classList.toggle('open');
+  }
+  function navTo(sectionId) {
+    var activePanel = document.querySelector('.panel-poids.active');
+    var target = null;
+    if (activePanel) { target = activePanel.querySelector('[data-section="' + sectionId + '"]'); }
+    if (!target) { target = document.getElementById(sectionId); }
+    if (!target) { target = document.querySelector('[data-section="' + sectionId + '"]'); }
+    if (!target) return;
+    var card = target;
+    while (card && !card.classList.contains('card')) { card = card.parentElement; }
+    if (card && !card.classList.contains('open')) { card.classList.add('open'); }
+    setTimeout(function() {
+      var top = target.getBoundingClientRect().top + window.pageYOffset - 130;
+      window.scrollTo({top: top, behavior: 'smooth'});
+    }, 80);
+  }
+</script>
+</body>
+</html>
