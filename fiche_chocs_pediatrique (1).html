@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>États de Choc Pédiatriques — SDS30</title>
+<style>
+  :root {
+    --bleu: #1a5c8a;
+    --bleu-bg: #e8f0f8;
+    --rouge: #c0392b;
+    --rouge-bg: #fdf0ef;
+    --orange: #c96a00;
+    --orange-bg: #fef6e8;
+    --vert: #1a6b3a;
+    --vert-bg: #eaf5ee;
+    --violet: #5a2d82;
+    --violet-bg: #f3eef9;
+    --marron: #7b3f00;
+    --marron-bg: #fdf3e3;
+    --gris: #4a4a4a;
+    --gris-clair: #f5f5f5;
+    --bordure: #d0d0d0;
+    font-size: 15px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #1a1a1a;
+    background: #f0f2f5;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  header {
+    background: var(--rouge);
+    color: #fff;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.2);
+  }
+  .header-inner { padding: 14px 18px; display: flex; align-items: center; gap: 12px; }
+  .logo { font-size: 26px; }
+  .header-text h1 { font-size: 18px; font-weight: 900; letter-spacing: -0.3px; }
+  .header-text p  { font-size: 11px; opacity: 0.75; margin-top: 1px; letter-spacing: 0.3px; text-transform: uppercase; }
+
+  .common-wrap { padding: 14px 14px 4px; }
+
+  .section { margin-bottom: 12px; border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .section-header { padding: 8px 12px; font-size: 13px; font-weight: 700; color: #fff; letter-spacing: 0.2px; }
+  .section-header.rouge  { background: var(--rouge); }
+  .section-header.bleu   { background: var(--bleu); }
+  .section-header.orange { background: var(--orange); }
+  .section-header.vert   { background: var(--vert); }
+  .section-header.violet { background: var(--violet); }
+  .section-header.noir   { background: #2c2c2c; }
+  .section-body { padding: 10px 12px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--gris-clair); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--gris); padding: 5px 8px; text-align: left; border-bottom: 1px solid var(--bordure); }
+  td { padding: 5px 8px; border-bottom: 1px solid #ebebeb; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .val        { font-weight: 700; color: var(--bleu); }
+  .val-rouge  { font-weight: 700; color: var(--rouge); }
+  .val-vert   { font-weight: 700; color: var(--vert); }
+  .val-orange { font-weight: 700; color: var(--orange); }
+  .val-violet { font-weight: 700; color: var(--violet); }
+
+  .alerte {
+    background: var(--rouge-bg); border: 1px solid #e8b4b0; border-radius: 8px;
+    padding: 8px 10px; font-size: 12px; color: var(--rouge); font-weight: 600;
+    margin-bottom: 10px; display: flex; gap: 6px; align-items: flex-start;
+  }
+  .alerte::before { content: "⚠"; font-size: 14px; flex-shrink: 0; }
+
+  .note {
+    background: var(--orange-bg); border-left: 3px solid var(--orange);
+    padding: 6px 10px; font-size: 12px; color: var(--orange);
+    margin-top: 8px; border-radius: 0 4px 4px 0;
+  }
+  .note-vert {
+    background: var(--vert-bg); border-left: 3px solid var(--vert);
+    padding: 6px 10px; font-size: 12px; color: var(--vert);
+    margin-top: 8px; border-radius: 0 4px 4px 0;
+  }
+  .note-rouge {
+    background: var(--rouge-bg); border-left: 3px solid var(--rouge);
+    padding: 6px 10px; font-size: 12px; color: var(--rouge);
+    margin-top: 8px; border-radius: 0 4px 4px 0;
+  }
+
+  /* RECONNAISSANCE CHOC */
+  .choc-types {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .choc-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--bordure);
+    font-size: 12px;
+  }
+  .choc-card-title {
+    padding: 5px 10px;
+    font-weight: 700;
+    font-size: 12px;
+    color: #fff;
+  }
+  .choc-card-body { padding: 7px 10px; line-height: 1.5; background: #fff; }
+
+  /* ÉTAPES NUMÉROTÉES */
+  .step {
+    display: flex; gap: 8px; align-items: flex-start;
+    margin-bottom: 8px; font-size: 13px;
+  }
+  .step-num {
+    background: var(--rouge); color: #fff;
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .step-num.bleu   { background: var(--bleu); }
+  .step-num.vert   { background: var(--vert); }
+  .step-num.orange { background: var(--orange); }
+  .step-num.violet { background: var(--violet); }
+
+  /* ACCORDION */
+  .acc-wrap { background: #2c2c2c; padding: 8px 14px 8px; }
+  .acc-wrap p { color: #ccc; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin-bottom: 6px; }
+
+  details.acc { margin-bottom: 6px; border-radius: 8px; overflow: hidden; }
+  details.acc summary {
+    color: #fff; padding: 11px 14px; font-size: 14px; font-weight: 700;
+    cursor: pointer; list-style: none;
+    display: flex; justify-content: space-between; align-items: center;
+    -webkit-user-select: none; user-select: none;
+  }
+  details.acc summary::-webkit-details-marker { display: none; }
+  details.acc summary .arr { font-size: 10px; opacity: 0.8; }
+  details.acc[open] summary .arr { transform: rotate(180deg); display: inline-block; }
+  details.acc summary .sub { font-size: 11px; font-weight: 400; opacity: 0.85; margin-left: 8px; }
+  details.acc .panel-inner { padding: 12px 14px 16px; background: #f0f2f5; }
+  details.acc .panel-inner .section { margin-bottom: 10px; }
+
+  details.acc.sept  { border: 2px solid var(--orange); }
+  details.acc.sept  summary { background: var(--orange); }
+  details.acc.hemo  { border: 2px solid var(--rouge); }
+  details.acc.hemo  summary { background: var(--rouge); }
+  details.acc.ana   { border: 2px solid var(--violet); }
+  details.acc.ana   summary { background: var(--violet); }
+  details.acc.cardio{ border: 2px solid var(--bleu); }
+  details.acc.cardio summary { background: var(--bleu); }
+  details.acc.deshy { border: 2px solid var(--vert); }
+  details.acc.deshy summary { background: var(--vert); }
+
+  .drug-block {
+    background: var(--rouge-bg); border: 1px solid #e8b4b0;
+    border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;
+  }
+  .drug-block h4 { color: var(--rouge); font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+  .drug-block.bleu { background: var(--bleu-bg); border-color: #b0c8e8; }
+  .drug-block.bleu h4 { color: var(--bleu); }
+  .drug-block.vert { background: var(--vert-bg); border-color: #a8d5b5; }
+  .drug-block.vert h4 { color: var(--vert); }
+  .drug-block.violet { background: var(--violet-bg); border-color: #c5b0e0; }
+  .drug-block.violet h4 { color: var(--violet); }
+
+  .footer-note { font-size: 11px; color: #999; text-align: center; padding: 14px 16px 24px; line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">🩺</div>
+    <div class="header-text">
+      <h1>États de Choc Pédiatriques</h1>
+      <p>SDS30 · v1.0 · juin 2026</p>
+    </div>
+  </div>
+</header>
+
+<div class="common-wrap">
+
+  <!-- RECONNAISSANCE -->
+  <div class="section">
+    <div class="section-header noir">🔍 Reconnaître le choc</div>
+    <div class="section-body">
+      <div class="alerte">L'hypotension et le retentissement neurologique/respiratoire peuvent être tardifs chez l'enfant · Ne pas attendre l'hypotension pour agir</div>
+      <p style="font-size:12px;font-weight:700;color:var(--gris);margin-bottom:8px">Signes précoces communs :</p>
+      <table style="margin-bottom:10px">
+        <tr><td>Teint gris · marbrures · extrémités froides</td><td class="val-rouge">TRC &gt; 3s</td></tr>
+        <tr><td>Tachycardie</td><td class="val-rouge">FC élevée pour l'âge</td></tr>
+        <tr><td>Oligurie</td><td class="val-rouge">Diurèse &lt; 1 mL/kg/h</td></tr>
+        <tr><td>Troubles de conscience</td><td class="val-rouge">Agitation · obnubilation · AVPU &lt; A</td></tr>
+      </table>
+      <div class="choc-types">
+        <div class="choc-card">
+          <div class="choc-card-title" style="background:var(--bleu)">Cardiogénique</div>
+          <div class="choc-card-body">FC↓ ou ↑ · TRC &gt;4s · teint gris/cyanosé · TA pincée · hépatomégalie · détresse respi</div>
+        </div>
+        <div class="choc-card">
+          <div class="choc-card-title" style="background:var(--orange)">Distributif</div>
+          <div class="choc-card-body">FC↑ · peau chaude rouge · PAD basse · TRC &lt;2s · pouls bondissant<br><em style="font-size:11px">Septique · anaphylactique · toxique</em></div>
+        </div>
+        <div class="choc-card">
+          <div class="choc-card-title" style="background:var(--rouge)">Hypovolémique</div>
+          <div class="choc-card-body">FC↑ · extrémités froides · marbrures · TRC &gt;4s · TA systolique basse<br><em style="font-size:11px">Hémorragique · déshydratation · brûlures</em></div>
+        </div>
+        <div class="choc-card">
+          <div class="choc-card-title" style="background:#2c2c2c">Obstructif</div>
+          <div class="choc-card-body">FC↑ puis ↓↓ · détresse respi +++ · cyanose · pouls paradoxal<br><em style="font-size:11px">Tamponnade · PNO compressif · coarctation</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONDITIONNEMENT COMMUN -->
+  <div class="section">
+    <div class="section-header rouge">🔧 Conditionnement — Toujours</div>
+    <div class="section-body">
+      <div class="step"><div class="step-num bleu">1</div><div>Liberté des VAS · O₂ · scope ECG · TA /5 min</div></div>
+      <div class="step"><div class="step-num bleu">2</div><div>VVP × 2 · IO au 2ème échec · bilan si possible (GDS + lactates + iono)</div></div>
+      <div class="step"><div class="step-num bleu">3</div><div>Dextro systématique · G10 % 3 mL/kg si &lt; 0,6 g/L</div></div>
+      <div class="step"><div class="step-num bleu">4</div><div>Prévention hypothermie · couverture de survie</div></div>
+      <div class="step"><div class="step-num rouge">5</div><div>Intubation si lactates &gt; 4 mmol/L · apnées · troubles de conscience · <strong>Amines AVANT intubation +++</strong></div></div>
+      <div class="note">ISR si intubation : Kétamine 2 mg/kg + Célocurine · éviter Propofol si choc · Ventilation mécanique : PEP 4–5 · VT 5 mL/kg · SaO₂ &gt; 95%</div>
+    </div>
+  </div>
+
+  <!-- OBJECTIFS HÉMODYNAMIQUES -->
+  <div class="section">
+    <div class="section-header bleu">🎯 Objectifs hémodynamiques par tranche</div>
+    <div class="section-body">
+      <table>
+        <tr><th>Tranche</th><th>PAM mini sans TC</th><th>PAM mini avec TC</th><th>PAS mini</th></tr>
+        <tr><td>Crèche &lt;10 kg</td><td class="val">&gt; 45 mmHg</td><td class="val-rouge">&gt; 50 mmHg</td><td class="val">&gt; 50 mmHg</td></tr>
+        <tr><td>Maternelle 10–20 kg</td><td class="val">&gt; 50 mmHg</td><td class="val-rouge">&gt; 60 mmHg</td><td class="val">&gt; 72–74 mmHg</td></tr>
+        <tr><td>Primaire 20–30 kg</td><td class="val">&gt; 55 mmHg</td><td class="val-rouge">&gt; 65 mmHg</td><td class="val">&gt; 82–88 mmHg</td></tr>
+        <tr><td>Ados &gt;30 kg</td><td class="val">&gt; 60 mmHg</td><td class="val-rouge">&gt; 70 mmHg</td><td class="val">&gt; 88–90 mmHg</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ACCORDION PAR TYPE DE CHOC -->
+<div class="acc-wrap">
+  <p>▼ PAR TYPE DE CHOC — Toucher pour ouvrir/fermer</p>
+
+<!-- ===== CHOC SEPTIQUE ===== -->
+<details class="acc sept" open>
+  <summary>🦠 CHOC SEPTIQUE <span class="sub">Distributif · infection</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+
+    <div class="alerte">Chez l'enfant l'hypotension peut être absente · Ne pas attendre · Mortalité &gt; 40%</div>
+
+    <div class="section">
+      <div class="section-header orange">🔍 Reconnaître</div>
+      <div class="section-body">
+        <table>
+          <tr><td>Sepsis</td><td>Infection suspectée + dysfonction d'organe</td></tr>
+          <tr><td>Choc septique</td><td class="val-rouge">Sepsis + vasopresseurs nécessaires malgré remplissage ≥ 30 mL/kg + lactates &gt; 2 mmol/L</td></tr>
+          <tr><td>Purpura fulminans</td><td class="val-rouge">Masque FFP2 · précautions gouttelettes · examiner l'enfant nu · entourer les taches</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header orange">💊 Traitement</div>
+      <div class="section-body">
+        <div class="step"><div class="step-num orange">1</div><div><strong>Remplissage</strong> — RL ou NaCl 0,9 % : 20 mL/kg en 10 min · réévaluer après chaque bolus · renouveler si bonne tolérance (max 40–60 mL/kg) · stopper si hépatomégalie · crépitants · aggravation respi</div></div>
+        <div class="step"><div class="step-num orange">2</div><div><strong>Noradrénaline</strong> — débuter après 20 mL/kg sans réponse · ou d'emblée si choc sévère · titrer par paliers 0,2 µg/kg/min toutes les 2 min · si résistance &gt; 1 µg/kg/min → ajouter Adrénaline</div></div>
+        <div class="step"><div class="step-num orange">3</div><div><strong>Antibiothérapie précoce IV</strong> — voie différente des amines</div></div>
+
+        <div class="drug-block" style="margin-top:10px">
+          <h4>💉 Antibiothérapie selon contexte</h4>
+          <table>
+            <tr><th>Contexte</th><th>Traitement</th></tr>
+            <tr><td>Purpura / méningite</td><td class="val-rouge">Rocéphine 100 mg/kg IV en une fois (max 2 g)</td></tr>
+            <tr><td>Autres infections</td><td class="val-rouge">Augmentin 50 mg/kg IV (max 1 g pour 1ère dose)</td></tr>
+          </table>
+        </div>
+
+        <div class="note">Préparer la seringue de Noradrénaline d'emblée · hémoculture si possible sans retarder ATB · sonde gastrique et urinaire après stabilisation</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header noir">💊 Noradrénaline — dilutions par tranche</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Tranche</th><th>Dilution</th><th>Débit 0,1 µg/kg/min</th></tr>
+          <tr><td>Crèche &lt;10 kg</td><td>0,5 mg dans 50 mL SSI (10 µg/mL)</td><td class="val-rouge">0,9 mL/h</td></tr>
+          <tr><td>Maternelle 10–20 kg</td><td>1 mg dans 50 mL SSI (20 µg/mL)</td><td class="val-rouge">1,5–3 mL/h</td></tr>
+          <tr><td>Primaire 20–30 kg</td><td>4 mg dans 40 mL G5% (100 µg/mL)</td><td class="val-rouge">1,8–2,4 mL/h</td></tr>
+          <tr><td>Ados &gt;30 kg</td><td>4 mg dans 40 mL G5% (100 µg/mL)</td><td class="val-rouge">2,1–3 mL/h</td></tr>
+        </table>
+        <div class="note">Paliers de 0,2 µg/kg/min toutes les 2 min · si noradré &gt; 1 µg/kg/min → ajouter Adrénaline IVSE 0,1 µg/kg/min</div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ===== CHOC HÉMORRAGIQUE ===== -->
+<details class="acc hemo">
+  <summary>🩸 CHOC HÉMORRAGIQUE <span class="sub">Hypovolémique · traumatique</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+
+    <div class="alerte">La TA peut être normale jusqu'à perte &gt; 30% du volume circulant · Si bradycardie → suspecter choc spinal</div>
+
+    <div class="section">
+      <div class="section-header rouge">🛑 Stopper l'hémorragie — Priorité absolue</div>
+      <div class="section-body">
+        <div class="step"><div class="step-num">1</div><div>Compression manuelle · garrot (noter l'heure) · pansement hémostatique · ceinture pelvienne</div></div>
+        <div class="step"><div class="step-num">2</div><div><strong>Exacyl (acide tranexamique)</strong> — 20 mg/kg IVL 10 min · avant H3 impérativement</div></div>
+        <div class="step"><div class="step-num">3</div><div>Si absence hémorragie extériorisée → FAST écho (bassin · crâne · abdomen)</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header rouge">💊 Traitement hémodynamique</div>
+      <div class="section-body">
+        <div class="step"><div class="step-num">1</div><div><strong>Remplissage NaCl 0,9 %</strong> — 20 mL/kg · <strong>max 20 mL/kg de cristalloïdes</strong> · transfusion CGR dès que disponible</div></div>
+        <div class="step"><div class="step-num">2</div><div><strong>Anticiper la transfusion CGR O négatif</strong> — 20 mL/kg le plus vite possible · contact SAMU</div></div>
+        <div class="step"><div class="step-num">3</div><div><strong>PLYO (plasma lyophilisé)</strong> — si transport &gt; 20 min et hémorragie aiguë · 10–15 mL/kg</div></div>
+        <div class="step"><div class="step-num">4</div><div><strong>Noradrénaline</strong> — si collapsus persistant · brancher quelle que soit l'hémodynamique si intubation</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header noir">💊 Exacyl — doses par tranche</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Tranche</th><th>Dose</th><th>Volume (100 mg/mL)</th></tr>
+          <tr><td>Crèche &lt;10 kg</td><td>20 mg/kg</td><td class="val-rouge">1–2 mL IVL 10 min</td></tr>
+          <tr><td>Maternelle 10–20 kg</td><td>20 mg/kg</td><td class="val-rouge">2–4 mL IVL 10 min</td></tr>
+          <tr><td>Primaire 20–30 kg</td><td>20 mg/kg</td><td class="val-rouge">4–6 mL IVL 10 min</td></tr>
+          <tr><td>Ados &gt;30 kg</td><td>20 mg/kg (max 1 g)</td><td class="val-rouge">6–10 mL IVL 10 min</td></tr>
+        </table>
+        <div class="note">Prélever groupage + RAI AVANT toute transfusion · noter heure de pose garrot et heure de transfusion</div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ===== CHOC ANAPHYLACTIQUE ===== -->
+<details class="acc ana">
+  <summary>🌿 CHOC ANAPHYLACTIQUE <span class="sub">Distributif · allergique</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+
+    <div class="alerte">Les signes cutanés peuvent être absents · Identifier l'allergène · Arrêter l'exposition</div>
+
+    <div class="section">
+      <div class="section-header violet">📊 Grades de sévérité</div>
+      <div class="section-body">
+        <table>
+          <tr><td><strong>Grade 1</strong></td><td>Signes cutanéo-muqueux seuls : érythème · urticaire · œdème</td></tr>
+          <tr><td><strong>Grade 2</strong></td><td>Atteinte modérée : tachycardie · hypotension · bronchospasme</td></tr>
+          <tr><td><strong>Grade 3</strong></td><td class="val-rouge">Atteinte multiviscérale menaçant le pronostic vital</td></tr>
+          <tr><td><strong>Grade 4</strong></td><td class="val-rouge">ACR → cf. fiche ACR pédiatrique</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header violet">💊 Traitement</div>
+      <div class="section-body">
+        <div class="step"><div class="step-num violet">1</div><div><strong>Adrénaline IM grade ≥ 2</strong> — 0,01 mL/kg d'adrénaline pure (1 mg/mL) · max 0,5 mL · face antéro-latérale cuisse · non CI si tachycardie<br><span style="font-size:12px;color:var(--violet)">Si patient a son Epipen : 150 µg si 7,5–25 kg · 300 µg si &gt;25 kg</span></div></div>
+        <div class="step"><div class="step-num violet">2</div><div><strong>O₂ + Position adaptée</strong> — demi-assise si détresse respi · Trendelenburg si détresse cardio-vasculaire</div></div>
+        <div class="step"><div class="step-num violet">3</div><div><strong>Remplissage NaCl 0,9 %</strong> — 20 mL/kg si détresse CV</div></div>
+        <div class="step"><div class="step-num violet">4</div><div><strong>Si échec IM à 5 min</strong> — Adrénaline IV titration : diluer 1 mL adrénaline (1 mg) dans 9 mL SSI → 100 µg/mL · puis prendre 1 mL de cette dilution + 9 mL SSI → 10 µg/mL · injecter 1 µg/kg (= 0,1 mL/kg) par bolus IV toutes les 2 min</div></div>
+        <div class="step"><div class="step-num violet">5</div><div><strong>Si échec IV à 5–10 min</strong> — Adrénaline IVSE : 1 mg dans 50 mL SSI (20 µg/mL) → débuter 0,1 µg/kg/min · titrer par paliers</div></div>
+        <div class="step"><div class="step-num violet">6</div><div><strong>Bronchospasme</strong> — Ventoline 2,5 mg (&lt;30 kg) ou 5 mg (&gt;30 kg) · Œdème de Quincke : aérosol adrénaline 0,5 mg/kg max 5 mg</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header violet">💊 Traitements associés</div>
+      <div class="section-body">
+        <table>
+          <tr><td>Polaramine IV</td><td class="val">&lt;10 kg : 1,25 mg · 10–20 kg : 2,5 mg · 20–30 kg : 3,75 mg · &gt;30 kg : 5 mg · IVL 1 min</td></tr>
+          <tr><td>Solumedrol IV</td><td class="val">2 mg/kg IV</td></tr>
+          <tr><td>Tryptase</td><td class="val-orange">Prélever 30 min à 2h après les 1ers symptômes (tube sec rouge) · noter heure des 1ers symptômes</td></tr>
+        </table>
+        <div class="note-vert">Hospitaliser au minimum en SI même si amélioration clinique · risque de réaction biphasique</div>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ===== CHOC CARDIOGÉNIQUE ===== -->
+<details class="acc cardio">
+  <summary>❤️ CHOC CARDIOGÉNIQUE <span class="sub">Défaillance pompe</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+
+    <div class="alerte">Éviter le remplissage sauf collapsus confirmé · risque d'OAP · Contact SAMU immédiat pour discuter ECMO</div>
+
+    <div class="section">
+      <div class="section-header bleu">🔍 Causes à rechercher</div>
+      <div class="section-body">
+        <table>
+          <tr><td>Cardiopathie ductodépendante (NN)</td><td class="val-rouge">Fermeture du canal artériel · cyanose · collapsus</td></tr>
+          <tr><td>Myocardite virale</td><td class="val-orange">Contexte viral · tachycardie · défaillance</td></tr>
+          <tr><td>Trouble du rythme</td><td class="val">ECG · TSV · BAV</td></tr>
+          <tr><td>Tamponnade</td><td class="val">Épanchement péricardique · pouls paradoxal</td></tr>
+          <tr><td>PNO compressif</td><td class="val">Asymétrie · déviation trachée · exsufflation</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header bleu">💊 Traitement</div>
+      <div class="section-body">
+        <div class="step"><div class="step-num bleu">1</div><div><strong>Furosémide 2 mg/kg IV</strong> — si pas d'hypotension franche</div></div>
+        <div class="step"><div class="step-num bleu">2</div><div><strong>Dobutamine 5–20 µg/kg/min</strong> — si mauvaise contractilité<br>
+          &lt;15 kg : 4 mL (250 mg/20 mL) + 46 mL SSI → 5 µg/kg/min = 0,3 mL/kg/h<br>
+          &gt;15 kg : 12 mL + 38 mL SSI → 5 µg/kg/min = 0,1 mL/kg/h</div></div>
+        <div class="step"><div class="step-num bleu">3</div><div><strong>Noradrénaline</strong> — si résistances vasculaires faibles associées · 0,2–5 µg/kg/min</div></div>
+        <div class="step"><div class="step-num rouge">4</div><div><strong>Discuter transfert ECMO</strong> — choc réfractaire aux amines · myocardite avec hyperlactatémie · contact SAMU</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header bleu">🚑 Transfert — Points de vigilance</div>
+      <div class="section-body">
+        <table>
+          <tr><td>Amines</td><td class="val-rouge">En continu sur une seule voie · pas de bolus</td></tr>
+          <tr><td>Sat cible</td><td class="val">&gt;95% sauf cardiopathie cyanogène</td></tr>
+          <tr><td>Sédation entretien si intubé</td><td class="val">Sufenta +/− Hypnovel</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+<!-- ===== DÉSHYDRATATION AIGUË ===== -->
+<details class="acc deshy">
+  <summary>💧 DÉSHYDRATATION AIGUË <span class="sub">Hypovolémique · digestif</span> <span class="arr">▼</span></summary>
+  <div class="panel-inner">
+
+    <div class="section">
+      <div class="section-header vert">🔍 Évaluation</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Signe</th><th>Modérée (5–10%)</th><th>Sévère (&gt;10%)</th></tr>
+          <tr><td>Conscience</td><td>Normale ou irritable</td><td class="val-rouge">Obnubilation · coma</td></tr>
+          <tr><td>Yeux</td><td>Légèrement enfoncés</td><td class="val-rouge">Très enfoncés</td></tr>
+          <tr><td>Muqueuses</td><td>Sèches</td><td class="val-rouge">Très sèches</td></tr>
+          <tr><td>Pli cutané</td><td>Disparaît lentement</td><td class="val-rouge">Disparaît très lentement</td></tr>
+          <tr><td>TRC</td><td>&gt;2s</td><td class="val-rouge">&gt;3–4s</td></tr>
+          <tr><td>FC</td><td>Tachycardie</td><td class="val-rouge">Tachycardie ++ · bradycardie tardive</td></tr>
+        </table>
+        <div class="note">Dextro systématique · resucrage si &lt; 0,6 g/L · G10% 3 mL/kg</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header vert">💊 Traitement</div>
+      <div class="section-body">
+        <div class="step"><div class="step-num vert">1</div><div><strong>Remplissage RL ou NaCl 0,9 %</strong> — 20 mL/kg · renouveler jusqu'à réduction tachycardie et amélioration conscience</div></div>
+        <div class="step"><div class="step-num vert">2</div><div><strong>Si persistance après 2 remplissages</strong> — Noradrénaline : 1 mg dans 50 mL SSI (20 µg/mL) → débuter 0,2 µg/kg/min = 0,3 mL/kg/h · faire un 3ème remplissage</div></div>
+        <div class="step"><div class="step-num vert">3</div><div><strong>Après remplissage</strong> — relai hydratation IV : NaCl 0,9% 4 mL/kg/h</div></div>
+        <div class="step"><div class="step-num vert">4</div><div><strong>Vomissements itératifs</strong> — Zophren 0,1 mg/kg IV</div></div>
+        <div class="step"><div class="step-num vert">5</div><div><strong>Si prise orale possible</strong> — SRO 10–20 mL/kg PO ou sonde gastrique</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header vert">💊 Remplissage — volumes par tranche</div>
+      <div class="section-body">
+        <table>
+          <tr><th>Tranche</th><th>1er remplissage 20 mL/kg</th><th>Hydratation relai 4 mL/kg/h</th></tr>
+          <tr><td>Crèche &lt;10 kg</td><td class="val-rouge">50–80 mL</td><td class="val">20–40 mL/h</td></tr>
+          <tr><td>Maternelle 10–20 kg</td><td class="val-rouge">100–200 mL</td><td class="val">40–80 mL/h</td></tr>
+          <tr><td>Primaire 20–30 kg</td><td class="val-rouge">200–300 mL</td><td class="val">80–120 mL/h</td></tr>
+          <tr><td>Ados &gt;30 kg</td><td class="val-rouge">300–500 mL</td><td class="val">120–160 mL/h</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</details>
+
+</div><!-- fin acc-wrap -->
+
+<p class="footer-note">
+  SDS30 · v1.1 · juin 2026<br>
+  Référence : protocoles SMUR pédiatrique · ERC Guidelines 2025 · GFRUP<br>
+  Ce document ne remplace pas le contact SAMU/SMUR pédiatrique
+</p>
+
+</body>
+</html>
