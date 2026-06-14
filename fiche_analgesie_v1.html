@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analgésie-Sédation Pédiatrique — SDS30</title>
+<style>
+  :root {
+    --accent:     #8b0a50;
+    --accent-dk:  #650838;
+    --accent-bg:  #fce8f3;
+    --rouge:      #c0392b;
+    --rouge-bg:   #fdf3f2;
+    --bleu:       #1a5c8a;
+    --bleu-bg:    #eaf2f8;
+    --orange:     #c96a00;
+    --orange-bg:  #fef6e8;
+    --vert:       #1a6b3a;
+    --vert-bg:    #eaf5ee;
+    --violet:     #5a2d82;
+    --violet-bg:  #f3eef9;
+    --gris-bg:    #f0f2f5;
+    --blanc:      #ffffff;
+    --texte:      #1a1a1a;
+    --texte-soft: #666;
+    --bordure:    #d8dce3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gris-bg); color: var(--texte); max-width: 720px; margin: 0 auto; font-size: 14px; }
+
+  header { background: var(--accent); padding: 14px 18px 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .back-btn { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 20px; line-height: 1; padding: 2px 4px; }
+  header h1 { font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 0.3px; flex: 1; }
+  header p { font-size: 10px; color: rgba(255,255,255,0.65); }
+
+  .weight-tabs { display: flex; background: var(--accent-dk); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .weight-tabs::-webkit-scrollbar { display: none; }
+  .weight-tab { flex: 1; min-width: 80px; padding: 10px 8px; text-align: center; color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+  .weight-tab .kg { display: block; font-size: 14px; font-weight: 900; color: rgba(255,255,255,0.75); margin-bottom: 1px; }
+  .weight-tab.active { color: #fff; border-bottom-color: #fff; background: rgba(255,255,255,0.1); }
+  .weight-tab.active .kg { color: #fff; }
+
+  .quick-nav { display: flex; gap: 8px; padding: 10px 14px; background: var(--blanc); border-bottom: 1px solid var(--bordure); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .quick-nav::-webkit-scrollbar { display: none; }
+  .qnav-btn { background: var(--gris-bg); border: 1px solid var(--bordure); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 700; color: var(--texte-soft); cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+  .qnav-btn:active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .content { padding: 14px 14px 48px; }
+  .panel-poids { display: none; }
+  .panel-poids.active { display: block; }
+
+  .card { background: var(--blanc); border-radius: 12px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; border-left: 5px solid var(--accent); gap: 8px; }
+  .card-head.rouge  { border-left-color: var(--rouge); }
+  .card-head.bleu   { border-left-color: var(--bleu); }
+  .card-head.orange { border-left-color: var(--orange); }
+  .card-head.vert   { border-left-color: var(--vert); }
+  .card-head.violet { border-left-color: var(--violet); }
+  .card-head.noir   { border-left-color: #2c2c2c; }
+  .card-head-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .card-head-icon { font-size: 18px; flex-shrink: 0; }
+  .card-head-title { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; color: var(--texte); line-height: 1.3; }
+  .card-head-sub { font-size: 11px; font-weight: 400; color: var(--texte-soft); text-transform: none; letter-spacing: 0; display: block; margin-top: 1px; }
+  .card-chevron { color: var(--texte-soft); font-size: 13px; flex-shrink: 0; transition: transform 0.2s; }
+  .card.open .card-chevron { transform: rotate(180deg); }
+  .card-body { display: none; padding: 0 14px 14px; border-top: 1px solid var(--bordure); }
+  .card.open .card-body { display: block; }
+
+  /* ALGO DOULEUR */
+  .algo-douleur { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  @media (max-width: 400px) { .algo-douleur { grid-template-columns: 1fr; } }
+  .algo-card { border-radius: 8px; overflow: hidden; border: 1px solid var(--bordure); }
+  .algo-card-title { padding: 7px 10px; font-weight: 800; font-size: 12px; color: #fff; text-align: center; text-transform: uppercase; }
+  .algo-card-body { padding: 9px 10px; font-size: 12px; line-height: 1.7; background: #fff; }
+
+  /* TITRATION STEPS */
+  .step { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px dashed var(--bordure); font-size: 12px; line-height: 1.5; }
+  .step:last-child { border-bottom: none; }
+  .step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
+  .step-num.bleu { background: var(--bleu); }
+  .step-num.rouge { background: var(--rouge); }
+
+  /* DOSES EN GRAND */
+  .dose-card { background: var(--gris-bg); border-radius: 10px; padding: 12px 14px; border-left: 4px solid var(--accent); margin-top: 8px; }
+  .dose-card.rouge  { border-left-color: var(--rouge); }
+  .dose-card.orange { border-left-color: var(--orange); }
+  .dose-card.vert   { border-left-color: var(--vert); }
+  .dose-card.violet { border-left-color: var(--violet); }
+  .dose-card.bleu   { border-left-color: var(--bleu); }
+  .dose-card.noir   { border-left-color: #2c2c2c; }
+  .dose-drug { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; color: var(--texte-soft); margin-bottom: 4px; }
+  .dose-prep { font-size: 11px; color: var(--texte-soft); margin-bottom: 8px; line-height: 1.4; }
+  .dose-weights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .dose-w { background: var(--blanc); border-radius: 8px; padding: 8px 6px; text-align: center; border: 1px solid var(--bordure); }
+  .dose-w .wlabel { font-size: 10px; color: var(--texte-soft); font-weight: 700; margin-bottom: 4px; display: block; }
+  .dose-w .wval { font-size: 18px; font-weight: 900; color: var(--accent); line-height: 1; display: block; }
+  .dose-w .wunit { font-size: 10px; color: var(--texte-soft); display: block; margin-top: 1px; }
+  .dose-card.rouge  .dose-w .wval { color: var(--rouge); }
+  .dose-card.orange .dose-w .wval { color: var(--orange); }
+  .dose-card.vert   .dose-w .wval { color: var(--vert); }
+  .dose-card.violet .dose-w .wval { color: var(--violet); }
+  .dose-card.bleu   .dose-w .wval { color: var(--bleu); }
+  .dose-card.noir   .dose-w .wval { color: #2c2c2c; }
+
+  /* SÉDATION ENTRETIEN */
+  .sedat-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+  .sedat-table th { background: var(--gris-bg); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--texte-soft); padding: 5px 8px; text-align: left; border-bottom: 1px solid var(--bordure); }
+  .sedat-table td { padding: 7px 8px; border-bottom: 1px solid var(--bordure); vertical-align: middle; line-height: 1.4; font-size: 12px; }
+  .sedat-table tr:last-child td { border-bottom: none; }
+  .sedat-table td:first-child { font-weight: 700; width: 32%; }
+  .sedat-table td:nth-child(2) { font-size: 11px; color: var(--texte-soft); }
+  .sedat-table .debit { font-weight: 900; color: #2c2c2c; font-size: 14px; }
+
+  .simple-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+  .simple-table td, .simple-table th { padding: 7px 8px; border-bottom: 1px solid var(--bordure); vertical-align: top; line-height: 1.4; }
+  .simple-table tr:last-child td { border-bottom: none; }
+  .simple-table th { background: var(--gris-bg); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--texte-soft); }
+  .simple-table td:first-child { color: var(--texte-soft); font-size: 11px; width: 38%; }
+  .simple-table td:last-child { font-weight: 600; }
+
+  .alerte { background: var(--rouge-bg); border-left: 4px solid var(--rouge); border-radius: 0 8px 8px 0; padding: 10px 12px; font-size: 12px; color: var(--rouge); font-weight: 600; margin-bottom: 10px; line-height: 1.5; }
+  .note { background: var(--orange-bg); border-left: 4px solid var(--orange); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--orange); margin-top: 8px; line-height: 1.5; }
+  .note-vert { background: var(--vert-bg); border-left: 4px solid var(--vert); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--vert); margin-top: 8px; line-height: 1.5; }
+  .note-violet { background: var(--violet-bg); border-left: 4px solid var(--violet); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--violet); margin-top: 8px; line-height: 1.5; }
+
+  .footer-note { text-align: center; font-size: 10px; color: #aaa; padding: 16px 14px 8px; border-top: 1px solid var(--bordure); margin-top: 8px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <a class="back-btn" href="index.html">‹</a>
+    <h1>💊 Analgésie — Sédation</h1>
+  </div>
+  <p>SDS30 · v1.0 · RFE SFAR 2010 · SFAR 2019</p>
+</header>
+
+<div class="weight-tabs">
+  <div class="weight-tab active" onclick="switchTab(this,'global')"><span class="kg">Tous</span>Commun</div>
+  <div class="weight-tab" onclick="switchTab(this,'creche')"><span class="kg">&lt;10 kg</span>Crèche</div>
+  <div class="weight-tab" onclick="switchTab(this,'maternelle')"><span class="kg">10–20 kg</span>Maternelle</div>
+  <div class="weight-tab" onclick="switchTab(this,'primaire')"><span class="kg">20–30 kg</span>Primaire</div>
+  <div class="weight-tab" onclick="switchTab(this,'adulte')"><span class="kg">&gt;30 kg</span>Ados</div>
+</div>
+
+<div class="quick-nav">
+  <button class="qnav-btn" onclick="navTo('evaluation')">📊 Évaluation</button>
+  <button class="qnav-btn" onclick="navTo('algorithme')">🧭 Algorithme</button>
+  <button class="qnav-btn" onclick="navTo('doses')">💉 Doses</button>
+  <button class="qnav-btn" onclick="navTo('sedation')">😴 Sédation</button>
+  <button class="qnav-btn" onclick="navTo('voie-in')">👃 Voie IN</button>
+  <button class="qnav-btn" onclick="navTo('meopa')">🫧 MEOPA</button>
+</div>
+
+<div class="content">
+
+<!-- ═══ PANNEAU COMMUN ═══ -->
+<div class="panel-poids active" id="panel-global">
+
+  <!-- ÉVALUATION -->
+  <div class="card open" id="evaluation">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">📊</span>
+        <div><div class="card-head-title">Évaluation de la douleur</div><span class="card-head-sub">EVENDOL · EVA · Seuil de traitement</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><th>Échelle</th><th style="color:var(--vert)">Faible</th><th style="color:var(--orange)">Modérée</th><th style="color:var(--rouge)">Intense</th></tr>
+        <tr><td><strong>EVENDOL</strong> (&lt; 5 ans)</td><td style="color:var(--vert);font-weight:700">≤ 3 / 15</td><td style="color:var(--orange);font-weight:700">4–10 / 15</td><td style="color:var(--rouge);font-weight:700">≥ 11 / 15</td></tr>
+        <tr><td><strong>EVA</strong> (&gt; 5 ans)</td><td style="color:var(--vert);font-weight:700">≤ 3 / 10</td><td style="color:var(--orange);font-weight:700">4–6 / 10</td><td style="color:var(--rouge);font-weight:700">≥ 7 / 10</td></tr>
+      </table>
+      <div class="note">Seuil de traitement : EVENDOL ≥ 4 · EVA ≥ 4 · Réévaluer 30 min après traitement</div>
+    </div>
+  </div>
+
+  <!-- ALGORITHME -->
+  <div class="card open" id="algorithme">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🧭</span>
+        <div><div class="card-head-title">Algorithme — Patient en VS</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="algo-douleur">
+        <div class="algo-card">
+          <div class="algo-card-title" style="background:var(--vert)">Douleur faible ou modérée</div>
+          <div class="algo-card-body">
+            <strong>1ère intention :</strong><br>
+            · Paracétamol IV 15 mg/kg<br>
+            · Nubain 0,2 mg/kg IV<br>
+            · MEOPA<br><br>
+            <strong>Si insuffisant à 30 min :</strong><br>
+            → Morphine IV titration<br>
+            <span style="font-size:11px;color:var(--texte-soft)">(EVA ≥ 4 ou EVENDOL ≥ 4)</span>
+          </div>
+        </div>
+        <div class="algo-card">
+          <div class="algo-card-title" style="background:var(--rouge)">Douleur intense</div>
+          <div class="algo-card-body">
+            <strong>1ère intention :</strong><br>
+            · Morphine IV titration<br>
+            · + Paracétamol IV 15 mg/kg<br>
+            · +/− MEOPA<br>
+            · +/− Kétamine 0,3 mg/kg IV<br><br>
+            <strong>Réévaluer / 5 min</strong><br>
+            <span style="font-size:11px;color:var(--texte-soft)">poursuivre titration morphine</span>
+          </div>
+        </div>
+      </div>
+      <div class="note-violet">Pas de VVP disponible → Voie intranasale (IN) en priorité</div>
+    </div>
+  </div>
+
+  <!-- MORPHINE TITRATION -->
+  <div class="card open" id="doses">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💉</span>
+        <div><div class="card-head-title">Morphine — Titration IV</div><span class="card-head-sub">Règle commune à toutes les tranches</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="step"><div class="step-num bleu">1</div><div>Diluer : 1 amp 10 mg/mL + 9 mL SSI → <strong>1 mg/mL</strong></div></div>
+      <div class="step"><div class="step-num bleu">2</div><div>Dose initiale : <strong>0,1 mg/kg</strong> IVD (≥ 1 an) · <strong>0,05 mg/kg</strong> (&lt; 1 an)</div></div>
+      <div class="step"><div class="step-num bleu">3</div><div>Paliers : <strong>0,05 mg/kg</strong> IVD toutes les 5 min jusqu'à analgésie satisfaisante</div></div>
+      <div class="alerte" style="margin-top:10px">Surdosage morphinique → <strong>Naloxone 10 µg/kg IVD</strong> · diluer 1 amp 0,4 mg + 9 mL SSI → 0,04 mg/mL → <strong>0,25 mL/kg</strong> · répéter /3–5 min</div>
+    </div>
+  </div>
+
+  <!-- SÉDATION INTUBÉ GÉNÉRALE -->
+  <div class="card" id="sedation">
+    <div class="card-head noir" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">😴</span>
+        <div><div class="card-head-title">Sédation — Patient intubé ventilé</div><span class="card-head-sub">Posologies · Dilutions standard seringue 50 mL</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="sedat-table">
+        <tr><th>Médicament</th><th>Dilution 50 mL</th><th>Posologie</th></tr>
+        <tr><td>Hypnovel</td><td>50 mg dans 50 mL → 1 mg/mL</td><td>0,1–0,3 mg/kg/h</td></tr>
+        <tr><td>OU Kétamine</td><td>250 mg dans 50 mL → 5 mg/mL</td><td>2–4 mg/kg/h</td></tr>
+        <tr><td>+ Sufenta</td><td>50 µg dans 50 mL → 1 µg/mL</td><td>0,2–0,5 µg/kg/h</td></tr>
+      </table>
+      <div class="note">Hypnovel si HD stable · Kétamine si HD instable ou TC · Sufenta systématiquement associé · Débits précis → onglets par poids</div>
+    </div>
+  </div>
+
+  <!-- VOIE IN -->
+  <div class="card" id="voie-in">
+    <div class="card-head violet" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">👃</span>
+        <div><div class="card-head-title">Voie Intranasale (IN)</div><span class="card-head-sub">Si pas de VVP · drogues pures · délai 10–15 min</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="alerte">Délai d'action 10–15 min · Diviser en 2 narines si volume &gt; 0,5 mL · Drogues pures sans dilution</div>
+      <table class="simple-table">
+        <tr><th>Médicament</th><th>Indication</th><th>Dose</th><th>Répétition</th></tr>
+        <tr><td>Kétamine<br><small style="color:var(--texte-soft)">250 mg/5 mL pure</small></td><td>Analgésie</td><td style="color:var(--violet);font-weight:700">2 mg/kg<br>0,04 mL/kg</td><td style="font-size:11px">1 mg/kg à 15 min</td></tr>
+        <tr><td>Sufenta<br><small style="color:var(--texte-soft)">250 µg/5 mL<br>diluer 2 mL + 10 mL SSI</small></td><td>Analgésie VS</td><td style="color:var(--violet);font-weight:700">0,3 µg/kg<br>0,02 mL/kg</td><td style="font-size:11px">0,15 µg/kg à 15 min</td></tr>
+        <tr><td>Midazolam<br><small style="color:var(--texte-soft)">50 mg/10 mL pure</small></td><td>Sédation · convulsions</td><td style="color:var(--violet);font-weight:700">0,3 mg/kg<br>0,06 mL/kg</td><td style="font-size:11px">0,15 mg/kg à 15 min</td></tr>
+      </table>
+      <div class="note-violet">Doses précises par poids → onglets par tranche</div>
+    </div>
+  </div>
+
+  <!-- MEOPA -->
+  <div class="card" id="meopa">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🫧</span>
+        <div><div class="card-head-title">MEOPA</div><span class="card-head-sub">Mélange Équimolaire O₂/N₂O 50/50</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>Indications</td><td>Acte douloureux court · pose VVP · pansement · réduction fracture · sondage</td></tr>
+        <tr><td>Âge minimum</td><td style="color:var(--rouge);font-weight:700">&gt; 1 mois</td></tr>
+        <tr><td>Durée max</td><td>60 min · inhaler 3 min avant de débuter le soin</td></tr>
+        <tr><td>Administration</td><td>Débit adapté à la respiration · ballon gonflé en permanence · obus vertical</td></tr>
+        <tr><td>Conservation</td><td style="color:var(--rouge);font-weight:700">T° &gt; 0°C impérativement</td></tr>
+      </table>
+      <div class="alerte" style="margin-top:10px">CI : TC grave · HTIC · PNO · emphysème · embolie gazeuse · distension gazeuse abdominale · altération conscience · patient nécessitant FiO₂ pure</div>
+    </div>
+  </div>
+
+  <!-- SITUATIONS PARTICULIÈRES -->
+  <div class="card">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">⚡</span>
+        <div><div class="card-head-title">Situations particulières</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="simple-table">
+        <tr><td>CEE pour réduction TSV</td><td>Kétamine IV <strong>0,5 mg/kg</strong></td></tr>
+        <tr><td>Pose drain thoracique</td><td>Kétamine <strong>1 mg/kg IV</strong> +/− titration 0,5 mg/kg</td></tr>
+        <tr><td>Pansement brûlures</td><td>Cf. fiche brûlé · Kétamine + MEOPA + Paracétamol</td></tr>
+        <tr><td>Pose KTIO hors ACR</td><td>Lidocaïne 2 % <strong>0,5 mg/kg</strong> sur 2 min · repos 1 min · rinçage<br>puis 0,25 mg/kg sur 1 min · flush SSI 10 mL<br><small style="color:var(--texte-soft)">Durée totale ≥ 4 min · seulement hors urgence vitale</small></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:16px 0 4px;font-size:12px;color:var(--texte-soft);font-weight:700">
+    👇 Sélectionne une tranche de poids pour les doses
+  </div>
+
+</div><!-- /global -->
+
+
+<!-- ═══ CRÈCHE < 10 kg ═══ -->
+<div class="panel-poids" id="panel-creche">
+  <div class="card open" data-section="doses">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Analgésie en VS — &lt; 10 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card" style="margin-top:0">
+        <div class="dose-drug">Paracétamol 10 mg/mL · 15 mg/kg IVL 15 min</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">4,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">7,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">12</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">Nubain 10 mg/mL · 0,2 mg/kg IVL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,06</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,1</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,16</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Morphine titration · 0,05 mg/kg (&lt;1 an) · 0,1 mg/kg (≥1 an)</div>
+        <div class="dose-prep">1 amp 10 mg/mL + 9 mL SSI → 1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,15</span><span class="wunit">mL init</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,25</span><span class="wunit">mL init</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,4</span><span class="wunit">mL init</span></div>
+        </div>
+        <div class="note" style="margin-top:8px">Dose initiale réduite &lt; 1 an · titration prudente · paliers 0,02 mg/kg /5 min</div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine analg. IV · 0,3 mg/kg · dilution 1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,9</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">1,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">2,4</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine IN · 2 mg/kg · 0,04 mL/kg pur (250 mg/5 mL)</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,12</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,32</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-section="sedation">
+    <div class="card-head noir" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">😴</span>
+        <div><div class="card-head-title">Sédation intubé — &lt; 10 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="sedat-table" style="margin-top:8px">
+        <tr><th>Médicament</th><th>Dilution 50 mL</th><th>Débit départ</th></tr>
+        <tr><td>Hypnovel</td><td>50 mg dans 50 mL → 1 mg/mL</td><td class="debit">0,3–0,9 mL/h</td></tr>
+        <tr><td>OU Kétamine</td><td>250 mg dans 50 mL → 5 mg/mL</td><td class="debit">1,2–2,4 mL/h</td></tr>
+        <tr><td>+ Sufenta</td><td>50 µg dans 50 mL → 1 µg/mL</td><td class="debit">0,8–2 mL/h</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" data-section="voie-in">
+    <div class="card-head violet" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">👃</span>
+        <div><div class="card-head-title">Voie IN — &lt; 10 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine 250 mg/5 mL pure · 2 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,12</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,32</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Sufenta dilué · 0,3 µg/kg · 2 mL + 10 mL SSI</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,06</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,1</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,16</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Midazolam 50 mg/10 mL pure · 0,3 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">3 kg</span><span class="wval">0,18</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">5 kg</span><span class="wval">0,3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">8 kg</span><span class="wval">0,48</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /creche -->
+
+
+<!-- ═══ MATERNELLE 10–20 kg ═══ -->
+<div class="panel-poids" id="panel-maternelle">
+  <div class="card open" data-section="doses">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Analgésie en VS — 10–20 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card" style="margin-top:0">
+        <div class="dose-drug">Paracétamol 10 mg/mL · 15 mg/kg IVL 15 min</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">15</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">22,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">30</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">Nubain 10 mg/mL · 0,2 mg/kg IVL · max 20 mg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">0,2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">0,3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">0,4</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Morphine titration · 0,1 mg/kg init · puis 0,05 mg/kg /5 min</div>
+        <div class="dose-prep">1 amp 10 mg/mL + 9 mL SSI → 1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">1</span><span class="wunit">mL init</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">1,5</span><span class="wunit">mL init</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">2</span><span class="wunit">mL init</span></div>
+        </div>
+        <div class="note" style="margin-top:8px">Palier : 0,05 mg/kg = 0,5 mL (10 kg) · 0,75 mL (15 kg) · 1 mL (20 kg)</div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine analg. IV · 0,3 mg/kg · dilution 1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">4,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">6</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine IN · 2 mg/kg · 0,04 mL/kg pur</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">0,4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">0,6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">0,8</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-section="sedation">
+    <div class="card-head noir" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">😴</span>
+        <div><div class="card-head-title">Sédation intubé — 10–20 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="sedat-table" style="margin-top:8px">
+        <tr><th>Médicament</th><th>Dilution 50 mL</th><th>Débit départ</th></tr>
+        <tr><td>Hypnovel</td><td>50 mg dans 50 mL → 1 mg/mL</td><td class="debit">1,1–3,3 mL/h</td></tr>
+        <tr><td>OU Kétamine</td><td>250 mg dans 50 mL → 5 mg/mL</td><td class="debit">4,4–8,8 mL/h</td></tr>
+        <tr><td>+ Sufenta</td><td>50 µg dans 50 mL → 1 µg/mL</td><td class="debit">2–5 mL/h</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" data-section="voie-in">
+    <div class="card-head violet" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">👃</span>
+        <div><div class="card-head-title">Voie IN — 10–20 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine 250 mg/5 mL pure · 2 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">0,4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">0,6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">0,8</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Sufenta dilué · 0,3 µg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">0,2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">0,3</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">0,4</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Midazolam 50 mg/10 mL pure · 0,3 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">10 kg</span><span class="wval">0,6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">15 kg</span><span class="wval">0,9</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">1,2</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="note-violet">Diviser en 2 narines si volume &gt; 0,5 mL</div>
+    </div>
+  </div>
+</div><!-- /maternelle -->
+
+
+<!-- ═══ PRIMAIRE 20–30 kg ═══ -->
+<div class="panel-poids" id="panel-primaire">
+  <div class="card open" data-section="doses">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Analgésie en VS — 20–30 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card" style="margin-top:0">
+        <div class="dose-drug">Paracétamol 10 mg/mL · 15 mg/kg IVL 15 min</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">30</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">37,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">45</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">Nubain 10 mg/mL · 0,2 mg/kg IVL · max 20 mg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">0,4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">0,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">0,6</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Morphine titration · 0,1 mg/kg init · puis 0,05 mg/kg /5 min</div>
+        <div class="dose-prep">1 amp 10 mg/mL + 9 mL SSI → 1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">2</span><span class="wunit">mL init</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">2,5</span><span class="wunit">mL init</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">3</span><span class="wunit">mL init</span></div>
+        </div>
+        <div class="note" style="margin-top:8px">Palier : 0,05 mg/kg = 1 mL (20 kg) · 1,25 mL (25 kg) · 1,5 mL (30 kg)</div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine analg. IV · 0,3 mg/kg · dilution 1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">7,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">9</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine IN · 2 mg/kg · 0,04 mL/kg pur</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">0,8</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">1</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">1,2</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-section="sedation">
+    <div class="card-head noir" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">😴</span>
+        <div><div class="card-head-title">Sédation intubé — 20–30 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="sedat-table" style="margin-top:8px">
+        <tr><th>Médicament</th><th>Dilution 50 mL</th><th>Débit départ</th></tr>
+        <tr><td>Hypnovel</td><td>50 mg dans 50 mL → 1 mg/mL</td><td class="debit">2–6 mL/h</td></tr>
+        <tr><td>OU Kétamine</td><td>250 mg dans 50 mL → 5 mg/mL</td><td class="debit">8–16 mL/h</td></tr>
+        <tr><td>+ Sufenta</td><td>50 µg dans 50 mL → 1 µg/mL</td><td class="debit">4–10 mL/h</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" data-section="voie-in">
+    <div class="card-head violet" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">👃</span>
+        <div><div class="card-head-title">Voie IN — 20–30 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine 250 mg/5 mL pure · 2 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">0,8</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">1</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">1,2</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Sufenta dilué · 0,3 µg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">0,4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">0,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">0,6</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Midazolam 50 mg/10 mL pure · 0,3 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">20 kg</span><span class="wval">1,2</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">25 kg</span><span class="wval">1,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">30 kg</span><span class="wval">1,8</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="note-violet">Diviser en 2 narines si volume &gt; 0,5 mL</div>
+    </div>
+  </div>
+</div><!-- /primaire -->
+
+
+<!-- ═══ ADOS > 30 kg ═══ -->
+<div class="panel-poids" id="panel-adulte">
+  <div class="card open" data-section="doses">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Analgésie en VS — &gt; 30 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card" style="margin-top:0">
+        <div class="dose-drug">Paracétamol 10 mg/mL · 15 mg/kg · max 1 g ⚑</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">52,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">60</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">≥67 kg</span><span class="wval">100 ⚑</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card" style="margin-top:8px">
+        <div class="dose-drug">Nubain 10 mg/mL · 0,2 mg/kg · max 20 mg ⚑</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">7</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">8</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">≥50 kg</span><span class="wval">10 ⚑</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card rouge" style="margin-top:8px">
+        <div class="dose-drug">Morphine titration · 0,1 mg/kg init · puis 0,05 mg/kg /5 min</div>
+        <div class="dose-prep">1 amp 10 mg/mL + 9 mL SSI → 1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">3,5</span><span class="wunit">mL init</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">4</span><span class="wunit">mL init</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">5</span><span class="wunit">mL init</span></div>
+        </div>
+        <div class="note" style="margin-top:8px">Palier : 0,05 mg/kg = 1,75 mL (35 kg) · 2 mL (40 kg) · 2,5 mL (50 kg)</div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine analg. IV · 0,3 mg/kg · dilution 1 mg/mL</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">10,5</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">12</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">15</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine IN · 2 mg/kg · 0,04 mL/kg pur</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">1,4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">1,6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">2</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-section="sedation">
+    <div class="card-head noir" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">😴</span>
+        <div><div class="card-head-title">Sédation intubé — &gt; 30 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <table class="sedat-table" style="margin-top:8px">
+        <tr><th>Médicament</th><th>Dilution 50 mL</th><th>Débit départ</th></tr>
+        <tr><td>Hypnovel</td><td>50 mg dans 50 mL → 1 mg/mL</td><td class="debit">3,5–10 mL/h</td></tr>
+        <tr><td>OU Kétamine</td><td>250 mg dans 50 mL → 5 mg/mL</td><td class="debit">14–28 mL/h</td></tr>
+        <tr><td>+ Sufenta</td><td>50 µg dans 50 mL → 1 µg/mL</td><td class="debit">7–17,5 mL/h</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" data-section="voie-in">
+    <div class="card-head violet" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">👃</span>
+        <div><div class="card-head-title">Voie IN — &gt; 30 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Kétamine 250 mg/5 mL pure · 2 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">1,4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">1,6</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">2</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Sufenta dilué · 0,3 µg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">0,7</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">0,8</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">1</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card violet" style="margin-top:8px">
+        <div class="dose-drug">Midazolam 50 mg/10 mL pure · 0,3 mg/kg</div>
+        <div class="dose-weights">
+          <div class="dose-w"><span class="wlabel">35 kg</span><span class="wval">2,1</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">40 kg</span><span class="wval">2,4</span><span class="wunit">mL</span></div>
+          <div class="dose-w"><span class="wlabel">50 kg</span><span class="wval">3</span><span class="wunit">mL</span></div>
+        </div>
+      </div>
+      <div class="note-violet">Diviser en 2 narines si volume &gt; 0,5 mL</div>
+    </div>
+  </div>
+</div><!-- /adulte -->
+
+</div><!-- /content -->
+
+<p class="footer-note">SDS30 · v1.0 · juin 2026<br>Référence : RFE SFAR 2010 · SFAR 2019 · protocoles SMUR pédiatrique<br>Ce document ne remplace pas le contact SAMU/SMUR pédiatrique</p>
+
+<script>
+  function switchTab(el, panelId) {
+    document.querySelectorAll('.weight-tab').forEach(function(t) { t.classList.remove('active'); });
+    el.classList.add('active');
+    document.querySelectorAll('.panel-poids').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('panel-' + panelId).classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+  function toggleCard(headEl) {
+    var card = headEl.parentElement;
+    while (card && !card.classList.contains('card')) { card = card.parentElement; }
+    if (!card || card.classList.contains('always-open')) return;
+    card.classList.toggle('open');
+  }
+  function navTo(sectionId) {
+    var activePanel = document.querySelector('.panel-poids.active');
+    var target = null;
+    if (activePanel) { target = activePanel.querySelector('[data-section="' + sectionId + '"]'); }
+    if (!target) { target = document.getElementById(sectionId); }
+    if (!target) { target = document.querySelector('[data-section="' + sectionId + '"]'); }
+    if (!target) return;
+    var card = target;
+    while (card && !card.classList.contains('card')) { card = card.parentElement; }
+    if (card && !card.classList.contains('open')) { card.classList.add('open'); }
+    setTimeout(function() {
+      var top = target.getBoundingClientRect().top + window.pageYOffset - 130;
+      window.scrollTo({top: top, behavior: 'smooth'});
+    }, 80);
+  }
+</script>
+</body>
+</html>
