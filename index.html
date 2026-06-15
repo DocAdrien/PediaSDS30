@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SDS30 Pedia">
+<link rel="manifest" href="manifest.json">
 <title>SDS30 Pedia</title>
 <style>
   :root {
@@ -322,7 +323,7 @@
       <span class="tuile-arrow">›</span>
     </a>
 
-    <a class="tuile rouge" href="fiche_chocs_pediatrique.html">
+    <a class="tuile rouge" href="fiche_chocs_v1.html">
       <span class="tuile-num">5</span>
       <div>
         <div class="tuile-icon">🩺</div>
@@ -386,6 +387,15 @@
   document.getElementById('install-close').addEventListener('click', () => {
     document.getElementById('install-banner').classList.remove('visible');
   });
+
+  // Enregistrement du service worker pour le mode hors-ligne
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then((reg) => console.log('Service worker enregistré', reg.scope))
+        .catch((err) => console.log('Échec enregistrement SW', err));
+    });
+  }
 </script>
 
 </body>
