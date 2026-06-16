@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Damage Control Pédiatrique — SDS30</title>
+<style>
+  :root {
+    --accent:     #2c2c2c;
+    --accent-dk:  #1a1a1a;
+    --accent-bg:  #f0f0f0;
+    --rouge:      #c0392b;
+    --rouge-bg:   #fdf3f2;
+    --bleu:       #1a5c8a;
+    --bleu-bg:    #eaf2f8;
+    --orange:     #c96a00;
+    --orange-bg:  #fef6e8;
+    --vert:       #1a6b3a;
+    --vert-bg:    #eaf5ee;
+    --violet:     #5a2d82;
+    --violet-bg:  #f3eef9;
+    --jaune:      #b8860b;
+    --jaune-bg:   #fdf6e3;
+    --gris-bg:    #f0f2f5;
+    --blanc:      #ffffff;
+    --texte:      #1a1a1a;
+    --texte-soft: #666;
+    --bordure:    #d8dce3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gris-bg); color: var(--texte); max-width: 720px; margin: 0 auto; font-size: 14px; }
+
+  header { background: var(--accent); padding: 14px 18px 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .back-btn { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 20px; line-height: 1; padding: 2px 4px; }
+  header h1 { font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 0.3px; flex: 1; }
+  header p { font-size: 10px; color: rgba(255,255,255,0.65); }
+
+  .weight-tabs { display: flex; background: var(--accent-dk); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .weight-tabs::-webkit-scrollbar { display: none; }
+  .weight-tab { flex: 1; min-width: 80px; padding: 10px 8px; text-align: center; color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+  .weight-tab .kg { display: block; font-size: 14px; font-weight: 900; color: rgba(255,255,255,0.75); margin-bottom: 1px; }
+  .weight-tab.active { color: #fff; border-bottom-color: #fff; background: rgba(255,255,255,0.1); }
+  .weight-tab.active .kg { color: #fff; }
+
+  .quick-nav { display: flex; gap: 8px; padding: 10px 14px; background: var(--blanc); border-bottom: 1px solid var(--bordure); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .quick-nav::-webkit-scrollbar { display: none; }
+  .qnav-btn { background: var(--gris-bg); border: 1px solid var(--bordure); border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 700; color: var(--texte-soft); cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+  .qnav-btn:active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .content { padding: 14px 14px 48px; }
+  .panel-poids { display: none; }
+  .panel-poids.active { display: block; }
+
+  .card { background: var(--blanc); border-radius: 12px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; border-left: 5px solid var(--accent); gap: 8px; }
+  .card-head.rouge  { border-left-color: var(--rouge); }
+  .card-head.bleu   { border-left-color: var(--bleu); }
+  .card-head.orange { border-left-color: var(--orange); }
+  .card-head.vert   { border-left-color: var(--vert); }
+  .card-head.violet { border-left-color: var(--violet); }
+  .card-head.jaune  { border-left-color: var(--jaune); }
+  .card-head-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .card-head-icon { font-size: 18px; flex-shrink: 0; font-weight: 900; }
+  .card-head-title { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; color: var(--texte); line-height: 1.3; }
+  .card-head-sub { font-size: 11px; font-weight: 400; color: var(--texte-soft); text-transform: none; letter-spacing: 0; display: block; margin-top: 1px; }
+  .card-chevron { color: var(--texte-soft); font-size: 13px; flex-shrink: 0; transition: transform 0.2s; }
+  .card.open .card-chevron { transform: rotate(180deg); }
+  .card-body { display: none; padding: 0 14px 14px; border-top: 1px solid var(--bordure); }
+  .card.open .card-body { display: block; }
+
+  /* LETTRE XABCDE GÉANTE */
+  .xletter {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 900; color: #fff; flex-shrink: 0;
+  }
+  .xletter.rouge  { background: var(--rouge); }
+  .xletter.bleu   { background: var(--bleu); }
+  .xletter.orange { background: var(--orange); }
+  .xletter.jaune  { background: var(--jaune); }
+  .xletter.vert   { background: var(--vert); }
+  .xletter.violet { background: var(--violet); }
+  .xletter.noir   { background: #2c2c2c; }
+
+  /* STEPS */
+  .step { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; border-bottom: 1px dashed var(--bordure); font-size: 12px; line-height: 1.5; }
+  .step:last-child { border-bottom: none; }
+  .step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
+  .step-num.bleu   { background: var(--bleu); }
+  .step-num.vert   { background: var(--vert); }
+  .step-num.orange { background: var(--orange); }
+  .step-num.violet { background: var(--violet); }
+  .step-num.rouge  { background: var(--rouge); }
+  .step-num.jaune  { background: var(--jaune); }
+
+  /* TABLES */
+  .simple-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+  .simple-table td, .simple-table th { padding: 7px 8px; border-bottom: 1px solid var(--bordure); vertical-align: top; line-height: 1.4; }
+  .simple-table tr:last-child td { border-bottom: none; }
+  .simple-table th { background: var(--gris-bg); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--texte-soft); }
+  .simple-table td:first-child { color: var(--texte-soft); font-size: 11px; width: 36%; }
+  .simple-table td:last-child { font-weight: 600; }
+
+  /* ALERTES / NOTES */
+  .alerte { background: var(--rouge-bg); border-left: 4px solid var(--rouge); border-radius: 0 8px 8px 0; padding: 10px 12px; font-size: 12px; color: var(--rouge); font-weight: 600; margin-bottom: 10px; line-height: 1.5; }
+  .note { background: var(--orange-bg); border-left: 4px solid var(--orange); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--orange); margin-top: 8px; line-height: 1.5; }
+  .note-vert { background: var(--vert-bg); border-left: 4px solid var(--vert); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--vert); margin-top: 8px; line-height: 1.5; }
+  .note-violet { background: var(--violet-bg); border-left: 4px solid var(--violet); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--violet); margin-top: 8px; line-height: 1.5; }
+  .note-bleu { background: var(--bleu-bg); border-left: 4px solid var(--bleu); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 11px; color: var(--bleu); margin-top: 8px; line-height: 1.5; }
+
+  /* RENVOI FICHE */
+  .renvoi { background: #2c2c2c; color: #fff; border-radius: 8px; padding: 10px 12px; font-size: 12px; margin-top: 8px; display: flex; align-items: center; gap: 8px; }
+  .renvoi::before { content: '↗'; font-size: 16px; font-weight: 900; }
+
+  /* NORMES VITALES EN GRAND */
+  .vitaux-grid-big { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+  @media (max-width: 380px) { .vitaux-grid-big { grid-template-columns: 1fr; } }
+  .vx-big { background: var(--gris-bg); border-radius: 10px; padding: 12px; text-align: center; border-left: 4px solid var(--accent); }
+  .vx-big.rouge  { border-left-color: var(--rouge); }
+  .vx-big.bleu   { border-left-color: var(--bleu); }
+  .vx-big.vert   { border-left-color: var(--vert); }
+  .vx-big.orange { border-left-color: var(--orange); }
+  .vx-big.violet { border-left-color: var(--violet); }
+  .vx-big.jaune  { border-left-color: var(--jaune); }
+  .vx-big-label { font-size: 11px; color: var(--texte-soft); font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px; }
+  .vx-big-val { font-size: 24px; font-weight: 900; color: var(--texte); line-height: 1; }
+  .vx-big-unit { font-size: 11px; color: var(--texte-soft); margin-top: 2px; }
+  .vx-big-tc { font-size: 11px; color: var(--rouge); font-weight: 700; margin-top: 4px; }
+
+  /* PNO grid */
+  .pno-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  @media (max-width: 420px) { .pno-grid { grid-template-columns: 1fr; } }
+  .pno-card { border-radius: 8px; overflow: hidden; border: 1px solid var(--bordure); }
+  .pno-head { padding: 7px 10px; font-weight: 800; font-size: 12px; color: #fff; text-align: center; text-transform: uppercase; }
+  .pno-body { padding: 9px 10px; font-size: 12px; line-height: 1.7; background: #fff; }
+
+  /* BURN GRID */
+  .burn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+  .burn-item { background: var(--gris-bg); border-radius: 8px; padding: 8px 6px; text-align: center; }
+  .burn-label { font-size: 10px; color: var(--texte-soft); font-weight: 700; margin-bottom: 3px; }
+  .burn-val { font-size: 15px; font-weight: 900; color: var(--orange); }
+
+  /* MATERIEL PAR POIDS */
+  .mat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .mat-item { background: var(--gris-bg); border-radius: 8px; padding: 10px 12px; border: 1px solid var(--bordure); }
+  .mat-label { font-size: 10px; color: var(--texte-soft); font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
+  .mat-val { font-size: 14px; font-weight: 900; color: var(--texte); line-height: 1.3; }
+  .mat-sub { font-size: 10px; color: var(--texte-soft); margin-top: 2px; }
+
+  /* DOSES DAMAGE CONTROL PAR POIDS */
+  .dose-card-dc { background: var(--gris-bg); border-radius: 10px; padding: 10px 12px; border-left: 4px solid var(--accent); margin-bottom: 8px; }
+  .dose-card-dc.rouge  { border-left-color: var(--rouge); }
+  .dose-card-dc.violet { border-left-color: var(--violet); }
+  .dose-card-dc.jaune  { border-left-color: var(--jaune); }
+  .dose-card-dc.bleu   { border-left-color: var(--bleu); }
+  .dose-dc-label { font-size: 11px; font-weight: 800; color: var(--texte-soft); margin-bottom: 6px; line-height: 1.4; }
+  .dose-weights-dc { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .dose-w-dc { background: var(--blanc); border-radius: 8px; padding: 7px 4px; text-align: center; border: 1px solid var(--bordure); }
+  .wlabel-dc { font-size: 9px; color: var(--texte-soft); font-weight: 700; margin-bottom: 3px; display: block; }
+  .wval-dc { font-size: 16px; font-weight: 900; color: var(--accent); line-height: 1; display: block; }
+  .wunit-dc { font-size: 9px; color: var(--texte-soft); display: block; margin-top: 1px; }
+  .dose-card-dc.rouge  .wval-dc { color: var(--rouge); }
+  .dose-card-dc.violet .wval-dc { color: var(--violet); }
+  .dose-card-dc.jaune  .wval-dc { color: var(--jaune); }
+  .dose-card-dc.bleu   .wval-dc { color: var(--bleu); }
+
+  .footer-note { text-align: center; font-size: 10px; color: #aaa; padding: 16px 14px 8px; border-top: 1px solid var(--bordure); margin-top: 8px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <a class="back-btn" href="index.html">‹</a>
+    <h1>🚨 Damage Control Pédiatrique</h1>
+  </div>
+  <p>SDS30 · v1.0 · SMUR pédiatrique Necker · TECC Peds 2025</p>
+</header>
+
+<div class="weight-tabs">
+  <div class="weight-tab active" onclick="switchTab(this,'global')"><span class="kg">Tous</span>XABCDE</div>
+  <div class="weight-tab" onclick="switchTab(this,'creche')"><span class="kg">&lt;10 kg</span>Crèche</div>
+  <div class="weight-tab" onclick="switchTab(this,'maternelle')"><span class="kg">10–20 kg</span>Maternelle</div>
+  <div class="weight-tab" onclick="switchTab(this,'primaire')"><span class="kg">20–30 kg</span>Primaire</div>
+  <div class="weight-tab" onclick="switchTab(this,'adulte')"><span class="kg">&gt;30 kg</span>Ados</div>
+</div>
+
+<div class="quick-nav">
+  <button class="qnav-btn" onclick="navTo('safe')">🛡️ SAFE</button>
+  <button class="qnav-btn" onclick="navTo('x')">🩸 X</button>
+  <button class="qnav-btn" onclick="navTo('a')">🫁 A</button>
+  <button class="qnav-btn" onclick="navTo('b')">💨 B</button>
+  <button class="qnav-btn" onclick="navTo('c')">💉 C</button>
+  <button class="qnav-btn" onclick="navTo('d')">🧠 D</button>
+  <button class="qnav-btn" onclick="navTo('e')">🌡️ E</button>
+  <button class="qnav-btn" onclick="navTo('brulures')">🔥 Brûlures</button>
+  <button class="qnav-btn" onclick="navTo('evacuation')">🚑 Évacuation</button>
+  <button class="qnav-btn" onclick="navTo('vitaux')">📊 Constantes</button>
+  <button class="qnav-btn" onclick="navTo('materiel')">🔧 Matériel</button>
+</div>
+
+<div class="content">
+
+<!-- ═══ PANNEAU COMMUN — XABCDE ═══ -->
+<div class="panel-poids active" id="panel-global">
+
+  <!-- SAFE -->
+  <div class="card" id="safe">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🛡️</span>
+        <div><div class="card-head-title">SAFE — Avant l'approche</div><span class="card-head-sub">Sécurité de zone · tri si multiples victimes</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="step"><div class="step-num">S</div><div><strong>Stop the burning process</strong> — Éteindre la menace (feu, électricité, produit toxique...)</div></div>
+      <div class="step"><div class="step-num bleu">A</div><div><strong>Assess the scene</strong> — Évaluer la situation, le mécanisme, le nombre de victimes</div></div>
+      <div class="step"><div class="step-num vert">F</div><div><strong>Free of danger for you</strong> — Se mettre à l'abri avant toute approche</div></div>
+      <div class="step"><div class="step-num orange">E</div><div><strong>Evaluate the casualties</strong> — Tri des blessés (méthode START) si multiples victimes</div></div>
+      <div class="note">Vérifier SINUS/FMA · Identifier précocement les urgences vitales pour évacuation immédiate</div>
+    </div>
+  </div>
+
+  <!-- X -->
+  <div class="card open" id="x">
+    <div class="card-head rouge" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="xletter rouge">X</span>
+        <div><div class="card-head-title">eXsanguination</div><span class="card-head-sub">Maîtriser les hémorragies massives — priorité absolue</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="step"><div class="step-num rouge">1</div><div><strong>Garrot</strong> — hémorragie de membre non contrôlable · noter l'heure de pose · le plus proximal possible · sur peau nue</div></div>
+      <div class="step"><div class="step-num rouge">2</div><div><strong>Pansements hémostatiques et compressifs</strong> — wound packing profond + pansement compressif par-dessus</div></div>
+      <div class="step"><div class="step-num rouge">3</div><div><strong>Ceinture pelvienne</strong> — si suspicion fracture du bassin (mécanisme, douleur, instabilité)</div></div>
+      <div class="step"><div class="step-num rouge">4</div><div><strong>Déshabiller complètement</strong> — rechercher toute hémorragie non identifiée</div></div>
+      <div class="step"><div class="step-num rouge">5</div><div><strong>Anticiper le brancardage</strong> si saignement non contrôlé — ne pas perdre de temps sur place</div></div>
+    </div>
+  </div>
+
+  <!-- A -->
+  <div class="card open" id="a">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="xletter bleu">A</span>
+        <div><div class="card-head-title">Airway</div><span class="card-head-sub">Liberté des voies aériennes</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="step"><div class="step-num bleu">1</div><div><strong>Position de la tête</strong> — désobstruction manuelle · subluxation mandibulaire si trauma</div></div>
+      <div class="step"><div class="step-num bleu">2</div><div><strong>Guedel</strong> — canule oropharyngée adaptée à la taille</div></div>
+      <div class="step"><div class="step-num bleu">3</div><div><strong>Dispositif supraglottique</strong> — si VAS non protégées et IOT non immédiatement possible</div></div>
+      <div class="step"><div class="step-num bleu">4</div><div><strong>Intubation</strong> — ISR si conscience préservée · cf. fiche tronc commun pour doses et matériel par poids</div></div>
+      <div class="step"><div class="step-num rouge">5</div><div><strong>Cricothyroïdotomie</strong> — en dernier recours si échec des étapes précédentes et VAS non protégeables</div></div>
+      <div class="note">Restriction du rachis cervical sélective selon mécanisme — pas systématique, ne pas retarder les gestes vitaux</div>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="card open" id="b">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="xletter orange">B</span>
+        <div><div class="card-head-title">Breathing</div><span class="card-head-sub">Rétablir la respiration — FTVO</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="step"><div class="step-num orange">1</div><div><strong>Position adaptée</strong> — demi-assise si conscient et hémodynamique stable</div></div>
+      <div class="pno-grid">
+        <div class="pno-card">
+          <div class="pno-head" style="background:var(--orange)">PNO ouvert</div>
+          <div class="pno-body">Pansement 3 côtés ou Ackerman (valve unidirectionnelle)<br>Surveiller l'apparition d'un PNO sous tension</div>
+        </div>
+        <div class="pno-card">
+          <div class="pno-head" style="background:var(--rouge)">PNO fermé / suffocant</div>
+          <div class="pno-body">Exsufflation à l'aiguille<br>+/− Thoracostomie / Drain thoracique<br>Repères : 5ème EIC ligne axillaire antérieure</div>
+        </div>
+      </div>
+      <div class="note">Si arrêt cardiaque traumatique ou péri-arrêt → décompression bilatérale à l'aiguille</div>
+    </div>
+  </div>
+
+  <!-- C -->
+  <div class="card open" id="c">
+    <div class="card-head jaune" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="xletter jaune">C</span>
+        <div><div class="card-head-title">Circulation</div><span class="card-head-sub">Contrôle de la circulation — F4P</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="step"><div class="step-num jaune">1</div><div><strong>VVP / Intra-osseuse</strong> — abord rapide, IO d'emblée si échec ou urgence vitale</div></div>
+      <div class="step"><div class="step-num jaune">2</div><div><strong>Remplissage vasculaire</strong> — cristalloïdes limités, transfusion précoce si disponible</div></div>
+      <div class="step"><div class="step-num jaune">3</div><div><strong>Exacyl</strong> — acide tranexamique, avant H3</div></div>
+      <div class="step"><div class="step-num jaune">4</div><div><strong>Adrénaline</strong> — si signes de choc : ↑FC, extrémités froides, marbrures, TRC &gt; 3s</div></div>
+      <div class="renvoi" onclick="window.location.href='fiche_chocs_v1.html'">Doses détaillées (Exacyl, remplissage, amines) → Fiche États de Choc</div>
+    </div>
+  </div>
+
+  <!-- D -->
+  <div class="card open" id="d">
+    <div class="card-head violet" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="xletter violet">D</span>
+        <div><div class="card-head-title">Disability</div><span class="card-head-sub">Neurologique</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="step"><div class="step-num violet">1</div><div><strong>Score AVPU</strong> — Alert · Voice · Pain · Unresponsive</div></div>
+      <div class="step"><div class="step-num violet">2</div><div><strong>Pupilles / Déficit neurologique</strong> — taille, symétrie, réactivité · examen rapide des 4 membres</div></div>
+      <div class="step"><div class="step-num violet">3</div><div><strong>SSH 3% (NaCl 5,85%)</strong> — si signes d'HTIC · cf. fiche tronc commun pour les doses</div></div>
+      <div class="step"><div class="step-num violet">4</div><div><strong>Couverture de survie</strong> — emballer pour limiter la déperdition thermique</div></div>
+      <div class="note-violet">Tête surélevée à 30° si possible · objectif normocapnie EtCO₂ 35–40 mmHg · éviter hypoxie et hypotension (facteurs majeurs de mortalité du TC)</div>
+    </div>
+  </div>
+
+  <!-- E -->
+  <div class="card open" id="e">
+    <div class="card-head vert" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="xletter vert">E</span>
+        <div><div class="card-head-title">Exposure / Environnement</div><span class="card-head-sub">Head et hypothermie</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="step"><div class="step-num vert">1</div><div><strong>Déshabiller complètement</strong> — recherche de lésions occultes (déjà fait en X mais à reconfirmer)</div></div>
+      <div class="step"><div class="step-num vert">2</div><div><strong>Prévention hypothermie</strong> — couverture de survie, isolation du sol, retirer vêtements mouillés</div></div>
+      <div class="step"><div class="step-num vert">3</div><div><strong>Recherche de brûlures</strong> — cf. section dédiée ci-dessous</div></div>
+      <div class="note-vert">L'enfant est particulièrement exposé à l'hypothermie (surface corporelle/poids élevée) — facteur aggravant de la triade létale (hypothermie, acidose, coagulopathie)</div>
+    </div>
+  </div>
+
+  <!-- BRÛLURES -->
+  <div class="card" id="brulures">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🔥</span>
+        <div><div class="card-head-title">Brûlures</div><span class="card-head-sub">Surveillance · remplissage · CO/cyanure</span></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="step"><div class="step-num orange">1</div><div><strong>Surveillance VAS / respiratoire</strong> — seuil bas pour intubation si brûlures de la face/VAS suspectées</div></div>
+      <div class="step"><div class="step-num orange">2</div><div><strong>O₂ haut débit masque haute concentration</strong> — si suspicion intoxication au CO</div></div>
+      <div class="step"><div class="step-num orange">3</div><div><strong>Suspicion cyanure</strong> — incendie en espace clos, peau rouge cerise, symptômes non spécifiques</div></div>
+      <div class="step"><div class="step-num orange">4</div><div><strong>Estimation surface brûlée</strong> — règle des 9 adaptée à l'enfant ou paume de la main = 1% SC</div></div>
+      <div class="step"><div class="step-num orange">5</div><div><strong>Couvrir</strong> — pansements propres et secs (stériles si possible) · lutte hypothermie +++</div></div>
+
+      <div class="burn-grid">
+        <div class="burn-item"><div class="burn-label">Tête</div><div class="burn-val">~19%</div></div>
+        <div class="burn-item"><div class="burn-label">Tronc (face/dos)</div><div class="burn-val">~32%</div></div>
+        <div class="burn-item"><div class="burn-label">1 jambe</div><div class="burn-val">~15%</div></div>
+      </div>
+      <div class="note">Règle des 9 adaptée au nourrisson (tête plus grande proportionnellement). Si TBSA ≥ 20% et &lt; 30 kg : remplissage = 3 mL × poids (kg) × %TBSA, moitié sur les 8 premières heures, + entretien (4/2/1 mL/kg/h)</div>
+      <div class="note-violet">Si choc hémorragique associé → priorité au remplissage hémorragique (cf. fiche Chocs)</div>
+    </div>
+  </div>
+
+  <!-- RÉÉVALUATION + ANTALGIE -->
+  <div class="card" id="reevaluation">
+    <div class="card-head bleu" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🔄</span>
+        <div><div class="card-head-title">Réévaluation & Antalgie</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="step"><div class="step-num bleu">1</div><div><strong>Réévaluer l'efficacité</strong> — de chaque geste réalisé (garrot, pansement, position...)</div></div>
+      <div class="step"><div class="step-num bleu">2</div><div><strong>Yeux</strong> — protection oculaire si traumatisme facial/oculaire</div></div>
+      <div class="step"><div class="step-num bleu">3</div><div><strong>Antalgie</strong> — systématique, multimodale, dès que possible</div></div>
+      <div class="step"><div class="step-num bleu">4</div><div><strong>Nettoyer / Pansements / Antibiotiques</strong> — plaies ouvertes, parage simple, ATB si plaie souillée ou délai d'évacuation prolongé</div></div>
+      <div class="renvoi" onclick="window.location.href='fiche_analgesie_v1.html'">Doses détaillées → Fiche Analgésie-Sédation</div>
+    </div>
+  </div>
+
+  <!-- ÉVACUATION -->
+  <div class="card" id="evacuation">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🚑</span>
+        <div><div class="card-head-title">Préparer l'évacuation</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="step"><div class="step-num">1</div><div><strong>Préparer le brancardage</strong> — anticiper avant la fin des soins</div></div>
+      <div class="step"><div class="step-num">2</div><div><strong>Prioriser les victimes à évacuer</strong> — selon tri initial et évolution</div></div>
+      <div class="step"><div class="step-num">3</div><div><strong>Transmissions</strong> — bilan structuré, contact SAMU, identifier la structure d'accueil adaptée</div></div>
+      <div class="step"><div class="step-num">4</div><div><strong>Sécuriser le transport</strong> — fixations, équipement arrimé, surveillance continue</div></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:16px 0 4px;font-size:12px;color:var(--texte-soft);font-weight:700">
+    👇 Sélectionne une tranche de poids pour les normes vitales
+  </div>
+
+</div><!-- /global -->
+
+
+<!-- ═══ CRÈCHE < 10 kg ═══ -->
+<div class="panel-poids" id="panel-creche">
+  <div class="alerte">⚠ Poids &lt; 10 kg · soit &lt; 1 an</div>
+  <div class="card open" data-section="vitaux" id="vitaux">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">📊</span>
+        <div><div class="card-head-title">Normes des paramètres vitaux</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="vitaux-grid-big">
+        <div class="vx-big"><div class="vx-big-label">FR /min</div><div class="vx-big-val">20–40</div></div>
+        <div class="vx-big rouge"><div class="vx-big-label">SpO₂</div><div class="vx-big-val">&gt;94</div><div class="vx-big-unit">%</div></div>
+        <div class="vx-big"><div class="vx-big-label">FC /min</div><div class="vx-big-val">80–180</div></div>
+        <div class="vx-big bleu"><div class="vx-big-label">PAS</div><div class="vx-big-val">&gt;70</div><div class="vx-big-unit">mmHg</div></div>
+        <div class="vx-big vert"><div class="vx-big-label">PAM</div><div class="vx-big-val">&gt;50</div><div class="vx-big-unit">mmHg</div><div class="vx-big-tc">&gt;60 si TC</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-section="materiel">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🔧</span>
+        <div><div class="card-head-title">Matériel — &lt; 10 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="mat-grid">
+        <div class="mat-item"><div class="mat-label">Garrot</div><div class="mat-val">Pédiatrique</div><div class="mat-sub">Vérifier serrage sur petit membre</div></div>
+        <div class="mat-item"><div class="mat-label">Ceinture pelvienne</div><div class="mat-val">Non recommandée</div><div class="mat-sub">Compression manuelle/drap</div></div>
+        <div class="mat-item"><div class="mat-label">Guedel</div><div class="mat-val">Taille 0–1</div></div>
+        <div class="mat-item"><div class="mat-label">Sonde IOT</div><div class="mat-val">3 – 3,5</div><div class="mat-sub">Repère 9–10 cm</div></div>
+        <div class="mat-item"><div class="mat-label">Supraglottique</div><div class="mat-val">Taille 1–1,5</div></div>
+        <div class="mat-item"><div class="mat-label">Cricothyroïdotomie</div><div class="mat-val">Aiguille 14–16G</div><div class="mat-sub">Dernier recours</div></div>
+        <div class="mat-item"><div class="mat-label">Exsufflation PNO</div><div class="mat-val">Cathlon 20G rose</div></div>
+        <div class="mat-item"><div class="mat-label">Drain thoracique</div><div class="mat-val">CH 8</div></div>
+        <div class="mat-item"><div class="mat-label">VVP / IO</div><div class="mat-val">24G / IO bleu 15mm</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head jaune" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Doses XABCD — &lt; 10 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card-dc rouge">
+        <div class="dose-dc-label">C — Exacyl 100 mg/mL · 20 mg/kg IVL 10 min</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">3 kg</span><span class="wval-dc">0,6</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">5 kg</span><span class="wval-dc">1</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">8 kg</span><span class="wval-dc">1,6</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc rouge">
+        <div class="dose-dc-label">C — Remplissage NaCl 0,9% · 20 mL/kg</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">3 kg</span><span class="wval-dc">60</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">5 kg</span><span class="wval-dc">100</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">8 kg</span><span class="wval-dc">160</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc violet">
+        <div class="dose-dc-label">A — Kétamine ISR · 3 mg/kg IVD (10 mg/mL)</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">3 kg</span><span class="wval-dc">0,9</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">5 kg</span><span class="wval-dc">1,5</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">8 kg</span><span class="wval-dc">2,4</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc violet">
+        <div class="dose-dc-label">D — SSH 3% · 3 mL/kg IVL 10 min (si HTIC)</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">3 kg</span><span class="wval-dc">9</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">5 kg</span><span class="wval-dc">15</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">8 kg</span><span class="wval-dc">24</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc jaune">
+        <div class="dose-dc-label">C — Adrénaline choc · 0,01 mg/kg IVD (100 µg/mL)</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">3 kg</span><span class="wval-dc">0,3</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">5 kg</span><span class="wval-dc">0,5</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">8 kg</span><span class="wval-dc">0,8</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ MATERNELLE 10–20 kg ═══ -->
+<div class="panel-poids" id="panel-maternelle">
+  <div class="alerte">⚠ Poids 10–20 kg · 1 à 6 ans</div>
+  <div class="card open" data-section="vitaux">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">📊</span>
+        <div><div class="card-head-title">Normes des paramètres vitaux</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="vitaux-grid-big">
+        <div class="vx-big"><div class="vx-big-label">FR /min</div><div class="vx-big-val">20–30</div></div>
+        <div class="vx-big rouge"><div class="vx-big-label">SpO₂</div><div class="vx-big-val">&gt;94</div><div class="vx-big-unit">%</div></div>
+        <div class="vx-big"><div class="vx-big-label">FC /min</div><div class="vx-big-val">60–160</div></div>
+        <div class="vx-big bleu"><div class="vx-big-label">PAS</div><div class="vx-big-val">&gt;70</div><div class="vx-big-unit">mmHg</div></div>
+        <div class="vx-big vert"><div class="vx-big-label">PAM</div><div class="vx-big-val">&gt;55</div><div class="vx-big-unit">mmHg</div><div class="vx-big-tc">&gt;65 si TC</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-section="materiel">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🔧</span>
+        <div><div class="card-head-title">Matériel — 10–20 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="mat-grid">
+        <div class="mat-item"><div class="mat-label">Garrot</div><div class="mat-val">Pédiatrique/petit adulte</div></div>
+        <div class="mat-item"><div class="mat-label">Ceinture pelvienne</div><div class="mat-val">Taille pédiatrique</div><div class="mat-sub">Si disponible</div></div>
+        <div class="mat-item"><div class="mat-label">Guedel</div><div class="mat-val">Taille 1–1,5</div></div>
+        <div class="mat-item"><div class="mat-label">Sonde IOT</div><div class="mat-val">4 – 4,5</div><div class="mat-sub">Repère 12–15 cm</div></div>
+        <div class="mat-item"><div class="mat-label">Supraglottique</div><div class="mat-val">Taille 2</div></div>
+        <div class="mat-item"><div class="mat-label">Cricothyroïdotomie</div><div class="mat-val">Aiguille 14G</div><div class="mat-sub">Dernier recours</div></div>
+        <div class="mat-item"><div class="mat-label">Exsufflation PNO</div><div class="mat-val">Cathlon 18G vert</div></div>
+        <div class="mat-item"><div class="mat-label">Drain thoracique</div><div class="mat-val">CH 10–12</div></div>
+        <div class="mat-item"><div class="mat-label">VVP / IO</div><div class="mat-val">22G / IO bleu 25mm</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head jaune" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Doses XABCD — 10–20 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card-dc rouge">
+        <div class="dose-dc-label">C — Exacyl 100 mg/mL · 20 mg/kg IVL 10 min</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">10 kg</span><span class="wval-dc">2</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">15 kg</span><span class="wval-dc">3</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">20 kg</span><span class="wval-dc">4</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc rouge">
+        <div class="dose-dc-label">C — Remplissage NaCl 0,9% · 20 mL/kg</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">10 kg</span><span class="wval-dc">200</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">15 kg</span><span class="wval-dc">300</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">20 kg</span><span class="wval-dc">400</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc violet">
+        <div class="dose-dc-label">A — Kétamine ISR · 2–4 mg/kg IVD (10 mg/mL)</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">10 kg</span><span class="wval-dc">2–4</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">15 kg</span><span class="wval-dc">3–6</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">20 kg</span><span class="wval-dc">4–8</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc violet">
+        <div class="dose-dc-label">D — SSH 3% · 3 mL/kg IVL 10 min (si HTIC)</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">10 kg</span><span class="wval-dc">30</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">15 kg</span><span class="wval-dc">45</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">20 kg</span><span class="wval-dc">60</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc jaune">
+        <div class="dose-dc-label">C — Adrénaline choc · 0,01 mg/kg IVD (100 µg/mL)</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">10 kg</span><span class="wval-dc">1</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">15 kg</span><span class="wval-dc">1,5</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">20 kg</span><span class="wval-dc">2</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ PRIMAIRE 20–30 kg ═══ -->
+<div class="panel-poids" id="panel-primaire">
+  <div class="alerte">⚠ Poids 20–30 kg · 6 à 10 ans</div>
+  <div class="card open" data-section="vitaux">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">📊</span>
+        <div><div class="card-head-title">Normes des paramètres vitaux</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="vitaux-grid-big">
+        <div class="vx-big"><div class="vx-big-label">FR /min</div><div class="vx-big-val">15–20</div></div>
+        <div class="vx-big rouge"><div class="vx-big-label">SpO₂</div><div class="vx-big-val">&gt;94</div><div class="vx-big-unit">%</div></div>
+        <div class="vx-big"><div class="vx-big-label">FC /min</div><div class="vx-big-val">60–160</div></div>
+        <div class="vx-big bleu"><div class="vx-big-label">PAS</div><div class="vx-big-val">&gt;75</div><div class="vx-big-unit">mmHg</div></div>
+        <div class="vx-big vert"><div class="vx-big-label">PAM</div><div class="vx-big-val">&gt;55</div><div class="vx-big-unit">mmHg</div><div class="vx-big-tc">&gt;65 si TC</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-section="materiel">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🔧</span>
+        <div><div class="card-head-title">Matériel — 20–30 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="mat-grid">
+        <div class="mat-item"><div class="mat-label">Garrot</div><div class="mat-val">Adulte (taille réduite)</div></div>
+        <div class="mat-item"><div class="mat-label">Ceinture pelvienne</div><div class="mat-val">Taille S adulte</div><div class="mat-sub">À partir de 25 kg</div></div>
+        <div class="mat-item"><div class="mat-label">Guedel</div><div class="mat-val">Taille 2</div></div>
+        <div class="mat-item"><div class="mat-label">Sonde IOT</div><div class="mat-val">5 – 6</div><div class="mat-sub">Repère 15–20 cm</div></div>
+        <div class="mat-item"><div class="mat-label">Supraglottique</div><div class="mat-val">Taille 2–2,5</div></div>
+        <div class="mat-item"><div class="mat-label">Cricothyroïdotomie</div><div class="mat-val">Kit chirurgical/aiguille</div><div class="mat-sub">Dernier recours</div></div>
+        <div class="mat-item"><div class="mat-label">Exsufflation PNO</div><div class="mat-val">Cathlon 16G gris</div></div>
+        <div class="mat-item"><div class="mat-label">Drain thoracique</div><div class="mat-val">CH 16–20</div></div>
+        <div class="mat-item"><div class="mat-label">VVP / IO</div><div class="mat-val">20G / IO bleu 25mm</div></div>
+      </div>
+      <div class="note">Tuyaux et matériel ventilatoire adulte à partir de 25 kg</div>
+    </div>
+  </div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head jaune" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Doses XABCD — 20–30 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card-dc rouge">
+        <div class="dose-dc-label">C — Exacyl 100 mg/mL · 20 mg/kg IVL 10 min</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">20 kg</span><span class="wval-dc">4</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">25 kg</span><span class="wval-dc">5</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">30 kg</span><span class="wval-dc">6</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc rouge">
+        <div class="dose-dc-label">C — Remplissage NaCl 0,9% · 20 mL/kg</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">20 kg</span><span class="wval-dc">400</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">25 kg</span><span class="wval-dc">500</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">30 kg</span><span class="wval-dc">600</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc violet">
+        <div class="dose-dc-label">A — Kétamine ISR · 2–4 mg/kg IVD (10 mg/mL)</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">20 kg</span><span class="wval-dc">4–8</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">25 kg</span><span class="wval-dc">5–10</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">30 kg</span><span class="wval-dc">6–12</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc violet">
+        <div class="dose-dc-label">D — SSH 3% · 3 mL/kg IVL 10 min (si HTIC)</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">20 kg</span><span class="wval-dc">60</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">25 kg</span><span class="wval-dc">75</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">30 kg</span><span class="wval-dc">90</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc jaune">
+        <div class="dose-dc-label">C — Adrénaline choc · 0,01 mg/kg IVD (100 µg/mL)</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">20 kg</span><span class="wval-dc">2</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">25 kg</span><span class="wval-dc">2,5</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">30 kg</span><span class="wval-dc">3</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ ADOS > 30 kg ═══ -->
+<div class="panel-poids" id="panel-adulte">
+  <div class="alerte">⚠ Poids &gt; 30 kg · &gt; 10 ans</div>
+  <div class="card open" data-section="vitaux">
+    <div class="card-head" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">📊</span>
+        <div><div class="card-head-title">Normes des paramètres vitaux</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="vitaux-grid-big">
+        <div class="vx-big"><div class="vx-big-label">FR /min</div><div class="vx-big-val">10–15</div></div>
+        <div class="vx-big rouge"><div class="vx-big-label">SpO₂</div><div class="vx-big-val">&gt;94</div><div class="vx-big-unit">%</div></div>
+        <div class="vx-big"><div class="vx-big-label">FC /min</div><div class="vx-big-val">60–120</div></div>
+        <div class="vx-big bleu"><div class="vx-big-label">PAS</div><div class="vx-big-val">&gt;80</div><div class="vx-big-unit">mmHg</div></div>
+        <div class="vx-big vert"><div class="vx-big-label">PAM</div><div class="vx-big-val">&gt;65</div><div class="vx-big-unit">mmHg</div><div class="vx-big-tc">&gt;75 si TC</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-section="materiel">
+    <div class="card-head orange" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">🔧</span>
+        <div><div class="card-head-title">Matériel — &gt; 30 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="mat-grid">
+        <div class="mat-item"><div class="mat-label">Garrot</div><div class="mat-val">Adulte standard</div></div>
+        <div class="mat-item"><div class="mat-label">Ceinture pelvienne</div><div class="mat-val">Taille adulte</div></div>
+        <div class="mat-item"><div class="mat-label">Guedel</div><div class="mat-val">Taille 2–3</div></div>
+        <div class="mat-item"><div class="mat-label">Sonde IOT</div><div class="mat-val">6,5 – 7,5</div><div class="mat-sub">Repère 17–22 cm</div></div>
+        <div class="mat-item"><div class="mat-label">Supraglottique</div><div class="mat-val">Taille 3–4</div></div>
+        <div class="mat-item"><div class="mat-label">Cricothyroïdotomie</div><div class="mat-val">Kit chirurgical</div><div class="mat-sub">Dernier recours</div></div>
+        <div class="mat-item"><div class="mat-label">Exsufflation PNO</div><div class="mat-val">Stylo 14G ou 16G gris</div></div>
+        <div class="mat-item"><div class="mat-label">Drain thoracique</div><div class="mat-val">CH 20–24</div></div>
+        <div class="mat-item"><div class="mat-label">VVP / IO</div><div class="mat-val">16–18G / IO bleu 25mm</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card open" data-section="doses">
+    <div class="card-head jaune" onclick="toggleCard(this)">
+      <div class="card-head-left"><span class="card-head-icon">💊</span>
+        <div><div class="card-head-title">Doses XABCD — &gt; 30 kg</div></div>
+      </div><span class="card-chevron">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="dose-card-dc rouge">
+        <div class="dose-dc-label">C — Exacyl 100 mg/mL · 20 mg/kg · max 1g ⚑</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">35 kg</span><span class="wval-dc">7</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">40 kg</span><span class="wval-dc">8</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">≥50 kg</span><span class="wval-dc">10 ⚑</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc rouge">
+        <div class="dose-dc-label">C — Remplissage NaCl 0,9% · max 20 mL/kg</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">35 kg</span><span class="wval-dc">700</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">40 kg</span><span class="wval-dc">800</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">50 kg</span><span class="wval-dc">1000</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc violet">
+        <div class="dose-dc-label">A — Kétamine ISR · 2–4 mg/kg IVD (10 mg/mL)</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">35 kg</span><span class="wval-dc">7–14</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">40 kg</span><span class="wval-dc">8–16</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">50 kg</span><span class="wval-dc">10–20</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc violet">
+        <div class="dose-dc-label">D — SSH 3% · 3 mL/kg IVL 10 min (si HTIC)</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">35 kg</span><span class="wval-dc">105</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">40 kg</span><span class="wval-dc">120</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">50 kg</span><span class="wval-dc">150</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+      <div class="dose-card-dc jaune">
+        <div class="dose-dc-label">C — Adrénaline choc · 0,01 mg/kg · max 1mg ⚑</div>
+        <div class="dose-weights-dc">
+          <div class="dose-w-dc"><span class="wlabel-dc">35 kg</span><span class="wval-dc">3,5</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">40 kg</span><span class="wval-dc">4</span><span class="wunit-dc">mL</span></div>
+          <div class="dose-w-dc"><span class="wlabel-dc">≥50 kg</span><span class="wval-dc">5 ⚑</span><span class="wunit-dc">mL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<p class="footer-note">SDS30 · v1.0 · juin 2026<br>Référence : Aide cognitive damage control pédiatrique extrahospitalier en SSE — SMUR pédiatrique Necker (05/04/2024) · TECC Guidelines for Pediatric Patients 2025<br>Ce document ne remplace pas le contact SAMU/SMUR pédiatrique</p>
+
+<script>
+  function switchTab(el, panelId) {
+    document.querySelectorAll('.weight-tab').forEach(function(t) { t.classList.remove('active'); });
+    el.classList.add('active');
+    document.querySelectorAll('.panel-poids').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('panel-' + panelId).classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+  function toggleCard(headEl) {
+    var card = headEl.parentElement;
+    while (card && !card.classList.contains('card')) { card = card.parentElement; }
+    if (!card || card.classList.contains('always-open')) return;
+    card.classList.toggle('open');
+  }
+  function navTo(sectionId) {
+    var activePanel = document.querySelector('.panel-poids.active');
+    var target = null;
+    if (activePanel) { target = activePanel.querySelector('[data-section="' + sectionId + '"]'); }
+    if (!target) { target = document.getElementById(sectionId); }
+    if (!target) { target = document.querySelector('[data-section="' + sectionId + '"]'); }
+    if (!target) return;
+    var card = target;
+    while (card && !card.classList.contains('card')) { card = card.parentElement; }
+    if (card && !card.classList.contains('open')) { card.classList.add('open'); }
+    setTimeout(function() {
+      var top = target.getBoundingClientRect().top + window.pageYOffset - 130;
+      window.scrollTo({top: top, behavior: 'smooth'});
+    }, 80);
+  }
+</script>
+
+<script>
+  // Enregistrement du service worker pour le mode hors-ligne
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
