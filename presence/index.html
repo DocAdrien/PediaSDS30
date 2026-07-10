@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Présence garde – VRM MAR</title>
+<style>
+  :root{
+    --rouge: #B3261E;
+    --rouge-fonce: #7A1913;
+    --encre: #1C1B1A;
+    --gris: #6B6560;
+    --fond: #F6F4F1;
+    --carte: #FFFFFF;
+    --ligne: #E4E0DA;
+    --vert: #2E6E4E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--fond);
+    color:var(--encre);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:0 16px;
+  }
+  .page{
+    width:100%;
+    max-width:460px;
+    padding:28px 0 60px;
+  }
+  .bandeau{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .bandeau .barre{
+    width:6px;
+    height:34px;
+    background:var(--rouge);
+    border-radius:2px;
+    flex-shrink:0;
+  }
+  .bandeau h1{
+    font-size:19px;
+    line-height:1.25;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .bandeau .souslabel{
+    display:block;
+    font-size:12.5px;
+    color:var(--gris);
+    font-weight:500;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    margin-bottom:2px;
+  }
+  .carte{
+    background:var(--carte);
+    border:1px solid var(--ligne);
+    border-radius:14px;
+    padding:22px 20px 24px;
+    box-shadow:0 1px 2px rgba(28,27,26,0.04);
+  }
+  .champ{
+    margin-bottom:16px;
+  }
+  .champ label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--encre);
+    margin-bottom:6px;
+  }
+  .champ .aide{
+    font-weight:400;
+    color:var(--gris);
+    font-size:12px;
+  }
+  .champ input, .champ select{
+    width:100%;
+    padding:11px 12px;
+    font-size:16px;
+    border:1.5px solid var(--ligne);
+    border-radius:9px;
+    background:var(--fond);
+    color:var(--encre);
+    font-family:inherit;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .champ input:focus, .champ select:focus{
+    outline:none;
+    border-color:var(--rouge);
+    background:#fff;
+  }
+  .duo{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .bouton{
+    width:100%;
+    margin-top:6px;
+    padding:15px;
+    background:var(--rouge);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:0.01em;
+    cursor:pointer;
+    transition:background 0.15s ease, transform 0.05s ease;
+  }
+  .bouton:active{
+    background:var(--rouge-fonce);
+    transform:scale(0.99);
+  }
+  .note{
+    margin-top:14px;
+    font-size:12.5px;
+    color:var(--gris);
+    line-height:1.5;
+    text-align:center;
+  }
+  .statut{
+    display:none;
+    margin-top:14px;
+    padding:11px 13px;
+    border-radius:9px;
+    font-size:13px;
+    line-height:1.5;
+    background:#EAF4EE;
+    color:var(--vert);
+    border:1px solid #CFE7D9;
+  }
+  .statut.visible{display:block;}
+  .erreur{
+    display:none;
+    margin-top:10px;
+    font-size:12.5px;
+    color:var(--rouge-fonce);
+  }
+  .erreur.visible{display:block;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="bandeau">
+    <div class="barre"></div>
+    <div>
+      <span class="souslabel">SDIS 30 · VRM MAR</span>
+      <h1>Signaler ma présence en garde</h1>
+    </div>
+  </div>
+
+  <div class="carte">
+    <form id="formPresence">
+
+      <div class="champ">
+        <label for="nom">Nom</label>
+        <input type="text" id="nom" required autocomplete="family-name">
+      </div>
+
+      <div class="champ duo">
+        <div>
+          <label for="prenom">Prénom</label>
+          <input type="text" id="prenom" required autocomplete="given-name">
+        </div>
+        <div>
+          <label for="grade">Grade</label>
+          <select id="grade" required>
+            <option value="" disabled selected>Choisir</option>
+            <option value="Aspirant">Aspirant</option>
+            <option value="Lieutenant">Lieutenant</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="champ duo">
+        <div>
+          <label for="date">Date</label>
+          <input type="date" id="date" required>
+        </div>
+        <div>
+          <label for="horaire">Horaire <span class="aide">(ex. 08h–18h)</span></label>
+          <input type="text" id="horaire" placeholder="08h–18h" required>
+        </div>
+      </div>
+
+      <div class="champ">
+        <label for="intervention">N° d'intervention <span class="aide">(si applicable)</span></label>
+        <input type="text" id="intervention" placeholder="Ex. 2026-04521">
+      </div>
+
+      <button type="submit" class="bouton">Envoyer ma présence</button>
+
+      <div class="erreur" id="erreur">Merci de compléter tous les champs obligatoires.</div>
+      <div class="statut" id="statut">Votre appli mail va s'ouvrir avec le message pré-rempli. Il ne reste qu'à appuyer sur Envoyer.</div>
+    </form>
+
+    <p class="note">Un mail pré-rempli s'ouvre dans votre appli mail par défaut.<br>Vérifiez puis appuyez sur Envoyer.</p>
+  </div>
+
+</div>
+
+<script>
+  const DESTINATAIRE = "a.chetioui@sdis30.fr";
+  const VEHICULE = "VRM MAR";
+
+  const form = document.getElementById('formPresence');
+  const statut = document.getElementById('statut');
+  const erreur = document.getElementById('erreur');
+
+  // Pré-remplir la date du jour par défaut
+  const champDate = document.getElementById('date');
+  const aujourdhui = new Date().toISOString().split('T')[0];
+  champDate.value = aujourdhui;
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const nom = document.getElementById('nom').value.trim();
+    const prenom = document.getElementById('prenom').value.trim();
+    const grade = document.getElementById('grade').value;
+    const date = document.getElementById('date').value;
+    const horaire = document.getElementById('horaire').value.trim();
+    const intervention = document.getElementById('intervention').value.trim();
+
+    if(!nom || !prenom || !grade || !date || !horaire){
+      erreur.classList.add('visible');
+      statut.classList.remove('visible');
+      return;
+    }
+    erreur.classList.remove('visible');
+
+    const dateFormatee = new Date(date + 'T00:00:00').toLocaleDateString('fr-FR');
+
+    const objet = `Présence garde ${VEHICULE} - ${nom} ${prenom} - ${dateFormatee}`;
+
+    const corps =
+`Nom : ${nom}
+Prénom : ${prenom}
+Grade : ${grade}
+Véhicule : ${VEHICULE}
+Date : ${dateFormatee}
+Horaire : ${horaire}
+N° intervention : ${intervention || "—"}`;
+
+    const lienMailto = `mailto:${DESTINATAIRE}?subject=${encodeURIComponent(objet)}&body=${encodeURIComponent(corps)}`;
+
+    statut.classList.add('visible');
+    window.location.href = lienMailto;
+  });
+</script>
+
+</body>
+</html>
