@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Présence garde – VRM MAR</title>
+<title>Validation intervention VRM Aspirants/Lieutenants</title>
 <style>
   :root{
     --rouge: #B3261E;
@@ -156,7 +156,7 @@
     <div class="barre"></div>
     <div>
       <span class="souslabel">SDIS 30 · VRM MAR</span>
-      <h1>Signaler ma présence en garde</h1>
+      <h1>Validation intervention VRM Aspirants/Lieutenants</h1>
     </div>
   </div>
 
@@ -184,15 +184,9 @@
         </div>
       </div>
 
-      <div class="champ duo">
-        <div>
-          <label for="date">Date</label>
-          <input type="date" id="date" required>
-        </div>
-        <div>
-          <label for="horaire">Horaire <span class="aide">(ex. 08h–18h)</span></label>
-          <input type="text" id="horaire" placeholder="08h–18h" required>
-        </div>
+      <div class="champ">
+        <label for="date">Date</label>
+        <input type="date" id="date" required>
       </div>
 
       <div class="champ">
@@ -231,10 +225,9 @@
     const prenom = document.getElementById('prenom').value.trim();
     const grade = document.getElementById('grade').value;
     const date = document.getElementById('date').value;
-    const horaire = document.getElementById('horaire').value.trim();
     const intervention = document.getElementById('intervention').value.trim();
 
-    if(!nom || !prenom || !grade || !date || !horaire){
+    if(!nom || !prenom || !grade || !date){
       erreur.classList.add('visible');
       statut.classList.remove('visible');
       return;
@@ -251,7 +244,6 @@ Prénom : ${prenom}
 Grade : ${grade}
 Véhicule : ${VEHICULE}
 Date : ${dateFormatee}
-Horaire : ${horaire}
 N° intervention : ${intervention || "—"}`;
 
     const lienMailto = `mailto:${DESTINATAIRE}?subject=${encodeURIComponent(objet)}&body=${encodeURIComponent(corps)}`;
